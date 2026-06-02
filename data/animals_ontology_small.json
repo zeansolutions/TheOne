@@ -14,7 +14,9 @@
     {"id": "c_sun", "labels": ["الشمس", "شمس"], "category": "celestial"},
     {"id": "c_east", "labels": ["الشرق", "شرق"], "category": "direction"},
     {"id": "c_west", "labels": ["الغرب", "غرب"], "category": "direction"},
-    {"id": "c_underground", "labels": ["تحت الأرض", "أسفل الأرض"], "category": "location"}
+    {"id": "c_underground", "labels": ["تحت الأرض", "أسفل الأرض"], "category": "location"},
+    {"id": "c_eye_human", "labels": ["عين", "عين الإنسان", "العين"], "category": "anatomy"},
+    {"id": "c_spring_water", "labels": ["عين", "عين الماء", "نبع"], "category": "nature"}
   ],
   "relations": [
     {
@@ -73,6 +75,16 @@
       "from": "extreme_cold",
       "relation": "requires",
       "to": "good_insulation"
+    },
+    {
+      "from": "c_eye_human",
+      "relation": "is_part_of",
+      "to": "animal"
+    },
+    {
+      "from": "c_spring_water",
+      "relation": "located_in",
+      "to": "savanna"
     }
   ],
   "inference_rules": [

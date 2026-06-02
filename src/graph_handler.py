@@ -370,86 +370,157 @@ class GraphHandler:
             return 0.0
         return len(intersection) / len(union)
 
-    def dynamic_morphological_lookup(self, word, language="ar"):
+    def spreading_activation(self, source_concepts, max_steps=2, decay=0.5, threshold=0.1):
+        """
+        Runs a Spreading Activation algorithm on the NetworkX graph.
+        Starts with a dict of {concept_id: activation_value}.
+        Spreads activation to neighbors, scaled by decay and edge confidence.
+        Returns a dict of final concept activations: {concept_id: activation}.
+        """
+        if not source_concepts:
+            return {}
+            
+        # Initialize activation levels
+        activations = {c: 1.0 for c in source_concepts if self.graph.has_node(c)}
+        
+        for step in range(max_steps):
+            new_activations = {}
+            for node, val in activations.items():
+                if val < threshold:
+                    continue
+                # Find all neighbors (incoming and outgoing edges)
+                neighbors = []
+                # Out edges
+                if self.graph.has_node(node):
+                    for _, target, data in self.graph.out_edges(node, data=True):
+                        # We can weigh the link
+                        weight = data.get("confidence", 1.0)
+                        neighbors.append((target, weight))
+                    # In edges (back-propagation)
+                    for source, _, data in self.graph.in_edges(node, data=True):
+                        weight = data.get("confidence", 1.0) * 0.7 # slightly less weight back-propagation
+                        neighbors.append((source, weight))
+                    
+                if not neighbors:
+                    # Keep activation if no neighbors
+                    new_activations[node] = new_activations.get(node, 0.0) + val
+                    continue
+                    
+                # Distribute activation to neighbors
+                spread_val = (val * decay) / len(neighbors)
+                # Node retains some activation
+                new_activations[node] = new_activations.get(node, 0.0) + val * (1.0 - decay)
+                
+                for neigh, weight in neighbors:
+                    new_activations[neigh] = new_activations.get(neigh, 0.0) + spread_val * weight
+                    
+            # Normalize or threshold new activations
+            activations = new_activations
+            
+        return activations
+
+    def dynamic_morphological_lookup(self, word, language="ar", context_concepts=None):
         """
         Dynamic morphological analyzer.
         Matches input words to concept IDs using rules loaded in self.language_rules.
+        Supports Spreading Activation if multiple concepts match.
         """
         # Clean word of punctuation
         word = word.strip().replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "")
         
+        matched_concepts = []
+
         if language in ["en", "fr"]:
             word = word.lower()
             # 1. Lookup in the language-specific lexicon
             lang_rules = self.language_rules.get(language, {})
             lexicon = lang_rules.get("lexicon", {})
             if word in lexicon:
-                return lexicon[word]
+                matched_concepts.append(lexicon[word])
                 
             # 2. Direct lookup in node IDs (as fallback)
             for node in self.graph.nodes:
                 if word == node.lower():
-                    return node
-            return None
-
-        # --- Arabic Morphological Lookup (Existing logic) ---
-        # Direct lookup in concept labels
-        for node, data in self.graph.nodes(data=True):
-            if data.get("type") == "concept":
-                if word in data.get("labels", []):
-                    return node
-                    
-        # Apply affix rules dynamically loaded from language_rules
-        prefixes = [p["form"].replace("ـ", "") for p in self.language_rules.get("morphology", {}).get("particles", []) if p["type"] in ["definite_article", "preposition", "conjunction"]]
-        suffixes = [s["form"].replace("ـ", "") for s in self.language_rules.get("morphology", {}).get("particles", []) if s["type"] in ["pronoun_suffix", "plural_suffix"]]
-        
-        # Iterative stripping of prefixes/suffixes to handle compound affixes like "بالقطب" (ب + ال + قطب)
-        candidates = {word}
-        
-        # Try iterative prefix stripping
-        changed = True
-        while changed:
-            changed = False
-            new_candidates = set()
-            for cand in candidates:
-                for pref in prefixes:
-                    if cand.startswith(pref) and len(cand) > len(pref):
-                        stem = cand[len(pref):]
-                        if stem not in candidates:
-                            new_candidates.add(stem)
-                            changed = True
-            candidates.update(new_candidates)
-            
-        # Try iterative suffix stripping
-        changed = True
-        while changed:
-            changed = False
-            new_candidates = set()
-            for cand in candidates:
-                for suff in suffixes:
-                    if cand.endswith(suff) and len(cand) > len(suff):
-                        stem = cand[:-len(suff)]
-                        if stem not in candidates:
-                            new_candidates.add(stem)
-                            changed = True
-            candidates.update(new_candidates)
-            
-        # Check if any candidate is a concept label
-        for stem in sorted(list(candidates), key=len):
+                    matched_concepts.append(node)
+        else:
+            # --- Arabic Morphological Lookup ---
+            # Direct lookup in concept labels
             for node, data in self.graph.nodes(data=True):
                 if data.get("type") == "concept":
-                    if stem in data.get("labels", []):
-                        return node
+                    if word in data.get("labels", []):
+                        matched_concepts.append(node)
                         
-        # Check dynamic lexicon roots
-        for stem in sorted(list(candidates), key=len):
-            for root in self.language_rules.get("morphology", {}).get("roots", []):
-                if stem in root["patterns"]:
-                    for pat in root["patterns"]:
-                        for node, data in self.graph.nodes(data=True):
-                            if data.get("type") == "concept" and pat in data.get("labels", []):
-                                return node
-                                
+            # Apply affix rules dynamically loaded from language_rules
+            prefixes = [p["form"].replace("ـ", "") for p in self.language_rules.get("morphology", {}).get("particles", []) if p["type"] in ["definite_article", "preposition", "conjunction"]]
+            suffixes = [s["form"].replace("ـ", "") for s in self.language_rules.get("morphology", {}).get("particles", []) if s["type"] in ["pronoun_suffix", "plural_suffix"]]
+            
+            # Iterative stripping of prefixes/suffixes to handle compound affixes like "بالقطب" (ب + ال + قطب)
+            candidates = {word}
+            
+            # Try iterative prefix stripping
+            changed = True
+            while changed:
+                changed = False
+                new_candidates = set()
+                for cand in candidates:
+                    for pref in prefixes:
+                        if cand.startswith(pref) and len(cand) > len(pref):
+                            stem = cand[len(pref):]
+                            if stem not in candidates:
+                                new_candidates.add(stem)
+                                changed = True
+                candidates.update(new_candidates)
+                
+            # Try iterative suffix stripping
+            changed = True
+            while changed:
+                changed = False
+                new_candidates = set()
+                for cand in candidates:
+                    for suff in suffixes:
+                        if cand.endswith(suff) and len(cand) > len(suff):
+                            stem = cand[:-len(suff)]
+                            if stem not in candidates:
+                                new_candidates.add(stem)
+                                changed = True
+                candidates.update(new_candidates)
+                
+            # Check if any candidate is a concept label
+            for stem in sorted(list(candidates), key=len):
+                for node, data in self.graph.nodes(data=True):
+                    if data.get("type") == "concept":
+                        if stem in data.get("labels", []):
+                            matched_concepts.append(node)
+                            
+            # Check dynamic lexicon roots
+            for stem in sorted(list(candidates), key=len):
+                for root in self.language_rules.get("morphology", {}).get("roots", []):
+                    if stem in root["patterns"]:
+                        for pat in root["patterns"]:
+                            for node, data in self.graph.nodes(data=True):
+                                if data.get("type") == "concept" and pat in data.get("labels", []):
+                                    matched_concepts.append(node)
+                                    
+        # Resolve ambiguity using Spreading Activation if context is available
+        if matched_concepts:
+            # Deduplicate preserving order
+            unique_matches = []
+            for c in matched_concepts:
+                if c not in unique_matches:
+                    unique_matches.append(c)
+            
+            if len(unique_matches) > 1:
+                if context_concepts:
+                    activations = self.spreading_activation(context_concepts)
+                    # Pick candidate with highest activation level
+                    best_concept = max(unique_matches, key=lambda c: activations.get(c, 0.0))
+                    # If we found a candidate with positive activation, return it
+                    if activations.get(best_concept, 0.0) > 0.0:
+                        return best_concept
+                # Default fallback is the first match
+                return unique_matches[0]
+            return unique_matches[0]
+            
         return None
 
     def get_persona(self, persona_id="persona_1"):

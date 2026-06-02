@@ -251,12 +251,18 @@ class SimpleReasoner:
                 if idx == len(parts) - 1:
                     return last_result
             else:
+                # Gather active context concepts from conversation history
+                context_concepts = []
+                for turn in self.conversation_manager.history[-3:]:
+                    context_concepts.extend(turn.get("concepts", []))
+                context_concepts = list(set(context_concepts))
+                
                 # Identify mapped concepts
                 mapped_concepts = []
                 for word in words:
                     if not word:
                         continue
-                    concept = self.handler.dynamic_morphological_lookup(word, language=language)
+                    concept = self.handler.dynamic_morphological_lookup(word, language=language, context_concepts=context_concepts)
                     if concept and concept not in mapped_concepts:
                         mapped_concepts.append(concept)
                         
