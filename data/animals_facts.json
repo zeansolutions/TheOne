@@ -1,0 +1,58 @@
+{
+  "facts": [
+    {
+      "id": "fact_1",
+      "world": "reality",
+      "subject": "feline_carnivore",
+      "predicate": "lives_in",
+      "object": "savanna",
+      "confidence": 1.0
+    },
+    {
+      "id": "fact_2",
+      "world": "reality",
+      "subject": "polar_bear",
+      "predicate": "lives_in",
+      "object": "arctic",
+      "confidence": 1.0
+    },
+    {
+      "id": "fact_3",
+      "world": "reality",
+      "subject": "polar_bear",
+      "predicate": "has_property",
+      "object": "thick_fur",
+      "confidence": 1.0,
+      "reason": "arctic environment requires thick_fur for thermal insulation"
+    },
+    {
+      "id": "fact_4",
+      "world": "arctic_scenario",
+      "subject": "feline_carnivore",
+      "predicate": "lives_in",
+      "object": "arctic",
+      "confidence": 1.0
+    }
+  ],
+  "personas": [
+    {
+      "id": "persona_1",
+      "name": "الخبير المرح",
+      "language_style": {
+        "tone": "friendly_expert",
+        "particles": ["يا صاحبي", "بص بقى", "دي الحقيقة"],
+        "filler_words": ["طبعاً", "أكيد"]
+      },
+      "knowledge_preferences": {
+        "detailed": true,
+        "examples": true,
+        "analogies": true
+      },
+      "personality_traits": {
+        "humorous": 0.7,
+        "formal": 0.3,
+        "patient": 0.9
+      }
+    }
+  ]
+}

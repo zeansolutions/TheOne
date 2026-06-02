@@ -1,0 +1,34 @@
+{
+  "morphology": {
+    "roots": [
+      { "id": "أسد", "patterns": ["أسد", "أسود", "ليث"] },
+      { "id": "دبب", "patterns": ["دب", "دببة", "دب قطبي", "الدب"] },
+      { "id": "فرس", "patterns": ["مفترس", "فرائس"] },
+      { "id": "عوش", "patterns": ["يعيش", "عاش", "عيش"] },
+      { "id": "برد", "patterns": ["البرد", "برد", "باردة"] },
+      { "id": "فرق", "patterns": ["الفرق", "فرق"] },
+      { "id": "حمي", "patterns": ["حماية", "يتحمل", "تحمل"] },
+      { "id": "حتاج", "patterns": ["يحتاج", "يستدعي", "احتياج"] }
+    ],
+    "particles": [
+      { "form": "ال", "type": "definite_article" },
+      { "form": "و", "type": "conjunction" },
+      { "form": "في", "type": "preposition" },
+      { "form": "بـ", "type": "preposition" },
+      { "form": "لـ", "type": "preposition" },
+      { "form": "ـه", "type": "pronoun_suffix" },
+      { "form": "ـها", "type": "pronoun_suffix" },
+      { "form": "ـهم", "type": "pronoun_suffix" },
+      { "form": "ـين", "type": "plural_suffix" },
+      { "form": "ـات", "type": "plural_suffix" }
+    ]
+  },
+  "grammar": {
+    "sentence_types": [
+      { "id": "declarative", "pattern": "noun + verb + object", "description": "جملة خبرية" },
+      { "id": "interrogative", "pattern": "interrogative_particle + ...", "description": "جملة استفهامية" },
+      { "id": "conditional", "pattern": "if + condition + then", "description": "جملة شرطية" }
+    ],
+    "question_particles": ["هل", "ما", "كيف", "كم", "ماذا", "أين", "متى", "لماذا"]
+  }
+}

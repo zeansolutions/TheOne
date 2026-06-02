@@ -1,0 +1,94 @@
+{
+  "concepts": [
+    {"id": "animal", "labels": ["حيوان", "كائن حي"]},
+    {"id": "carnivore", "labels": ["مفترس"]},
+    {"id": "feline_carnivore", "labels": ["أسد", "ليث"]},
+    {"id": "polar_bear", "labels": ["دب قطبي", "دب"]},
+    {"id": "thin_fur", "labels": ["فرو خفيف"]},
+    {"id": "thick_fur", "labels": ["فرو سميك", "فرو"]},
+    {"id": "thermal_regulation", "labels": ["تنظيم حرارة", "تحمل البرد", "تحمل"]},
+    {"id": "arctic", "labels": ["القطب", "الأرض المتجمدة", "القطب الشمالي"]},
+    {"id": "savanna", "labels": ["السافانا"]},
+    {"id": "extreme_cold", "labels": ["برد شديد", "البرد"]},
+    {"id": "warm_climate", "labels": ["مناخ دافئ"]}
+  ],
+  "relations": [
+    {
+      "from": "feline_carnivore",
+      "relation": "is_a",
+      "to": "carnivore"
+    },
+    {
+      "from": "carnivore",
+      "relation": "is_a",
+      "to": "animal"
+    },
+    {
+      "from": "polar_bear",
+      "relation": "is_a",
+      "to": "carnivore"
+    },
+    {
+      "from": "feline_carnivore",
+      "relation": "lives_in",
+      "to": "savanna"
+    },
+    {
+      "from": "feline_carnivore",
+      "relation": "has_property",
+      "to": "thin_fur",
+      "causal_purpose": "adaptation_to_warm_climates"
+    },
+    {
+      "from": "thin_fur",
+      "relation": "provides",
+      "to": "poor_insulation"
+    },
+    {
+      "from": "polar_bear",
+      "relation": "lives_in",
+      "to": "arctic"
+    },
+    {
+      "from": "polar_bear",
+      "relation": "has_property",
+      "to": "thick_fur",
+      "causal_purpose": "adaptation_to_cold_climates"
+    },
+    {
+      "from": "thick_fur",
+      "relation": "provides",
+      "to": "good_insulation"
+    },
+    {
+      "from": "arctic",
+      "relation": "has_environment",
+      "to": "extreme_cold"
+    },
+    {
+      "from": "extreme_cold",
+      "relation": "requires",
+      "to": "good_insulation"
+    }
+  ],
+  "inference_rules": [
+    {
+      "id": "transitive_classification",
+      "name": "Transitive is_a",
+      "pattern": "X is_a Y AND Y is_a Z -> X is_a Z",
+      "logic": "transitive"
+    },
+    {
+      "id": "causal_adaptation",
+      "name": "Causal Adaptation",
+      "pattern": "Environment E requires Property P, Animal A in E, A lacks P -> A needs to adapt P",
+      "logic": "causal_reasoning"
+    },
+    {
+      "id": "analogy_transfer",
+      "name": "Analogy Transfer",
+      "pattern": "A1 is_similar_to A2, A2 has_property P, P solves_problem Prob -> A1 can_have P",
+      "logic": "analogical_reasoning"
+    }
+  ]
+}
