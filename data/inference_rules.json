@@ -1,0 +1,47 @@
+{
+  "rules": [
+    {
+      "id": "transitive_is_a",
+      "name": "التعدي التصنيفي",
+      "conditions": [
+        {"subject": "?x", "relation": "is_a", "object": "?y"},
+        {"subject": "?y", "relation": "is_a", "object": "?z"}
+      ],
+      "conclusion": {
+        "subject": "?x",
+        "relation": "is_a",
+        "object": "?z"
+      },
+      "description": "إذا كان ?x هو تصنيف فرعي من ?y، و ?y هو تصنيف فرعي من ?z، إذن ?x هو تصنيف فرعي من ?z."
+    },
+    {
+      "id": "property_inheritance",
+      "name": "وراثة الخصائص تصاعدياً",
+      "conditions": [
+        {"subject": "?x", "relation": "is_a", "object": "?y"},
+        {"subject": "?y", "relation": "has_property", "object": "?p"}
+      ],
+      "conclusion": {
+        "subject": "?x",
+        "relation": "has_property",
+        "object": "?p"
+      },
+      "description": "يرث الكائن ?x الخاصية ?p من فئته الأعلى ?y."
+    },
+    {
+      "id": "environment_requirement",
+      "name": "متطلبات البيئة للكائن",
+      "conditions": [
+        {"subject": "?x", "relation": "lives_in", "object": "?env"},
+        {"subject": "?env", "relation": "has_environment", "object": "?cond"},
+        {"subject": "?cond", "relation": "requires", "object": "?req"}
+      ],
+      "conclusion": {
+        "subject": "?x",
+        "relation": "requires",
+        "object": "?req"
+      },
+      "description": "إذا كان الكائن ?x يعيش في بيئة ?env تشتمل على ظرف ?cond يتطلب ?req، إذن ?x يتطلب ?req."
+    }
+  ]
+}

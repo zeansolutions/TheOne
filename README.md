@@ -152,7 +152,7 @@ TheOne/
 | :--- | :---: | :---: | :--- |
 | **1. المحلل الصرفي العربي المتقدم (Morphological Analyzer)** | **موجود بالكامل (Fully Implemented)** | 🔴 عالية جداً | `src/graph_handler.py` (الدالة [dynamic_morphological_lookup](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)) و [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) |
 | **2. حل الغموض بالـ Spreading Activation** | **موجود بالكامل (Fully Implemented)** | 🔴 عالية جداً | `src/graph_handler.py` (الدالة [spreading_activation](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)) |
-| **3. نظام قواعد الاستدلال المتقدم (Inference Rules)** | **موجود جزئياً (Partially Implemented)** | 🟠 عالية | `src/simple_reasoner.py` (دوال الاستدلال المتخصصة) و [animals_ontology_small.json](file:///home/zean/Projects/TheOne/data/animals_ontology_small.json) |
+| **3. نظام قواعد الاستدلال المتقدم (Inference Rules)** | **موجود بالكامل (Fully Implemented)** | 🟠 عالية | `src/graph_handler.py` (الدالة [infer_facts](file:///home/zean/Projects/TheOne/src/graph_handler.py#L585)) و [inference_rules.json](file:///home/zean/Projects/TheOne/data/inference_rules.json) |
 | **4. تحديث وتضارب المعرفة (Knowledge Update System)** | **موجود بالكامل (Fully Implemented)** | 🟠 عالية | `src/graph_handler.py` (الدالة [add_or_update_fact](file:///home/zean/Projects/TheOne/src/graph_handler.py#L65)) و `main.py` |
 | **5. التلقينة الكاملة لـ LLM (Prompt Template)** | **مستبعدة للتصميم الصوري (Design-Only / Not Needed at Runtime)** | 🟠 متوسطة | التلقين عند التشغيل محلي 100% رمزي رمزي بدون مخرجات الـ LLM |
 | **6. قاعدة بيانات المصطلحات والـ Lexicon المتقدم** | **موجود جزئياً (Partially Implemented)** | 🟡 منخفضة | [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) (الجذور واللواصق ومفردات اللغات) |
@@ -173,11 +173,9 @@ TheOne/
 * **آلية العمل:** عند استعلام المستخدم عن كلمة غامضة لفظياً (مثل "عين" التي قد تشير لـ `c_eye_human` أو `c_spring_water`)، يقوم المحلل بجمع كافة المرشحين المحتملين. بعد ذلك، يقوم بتشغيل دالة `spreading_activation` انطلاقاً من المفاهيم النشطة في سياق الحوار الأخير (المسترجعة من الذاكرة عبر `ConversationManager`). تنتشر شحنات التنشيط عبر العقد المجاورة في الرسم البياني للـ Graph (مع اضمحلال وتخفيض عند التراجع العكسي) لاحتساب المفهوم الأقرب دلالياً وسياقاً وتحديده كفاعل للعملية.
 
 #### 3. نظام قواعد الاستدلال المتقدم (Inference Rules)
-* **الوضع الحالي:** **مطبق جزئياً بآليات مخصصة**. لا يحتوي النظام حالياً على محرك استدلال عام يتعامل مع القواعد المنطقية التعميمية المكتوبة بلغة منطقية صورية (مثل قواعد Chaining عشوائية). بدلاً من ذلك، يدعم المحرك أربعة أنواع محددة ومحكمة من الاستدلال مبرمجة في [simple_reasoner.py](file:///home/zean/Projects/TheOne/src/simple_reasoner.py):
-  1. **الاستدلال التصنيفي التعدي (Transitive Categorization):** من خلال التحقق التعدي عبر علاقات `is_a` (مثل: الأسد -> مفترس -> حيوان).
-  2. **وراثة الخصائص (Property Inheritance):** استنتاج الخصائص الفيزيائية بشكل تصاعدي عبر شجرة التصنيف (دالة `inheritance_deduction`).
-  3. **الاستدلال السببي والبيئي (Causal Adaptation):** تحديد متطلبات البيئة البيولوجية وربطها بالخصائص الفيزيائية للكائن (دالة `causal_reasoning`).
-  4. **الاستدلال بالقياس والتناظر (Analogical Transfer):** قياس كائن على كائن آخر مشابه تصنيفياً ونقل الصفات اللازمة للبقاء ديناميكياً (دالة `analogical_reasoning`).
+* **الوضع الحالي:** **موجود بالكامل**. تم إدراج محرك استدلال استنتاجي أمامي ديناميكي (Dynamic Forward Chaining Engine) يقف وراء كافة عمليات منطق المعرفة.
+* **آلية العمل:** بدلاً من برمجة مسارات الاستدلال صلباً في الكود، يقوم النظام بقراءة حزمة قواعد منطقية (Horn Clauses) معرّفة بنموذج شرطي مرن (Conditions & Conclusions) ومتغيرات (مثل `?x`, `?y`, `?z`) من ملف تكوين خارجي [inference_rules.json](file:///home/zean/Projects/TheOne/data/inference_rules.json).
+* **التطبيق البرمجي:** في الدالة `infer_facts` داخل [graph_handler.py](file:///home/zean/Projects/TheOne/src/graph_handler.py#L585)، يتم إجراء مطابقة أنماط استعلامية تراجعية `find_bindings` لاكتشاف الكيانات التي تلبي الشروط، وتوليد روابط جديدة من نوع `inferred` مؤقتاً في شبكة الـ Graph وحساب ثقتها التراكمية وصياغة سلاسل التتبع العربية المناظرة تلقائياً لكل دورة استدلال (حتى الوصول لمرحلة الاستقرار). وتصبح دوال الاستدلال في [simple_reasoner.py](file:///home/zean/Projects/TheOne/src/simple_reasoner.py) بسيطة وتعتمد على البحث المباشر في العلاقات المستنتجة.
 
 #### 4. نظام تحديث وتضارب المعرفة المتقدم (Knowledge Update & Conflict Resolution)
 * **آلية العمل:** مدمج بالكامل ويتبع بنية ثلاثية الطبقات مع تخزين دائم لكافة البيانات الوصفية (Metadata).

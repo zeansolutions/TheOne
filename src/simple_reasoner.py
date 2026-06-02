@@ -26,23 +26,26 @@ class SimpleReasoner:
 
     def check_is_a_relationship(self, concept_id, target_category_id):
         """Checks if concept_id is a target_category_id directly or via transitive inheritance."""
+        self.handler.infer_facts(self.handler.active_world)
         trace = []
-        curr = concept_id
-        path = [concept_id]
+        path = [concept_id, target_category_id]
         
-        while curr:
-            parent = self.handler.get_parent(curr, "is_a")
-            if parent:
-                path.append(parent)
-                trace.append(f"{curr} هو تصنيف فرعي من {parent} (علاقة is_a)")
-                if parent == target_category_id:
-                    return {
-                        "result": True,
-                        "path": path,
-                        "trace": trace
-                    }
-            curr = parent
-            
+        # Check direct or inferred edge
+        for _, to_node, data in self.handler.graph.out_edges(concept_id, data=True):
+            if data.get("relation") == "is_a" and to_node == target_category_id:
+                reason = data.get("reason")
+                if reason:
+                    trace.append(reason)
+                else:
+                    # Translate labels to Arabic for trace readability
+                    sub_lbl = self.handler.graph.nodes[concept_id].get("labels", [concept_id])[0]
+                    obj_lbl = self.handler.graph.nodes[target_category_id].get("labels", [target_category_id])[0]
+                    trace.append(f"{sub_lbl} هو تصنيف فرعي من {obj_lbl} (علاقة is_a)")
+                return {
+                    "result": True,
+                    "path": path,
+                    "trace": trace
+                }
         return {
             "result": False,
             "path": path,
@@ -53,28 +56,22 @@ class SimpleReasoner:
         """
         Deduces if an entity inherits a property from any of its taxonomic parent categories.
         """
-        curr = entity_id
+        self.handler.infer_facts(self.handler.active_world)
         trace = []
-        
-        # Check direct properties
-        props = self.handler.get_properties(entity_id)
-        for p in props:
-            if p["property"] == property_id:
-                trace.append(f"{entity_id} لديه الخاصية {property_id} بشكل مباشر")
-                return {"result": True, "source": entity_id, "trace": trace}
-                
-        # Traverse up the hierarchy
-        while curr:
-            parent = self.handler.get_parent(curr, "is_a")
-            if parent:
-                trace.append(f"تتبع الوراثة تصاعدياً: {curr} يرث من {parent}")
-                parent_props = self.handler.get_properties(parent)
-                for p in parent_props:
-                    if p["property"] == property_id:
-                        trace.append(f"وجدنا أن {parent} لديه الخاصية {property_id}، وبالتالي يرثها {entity_id} بالتبعية")
-                        return {"result": True, "source": parent, "trace": trace}
-            curr = parent
-            
+        for _, to_node, data in self.handler.graph.out_edges(entity_id, data=True):
+            if data.get("relation") == "has_property" and to_node == property_id:
+                reason = data.get("reason")
+                if reason:
+                    trace.append(reason)
+                else:
+                    sub_lbl = self.handler.graph.nodes[entity_id].get("labels", [entity_id])[0]
+                    obj_lbl = self.handler.graph.nodes[property_id].get("labels", [property_id])[0]
+                    trace.append(f"{sub_lbl} لديه الخاصية [{obj_lbl}] بشكل مباشر")
+                return {
+                    "result": True,
+                    "source": entity_id,
+                    "trace": trace
+                }
         return {"result": False, "trace": trace}
 
     def causal_reasoning(self, entity_id, environment_id):
@@ -83,21 +80,31 @@ class SimpleReasoner:
         Identifies requirements of the environment, matches them against the entity's current properties,
         and determines what adaptation is needed based on functional causal purposes.
         """
+        self.handler.infer_facts(self.handler.active_world)
         trace = []
         trace.append(f"بدء الاستدلال السببي للـ {entity_id} في البيئة {environment_id}")
         
-        # 1. Get environment conditions & requirements
-        requirements = self.handler.get_requirements(environment_id)
-        if not requirements:
-            trace.append(f"البيئة {environment_id} لا تفرض أي متطلبات خاصة مسجلة في قاعدة المعرفة")
-            return {"needs_adaptation": False, "trace": trace}
-            
+        # 1. Look for inferred requirements of the entity (requires)
+        entity_reqs = []
+        for _, to_node, data in self.handler.graph.out_edges(entity_id, data=True):
+            if data.get("relation") == "requires":
+                entity_reqs.append((to_node, data.get("reason")))
+                
+        if not entity_reqs:
+            # Fallback to base graph lookup
+            base_reqs = self.handler.get_requirements(environment_id)
+            if not base_reqs:
+                trace.append(f"البيئة {environment_id} لا تفرض أي متطلبات خاصة مسجلة في قاعدة المعرفة")
+                return {"needs_adaptation": False, "trace": trace}
+            for req in base_reqs:
+                entity_reqs.append((req["requirement"], f"البيئة {environment_id} بها {req['condition']} مما يستدعي متطلب: {req['requirement']}"))
+
         # For simplicity, look at the insulation requirement (e.g. good_insulation)
         insulation_req = None
-        for req in requirements:
-            if req["requirement"] == "good_insulation":
+        for req, reason in entity_reqs:
+            if req == "good_insulation":
                 insulation_req = req
-                trace.append(f"البيئة {environment_id} بها {req['condition']} مما يستدعي متطلب: {req['requirement']}")
+                trace.append(reason)
                 break
                 
         if not insulation_req:
@@ -105,19 +112,15 @@ class SimpleReasoner:
             
         # 2. Check current entity properties
         properties = self.handler.get_properties(entity_id)
-        has_thick_fur = False
-        has_thin_fur = False
         current_fur = None
         
         for p in properties:
-            if p["property"] == "thick_fur":
-                has_thick_fur = True
-                current_fur = "thick_fur"
-            elif p["property"] == "thin_fur":
-                has_thin_fur = True
-                current_fur = "thin_fur"
+            if p["property"] in ["thick_fur", "thin_fur"]:
+                current_fur = p["property"]
                 
-        trace.append(f"الفحص الصرفي/الفيزيائي للـ {entity_id}: يمتلك {current_fur or 'لا يوجد فرو مسجل'}")
+        sub_lbl = self.handler.graph.nodes[entity_id].get("labels", [entity_id])[0]
+        fur_lbl = self.handler.graph.nodes[current_fur].get("labels", [current_fur])[0] if current_fur else "لا يوجد فرو مسجل"
+        trace.append(f"الفحص الصرفي/الفيزيائي للـ {sub_lbl}: يمتلك {fur_lbl}")
         
         # Check function of current property
         provides_good_insulation = False
@@ -126,16 +129,17 @@ class SimpleReasoner:
             for _, to_node, data in self.handler.graph.out_edges(current_fur, data=True):
                 if data.get("relation") == "provides" and to_node == "good_insulation":
                     provides_good_insulation = True
+                    break
                     
         if provides_good_insulation:
-            trace.append(f"الخاصية {current_fur} تلبي المتطلب {insulation_req['requirement']} بنجاح")
+            trace.append(f"الخاصية {current_fur} تلبي المتطلب {insulation_req} بنجاح")
             return {"needs_adaptation": False, "trace": trace}
         else:
-            trace.append(f"الخاصية الحالية للـ {entity_id} ({current_fur}) لا توفر العزل المطلوب ({insulation_req['requirement']})")
-            trace.append(f"← النتيجة: {entity_id} بحاجة إلى عزل حراري ({insulation_req['requirement']}) في {environment_id}")
+            trace.append(f"الخاصية الحالية للـ {sub_lbl} ({fur_lbl}) لا توفر العزل المطلوب ({insulation_req})")
+            trace.append(f"← النتيجة: {sub_lbl} بحاجة إلى عزل حراري ({insulation_req}) في {environment_id}")
             return {
                 "needs_adaptation": True,
-                "requirement": insulation_req["requirement"],
+                "requirement": insulation_req,
                 "current_property": current_fur,
                 "trace": trace
             }
@@ -212,6 +216,9 @@ class SimpleReasoner:
 
         # Detect and set active world
         query, world = self.world_manager.detect_and_set_world(query)
+        
+        # Run forward chaining inference engine to populate inferred edges
+        self.handler.infer_facts(world)
         
         # Split into sentences to support combined fact teaching + question
         # Split by both Arabic Question Mark '؟' and English/French Question Mark '?' and period '.'

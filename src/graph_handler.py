@@ -10,11 +10,22 @@ class GraphHandler:
         self.personas = []
         self.active_world = "reality"
 
-    def load_databases(self, ontology_path, facts_path, language_rules_path):
+    def load_databases(self, ontology_path, facts_path, language_rules_path, inference_rules_path=None):
         """Loads and parses JSON databases, populating the NetworkX graph and dynamic rules."""
         # 1. Load Language Rules
         with open(language_rules_path, 'r', encoding='utf-8') as f:
             self.language_rules = json.load(f)
+            
+        # 1.5 Load Inference Rules
+        self.inference_rules = []
+        if inference_rules_path is None:
+            inference_rules_path = os.path.join(os.path.dirname(ontology_path), "inference_rules.json")
+        if os.path.exists(inference_rules_path):
+            with open(inference_rules_path, 'r', encoding='utf-8') as f:
+                rules_db = json.load(f)
+                self.inference_rules = rules_db.get("rules", [])
+        else:
+            self.inference_rules = []
             
         # 2. Load Ontology (Concepts & Relations)
         with open(ontology_path, 'r', encoding='utf-8') as f:
@@ -522,6 +533,171 @@ class GraphHandler:
             return unique_matches[0]
             
         return None
+
+    def find_bindings(self, active_world, conditions, index=0, current_bindings=None):
+        """
+        Recursively matches a list of query conditions with variables (e.g. ?x, ?y)
+        against the graph's edges (ontology relations and active world facts).
+        Returns a list of binding dictionaries, e.g. [{'?x': 'feline_carnivore', '?y': 'carnivore'}].
+        """
+        if current_bindings is None:
+            current_bindings = {}
+            
+        if index >= len(conditions):
+            return [current_bindings]
+            
+        cond = conditions[index]
+        cond_sub = cond["subject"]
+        cond_rel = cond["relation"]
+        cond_obj = cond["object"]
+        
+        results = []
+        
+        # Iterate over all edges in the graph
+        for u, v, data in self.graph.edges(data=True):
+            # 1. Match relation
+            if data.get("relation") != cond_rel:
+                continue
+                
+            # 2. Match world
+            edge_type = data.get("type", "relation")
+            edge_world = data.get("world", "reality")
+            
+            # Facts and Inferred edges must match active_world. Ontology relations (type="relation") apply in all worlds.
+            if edge_type in ["fact", "inferred"] and edge_world != active_world:
+                continue
+                
+            # 3. Match subject
+            new_bindings = current_bindings.copy()
+            if cond_sub.startswith("?"):
+                if cond_sub in new_bindings:
+                    if new_bindings[cond_sub] != u:
+                        continue
+                else:
+                    new_bindings[cond_sub] = u
+            else:
+                if cond_sub != u:
+                    continue
+                    
+            # 4. Match object
+            if cond_obj.startswith("?"):
+                if cond_obj in new_bindings:
+                    if new_bindings[cond_obj] != v:
+                        continue
+                else:
+                    new_bindings[cond_obj] = v
+            else:
+                if cond_obj != v:
+                    continue
+                    
+            # Match was successful, match next condition recursively
+            sub_results = self.find_bindings(active_world, conditions, index + 1, new_bindings)
+            results.extend(sub_results)
+            
+        return results
+
+    def infer_facts(self, active_world, max_iterations=5):
+        """
+        Runs a Forward Chaining logic engine.
+        Applies rules in self.inference_rules to derive new edges of type 'inferred'
+        and stores them in the NetworkX graph.
+        """
+        # 1. Clear previous inferred edges for the active world to prevent duplicate build-up
+        inferred_edges = [(u, v, k) for u, v, k, d in list(self.graph.edges(keys=True, data=True)) 
+                          if d.get("type") == "inferred" and d.get("world") == active_world]
+        self.graph.remove_edges_from(inferred_edges)
+        
+        iteration = 0
+        while iteration < max_iterations:
+            new_edges_added = False
+            
+            for rule in self.inference_rules:
+                rule_id = rule["id"]
+                conditions = rule["conditions"]
+                conclusion_template = rule["conclusion"]
+                
+                # Find all satisfying variable bindings
+                bindings_list = self.find_bindings(active_world, conditions)
+                
+                for binding in bindings_list:
+                    # Construct conclusion
+                    sub = binding.get(conclusion_template["subject"], conclusion_template["subject"])
+                    obj = binding.get(conclusion_template["object"], conclusion_template["object"])
+                    rel = conclusion_template["relation"]
+                    
+                    # Verify u and v exist as nodes in the graph
+                    if not (self.graph.has_node(sub) and self.graph.has_node(obj)):
+                        continue
+                        
+                    # Check if this edge already exists in the active world
+                    exists = False
+                    # Check ontology relations
+                    for _, target, data in self.graph.out_edges(sub, data=True):
+                        if target == obj and data.get("relation") == rel:
+                            if data.get("type") == "relation":
+                                exists = True
+                                break
+                            elif data.get("type") in ["fact", "inferred"] and data.get("world") == active_world:
+                                exists = True
+                                break
+                                
+                    if not exists:
+                        # Find the matched edges to calculate minimum confidence
+                        matched_confidences = []
+                        
+                        # Re-verify which edges matched
+                        for cond in conditions:
+                            c_sub = binding.get(cond["subject"], cond["subject"])
+                            c_obj = binding.get(cond["object"], cond["object"])
+                            c_rel = cond["relation"]
+                            
+                            # Find the edge confidence
+                            for _, target, data in self.graph.out_edges(c_sub, data=True):
+                                if target == c_obj and data.get("relation") == c_rel:
+                                    matched_confidences.append(data.get("confidence", 1.0))
+                                    break
+                                    
+                        conf = min(matched_confidences) if matched_confidences else 1.0
+                        
+                        # Construct a trace step description in Arabic
+                        sub_lbl = self.graph.nodes[sub].get("labels", [sub])[0]
+                        obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+                        
+                        if rule_id == "transitive_is_a":
+                            y_node = binding["?y"]
+                            y_lbl = self.graph.nodes[y_node].get("labels", [y_node])[0]
+                            desc = f"{sub_lbl} هو {obj_lbl} (استنتاج بالتعدي التصنيفي: {sub_lbl} هو {y_lbl}، و {y_lbl} هو {obj_lbl})"
+                        elif rule_id == "property_inheritance":
+                            y_node = binding["?y"]
+                            y_lbl = self.graph.nodes[y_node].get("labels", [y_node])[0]
+                            desc = f"{sub_lbl} يرث خاصية [{obj_lbl}] تصاعدياً من فئته الأعلى {y_lbl}"
+                        elif rule_id == "environment_requirement":
+                            env_node = binding["?env"]
+                            env_lbl = self.graph.nodes[env_node].get("labels", [env_node])[0]
+                            cond_node = binding["?cond"]
+                            cond_lbl = self.graph.nodes[cond_node].get("labels", [cond_node])[0]
+                            desc = f"بما أن {sub_lbl} يعيش في {env_lbl}، و {env_lbl} يشتمل على {cond_lbl} الذي يتطلب [{obj_lbl}]، فإن {sub_lbl} يتطلب [{obj_lbl}]"
+                        else:
+                            desc = f"استنتاج الحقيقة: [{sub_lbl}] --({rel})--> [{obj_lbl}] بناءً على قاعدة '{rule.get('name', rule_id)}'"
+                            
+                        # Add inferred edge
+                        self.graph.add_edge(
+                            sub,
+                            obj,
+                            relation=rel,
+                            world=active_world,
+                            confidence=conf,
+                            type="inferred",
+                            rule_id=rule_id,
+                            reason=desc,
+                            timestamp="2026-06-03T00:00:00Z",
+                            source="forward_chainer"
+                        )
+                        new_edges_added = True
+                        
+            if not new_edges_added:
+                break
+            iteration += 1
 
     def get_persona(self, persona_id="persona_1"):
         for p in self.personas:
