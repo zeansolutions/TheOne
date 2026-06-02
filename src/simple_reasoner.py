@@ -1,7 +1,10 @@
+import os
+import json
 from src.world_manager import WorldManager
 from src.conflict_resolver import ConflictResolver
 from src.conversation_manager import ConversationManager
 from src.entity_resolver import EntityResolver
+from src.manager.language_selection_engine import LanguageSelectionEngine
 
 class SimpleReasoner:
     def __init__(self, graph_handler):
@@ -10,6 +13,16 @@ class SimpleReasoner:
         self.entity_resolver = EntityResolver(self.conversation_manager, self.handler)
         self.world_manager = WorldManager(self.handler)
         self.conflict_resolver = ConflictResolver(self.handler)
+        
+        # Load language engine
+        project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        languages_path = os.path.join(project_dir, "config", "languages.json")
+        if not os.path.exists(languages_path):
+            languages_path = "config/languages.json"
+        
+        self.language_engine = None
+        if os.path.exists(languages_path):
+            self.language_engine = LanguageSelectionEngine(languages_path)
 
     def check_is_a_relationship(self, concept_id, target_category_id):
         """Checks if concept_id is a target_category_id directly or via transitive inheritance."""
@@ -183,33 +196,55 @@ class SimpleReasoner:
         trace.append("لم نجد أي كائن مماثل يعيش في تلك البيئة ولديه الخاصية المطلوبة لقياسها")
         return {"success": False, "trace": trace}
 
-    def process_query(self, query, interactive=False):
+    def process_query(self, query, interactive=False, language=None):
         """
         Pipeline: Parsing -> Dynamic Morphological Lookup -> Logical Reasoning.
         Supports 5 dynamic queries, multi-world state, dynamic fact teaching, and dialog context.
+        Supports multilingual execution (ar, en, fr).
         """
+        # Detect and set language if not provided
+        if language is None:
+            if self.language_engine:
+                detected = self.language_engine.detect_language(query)
+                language = self.language_engine.select_language(detected)
+            else:
+                language = "ar"
+
         # Detect and set active world
         query, world = self.world_manager.detect_and_set_world(query)
         
         # Split into sentences to support combined fact teaching + question
-        parts = [p.strip() for p in query.replace("؟", "؟.").split(".") if p.strip()]
+        # Split by both Arabic Question Mark '؟' and English/French Question Mark '?' and period '.'
+        normalized_query = query.replace("؟", "؟.").replace("?", "?.")
+        parts = [p.strip() for p in normalized_query.split(".") if p.strip()]
         
         last_result = None
         
         for idx, part in enumerate(parts):
             raw_words = part.strip().split()
             words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "") for w in raw_words]
+            if language in ["en", "fr"]:
+                words = [w.lower() for w in words]
             
             # Check if this part is a question
-            is_question = any(q in words for q in self.handler.language_rules.get("grammar", {}).get("question_particles", [])) or part.endswith("؟") or "الفرق" in words or "إزاي" in words or "ازاي" in words
+            lang_rules = self.handler.language_rules.get(language, {})
+            question_particles = lang_rules.get("question_particles", [])
+            if not question_particles:
+                question_particles = self.handler.language_rules.get("grammar", {}).get("question_particles", [])
+                
+            is_question = any(q in words for q in question_particles) or \
+                          part.endswith("؟") or part.endswith("?") or \
+                          any(w in words for w in ["الفرق", "إزاي", "ازاي", "difference", "différence", "comment", "how"])
             
             if not is_question:
                 # Teach fact to world manager
-                teach_res = self.world_manager.parse_and_add_fact(part, world, interactive=interactive)
+                teach_res = self.world_manager.parse_and_add_fact(part, world, interactive=interactive, language=language)
                 last_result = {
                     "type": "teaching",
                     "result": teach_res["success"],
                     "message": teach_res["msg"],
+                    "status": teach_res.get("status"),
+                    "world": world,
                     "trace": [f"تحليل الجملة الخبرية وإدخالها في العالم النشط '{world}'"],
                     "confidence": 1.0
                 }
@@ -221,7 +256,7 @@ class SimpleReasoner:
                 for word in words:
                     if not word:
                         continue
-                    concept = self.handler.dynamic_morphological_lookup(word)
+                    concept = self.handler.dynamic_morphological_lookup(word, language=language)
                     if concept and concept not in mapped_concepts:
                         mapped_concepts.append(concept)
                         
@@ -243,7 +278,15 @@ class SimpleReasoner:
                     conflicts = self.conflict_resolver.resolve_conflict("c_sun", "rises_from")
                     conflict_trace = [c["description"] for c in conflicts]
                     
-                    if "هل" in words:
+                    is_classification_query = False
+                    if language == "ar" and "هل" in words:
+                        is_classification_query = True
+                    elif language == "en" and any(w in words for w in ["does", "is", "did", "can", "has", "are"]):
+                        is_classification_query = True
+                    elif language == "fr" and any(w in words for w in ["est-ce", "est", "a-t-il", "peut-il", "a", "ont"]):
+                        is_classification_query = True
+                        
+                    if is_classification_query:
                         dir_concept = None
                         for c in mapped_concepts:
                             if c in ["c_east", "c_west"]:
@@ -261,7 +304,7 @@ class SimpleReasoner:
                             }
                             
                     if target:
-                        target_lbl = self.handler.graph.nodes[target].get("labels")[0]
+                        target_lbl = self.handler.graph.nodes[target].get("labels", [target])[0]
                         return {
                             "type": "location",
                             "result": True,
@@ -272,27 +315,24 @@ class SimpleReasoner:
                             "confidence": 1.0
                         }
 
-                # 2. Classification
-                if "هل" in words and len(mapped_concepts) >= 2:
+                # 2. Comparison
+                if ("الفرق" in words or "difference" in words or "différence" in words or "differance" in words) and len(mapped_concepts) >= 2:
                     c1, c2 = mapped_concepts[0], mapped_concepts[1]
-                    # Verify order
-                    idx1 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w) == c1]) if any(self.handler.dynamic_morphological_lookup(w) == c1 for w in words) else 0
-                    idx2 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w) == c2]) if any(self.handler.dynamic_morphological_lookup(w) == c2 for w in words) else 1
-                    if idx1 > idx2:
-                        c1, c2 = c2, c1
-                        
-                    res = self.check_is_a_relationship(c1, c2)
+                    props1 = self.handler.get_properties(c1, world=world)
+                    props2 = self.handler.get_properties(c2, world=world)
                     return {
-                        "type": "classification",
-                        "result": res["result"],
+                        "type": "comparison",
+                        "result": True,
                         "concept1": c1,
                         "concept2": c2,
-                        "trace": res["trace"],
+                        "props1": props1,
+                        "props2": props2,
+                        "trace": [f"مقارنة الخصائص للـ {c1} والـ {c2} في العالم النشط '{world}'"],
                         "confidence": 1.0
                     }
                     
                 # 3. Hypothetical
-                elif ("لو" in words or "إذا" in words or "اذا" in words) and len(mapped_concepts) >= 2:
+                elif ("لو" in words or "إذا" in words or "اذا" in words or "if" in words or "si" in words) and len(mapped_concepts) >= 2:
                     entity = None
                     env = None
                     for c in mapped_concepts:
@@ -333,8 +373,36 @@ class SimpleReasoner:
                             "confidence": 1.0
                         }
 
-                # 4. Location (lives_in)
-                elif ("أين" in words or "اين" in words or "يعيش" in words or "عاش" in words) and len(mapped_concepts) >= 1:
+                # 4. Classification
+                else:
+                    is_classification_query = False
+                    if language == "ar" and "هل" in words:
+                        is_classification_query = True
+                    elif language == "en" and any(w in words for w in ["does", "is", "did", "can", "has", "are"]):
+                        is_classification_query = True
+                    elif language == "fr" and any(w in words for w in ["est-ce", "est", "a-t-il", "peut-il", "a", "ont"]):
+                        is_classification_query = True
+                        
+                    if is_classification_query and len(mapped_concepts) >= 2:
+                        c1, c2 = mapped_concepts[0], mapped_concepts[1]
+                        # Verify order
+                        idx1 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c1]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c1 for w in words) else 0
+                        idx2 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c2]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c2 for w in words) else 1
+                        if idx1 > idx2:
+                            c1, c2 = c2, c1
+                            
+                        res = self.check_is_a_relationship(c1, c2)
+                        return {
+                            "type": "classification",
+                            "result": res["result"],
+                            "concept1": c1,
+                            "concept2": c2,
+                            "trace": res["trace"],
+                            "confidence": 1.0
+                        }
+
+                # 5. Location (lives_in)
+                if ("أين" in words or "اين" in words or "يعيش" in words or "عاش" in words or "where" in words or "où" in words or "ou" in words or "vit" in words or "lives" in words) and len(mapped_concepts) >= 1:
                     concept = mapped_concepts[0]
                     props = self.handler.get_properties(concept, world=world)
                     location = None
@@ -357,22 +425,6 @@ class SimpleReasoner:
                             "confidence": 1.0
                         }
                         
-                # 5. Comparison
-                elif "الفرق" in words and len(mapped_concepts) >= 2:
-                    c1, c2 = mapped_concepts[0], mapped_concepts[1]
-                    props1 = self.handler.get_properties(c1, world=world)
-                    props2 = self.handler.get_properties(c2, world=world)
-                    return {
-                        "type": "comparison",
-                        "result": True,
-                        "concept1": c1,
-                        "concept2": c2,
-                        "props1": props1,
-                        "props2": props2,
-                        "trace": [f"مقارنة الخصائص للـ {c1} والـ {c2} في العالم النشط '{world}'"],
-                        "confidence": 1.0
-                    }
-                    
                 # Default unknown fail-safe
                 return {
                     "type": "unknown",

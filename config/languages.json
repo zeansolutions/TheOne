@@ -1,0 +1,43 @@
+{
+  "languages": [
+    {
+      "id": "ar",
+      "name": "العربية",
+      "name_en": "Arabic",
+      "locale": "ar-SA",
+      "is_rtl": true,
+      "metadata": {
+        "grammar_family": "semitic",
+        "morphology_complexity": "high",
+        "default_persona": "sage_friend"
+      },
+      "enabled": true
+    },
+    {
+      "id": "en",
+      "name": "English",
+      "name_ar": "الإنجليزية",
+      "locale": "en-US",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "germanic",
+        "morphology_complexity": "low",
+        "default_persona": "scientist"
+      },
+      "enabled": true
+    },
+    {
+      "id": "fr",
+      "name": "Français",
+      "name_ar": "الفرنسية",
+      "locale": "fr-FR",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "romance",
+        "morphology_complexity": "moderate",
+        "default_persona": "witty_mentor"
+      },
+      "enabled": true
+    }
+  ]
+}

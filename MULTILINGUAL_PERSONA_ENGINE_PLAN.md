@@ -73,6 +73,73 @@
 
 ## 3. قاعدة البيانات (Database Schema)
 
+### ⭐ نقطة حاسمة: قواعد البيانات الفعلية (مش مكررة)
+
+**السؤال الأساسي:** هل لكل لغة 3 قواعد بيانات منفصلة؟
+
+**الجواب الصريح:** لا. البنية الفعلية هي **6 قواعد بيانات فقط** موزّعة كالتالي:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│     Knowledge Core (موحد عالمياً — مستقل عن اللغة)         │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [1] Concept/Ontology Database (واحد فقط):                │
+│      ├─ feline_carnivore                                   │
+│      ├─ arctic                                             │
+│      ├─ meat                                               │
+│      └─ علاقات: is_a, causes, has_property               │
+│                                                             │
+│  [2] Facts Database (واحد فقط):                           │
+│      ├─ (feline_carnivore, eats, meat)                    │
+│      ├─ (arctic, has_property, extreme_cold)             │
+│      └─ (feline_in_arctic, needs, thick_fur)             │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+              ↓             ↓             ↓
+        يُرسل إلى      يُرسل إلى      يُرسل إلى
+        العربي        الإنجليزي      الفرنسي
+              ↓             ↓             ↓
+
+┌──────────────┬──────────────┬──────────────┐
+│ Language DB  │ Language DB  │ Language DB  │
+│   (عربي)     │ (English)    │ (Français)   │
+├──────────────┼──────────────┼──────────────┤
+│ [3] Lexicon  │ [4] Lexicon  │ [5] Lexicon  │
+│   (عربي)     │ (إنجليزي)    │ (فرنسي)      │
+│              │              │              │
+│"أسد" →       │"lion" →      │"lion" →      │
+│ concept_F    │ concept_F    │ concept_F    │
+│              │              │              │
+├──────────────┼──────────────┼──────────────┤
+│ Morphology   │ Tenses &     │ Conjugaison  │
+│ + Syntax     │ Word Order   │ + Accord     │
+│   (عربي)     │ (إنجليزي)    │ (فرنسي)      │
+│              │              │              │
+└──────────────┴──────────────┴──────────────┘
+
+[6] Personas Database (واحد مع multi-language versions):
+  ├─ sage_friend.ar (تحيات، تعبيرات عربي)
+  ├─ sage_friend.en (greetings، expressions إنجليزي)
+  ├─ sage_friend.fr (salutations، expressions فرنسي)
+  ├─ scientist.ar
+  ├─ scientist.en
+  └─ scientist.fr
+```
+
+**الملخص:**
+- **قواعد موحدة عالمياً:** Concept DB (1) + Facts DB (1) = 2 فقط
+- **قواعد لغوية (لكل لغة):** Lexicon (1) + Morphology/Syntax (1) = 2 × 3 لغات = 6
+- **قاعدة الشخصيات:** 1 موحدة مع 3 language versions
+- **المجموع:** 2 + 6 + 1 = **9 قواعد بيانات فقط** (ليس 18 ولا مكررة)
+
+**لماذا الـ Concepts والـ Facts موحدة؟**
+- "الأسد" (عربي) = "Lion" (إنجليزي) = "Lion" (فرنسي) → نفس concept_id
+- الحقيقة (feline_carnivore, eats, meat) موجودة مرة واحدة في الـ graph
+- كل لغة بتترجمها عند الـ rendering، مش بتخزن نسخة منفصلة
+
+---
+
 ### 3.1 جدول اللغات
 
 ```json
@@ -596,7 +663,179 @@ class LanguageSelectionEngine:
 
 ---
 
-## 5. محرك اختيار الشخصية في اللغة (Persona Selector)
+## 6. Pipeline الفعلي الكامل (بشرح قاعدة البيانات)
+
+**سيناريو 1: السؤال بالعربي**
+
+```
+المستخدم: "الأسد بياكل إيه؟" (عربي)
+
+[1] تحديد اللغة:
+    Detected Language = "ar" (عربي)
+    ✓ Selected Language = "ar"
+
+[2] استخراج الكلمات (Lexicon عربي):
+    "أسد" → Morphology Parser → stem: "أسد"
+    "بياكل" → stem: "أكل"
+    
+    البحث في Lexicon (عربي):
+    "أسد" → concept_id: "feline_carnivore"
+    "أكل" → relation_id: "eats"
+
+[3] الاستدلال المنطقي (على الـ Concept Graph الموحد):
+    Query: (feline_carnivore, eats, ?)
+    ✓ موجود في Facts DB (واحد): (feline_carnivore, eats, meat)
+    Return: concept_meat
+
+[4] اختيار الشخصية:
+    context = analyze(question, language="ar")
+    → question_type: "factual", mood: "casual"
+    → Select: "sage_friend" (الأولى في العربي)
+
+[5] توليد الرد المنطقي:
+    "الأسد يأكل لحمة"
+
+[6] تطبيق الشخصية والتعبيرات:
+    Render(response, persona="sage_friend", language="ar")
+    
+    استخدم:
+    - Persona.ar.expressions.confirmation
+    - Language Rules (عربي): صيغة الجملة، الإعراب
+    
+    الرد النهائي:
+    "الأسد بياكل لحمة يا صاحبي، ده حيوان مفترس بطبيعته"
+```
+
+**سيناريو 2: السؤال بالإنجليزي (نفس المعرفة)**
+
+```
+المستخدم: "What does a lion eat?" (إنجليزي)
+
+[1] تحديد اللغة:
+    Detected Language = "en" (إنجليزي)
+    ✓ Selected Language = "en"
+
+[2] استخراج الكلمات (Lexicon إنجليزي):
+    "lion" → Tenses Parser → lemma: "lion"
+    "eat" → lemma: "eat"
+    
+    البحث في Lexicon (إنجليزي):
+    "lion" → concept_id: "feline_carnivore"  [نفس الـ concept!]
+    "eat" → relation_id: "eats"  [نفس الـ relation!]
+
+[3] الاستدلال المنطقي (نفس الـ Graph):
+    Query: (feline_carnivore, eats, ?)
+    ✓ نفس الحقيقة في Facts DB: (feline_carnivore, eats, meat)
+    Return: concept_meat
+
+[4] اختيار الشخصية:
+    context = analyze(question, language="en")
+    → question_type: "factual", mood: "casual"
+    → Select: "scientist" (الافتراضية للإنجليزي)
+
+[5] توليد الرد المنطقي:
+    "A lion eats meat"
+
+[6] تطبيق الشخصية والتعبيرات:
+    Render(response, persona="scientist", language="en")
+    
+    استخدم:
+    - Persona.en.expressions.confirmation
+    - Language Rules (إنجليزي): verb tenses، articles
+    
+    الرد النهائي:
+    "The data confirms: a lion eats meat. Lions are obligate carnivores."
+```
+
+**ملاحظة حاسمة:**
+- الـ Concept Graph واحد في الحالتين
+- الـ Facts Database واحد في الحالتين
+- الفرق فقط في: Lexicon + Morphology + Persona expressions
+
+---
+
+## 6.5 الرسم البياني الكامل للـ Data Flow
+
+```
+سؤال المستخدم
+(أي لغة)
+        │
+        ↓
+┌───────────────────────────────────┐
+│ Language Detection Engine         │
+│ (اكتشف لغة السؤال)                │
+└────────┬────────────────────────┬─┘
+         │                        │
+    عربي │                    إنجليزي
+         ↓                        ↓
+    ┌─────────┐             ┌─────────┐
+    │ Lexicon │             │ Lexicon │
+    │ (عربي)  │             │ (إنج)   │
+    └────┬────┘             └────┬────┘
+         │                        │
+         └────────┬───────────────┘
+                  │
+         [تحويل إلى Concept IDs]
+                  │
+                  ↓
+        ┌─────────────────────────┐
+        │ Concept Graph (واحد)    │
+        │ (عالمي موحد)           │
+        └────────┬────────────────┘
+                 │
+         [استعلام عن العلاقات]
+                 │
+                 ↓
+        ┌─────────────────────────┐
+        │ Facts Database (واحد)   │
+        │ (عالمي موحد)           │
+        └────────┬────────────────┘
+                 │
+         [الحقيقة المنطقية]
+                 │
+                 ↓
+        ┌─────────────────────────────┐
+        │ Reasoning Engine            │
+        │ (استدلال منطقي)           │
+        └────────┬────────────────────┘
+                 │
+         [رد منطقي صافي]
+                 │
+    ┌────────────┴────────────────┐
+    │                             │
+    ↓                             ↓
+[اختيار الشخصية]         [اختيار التعبيرات]
+    │                             │
+    │              ┌──────────────┴──────────────┐
+    │              │                             │
+    ↓              ↓                             ↓
+معناه قائمة    Persona.lang.expressions    Language Rules
+بالشخصية      (تحيات، نهايات، إلخ)         (صيغة، نحو)
+    │              │                             │
+    └──────────────┼─────────────────────────────┘
+                   │
+                   ↓
+        ┌─────────────────────────┐
+        │ Expression Renderer     │
+        │ (تطبيق اللغة والشخصية)  │
+        └────────┬────────────────┘
+                 │
+         [الرد النهائي الطبيعي]
+                 │
+                 ↓
+         الرد بالعربي/الإنجليزي/الفرنسي
+         مع الشخصية المختارة
+```
+
+**الملاحظة الذهبية:**
+- كل شيء يمر عبر Concept Graph + Facts DB (موحدة وغير مكررة)
+- الاختلاف فقط في "الطبقات الخارجية": Lexicon + Persona + Language Rules
+- لو أضفت لغة جديدة، بس تضيف: Lexicon + Morphology Parser + Persona versions
+- لا تحتاج تكرار الـ Knowledge Core كله
+
+---
+
+## 7. محرك اختيار الشخصية في اللغة (Persona Selector)
 
 ```python
 class MultilingualPersonaSelector:

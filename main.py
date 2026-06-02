@@ -2,7 +2,7 @@ import os
 import sys
 from src.graph_handler import GraphHandler
 from src.simple_reasoner import SimpleReasoner
-from src.response_generator_simple import ResponseGeneratorSimple
+from src.manager.multilingual_persona_engine import MultilingualPersonaEngine
 
 def print_banner():
     print("=" * 70)
@@ -132,7 +132,7 @@ def main():
         sys.exit(1)
         
     reasoner = SimpleReasoner(handler)
-    generator = ResponseGeneratorSimple(handler)
+    persona_engine = MultilingualPersonaEngine(handler)
     
     # Print welcome
     print_banner()
@@ -146,19 +146,30 @@ def main():
                 continue
                 
             # Run pipeline
-            res = reasoner.process_query(query, interactive=True)
-            response = generator.generate(res)
+            # 1. Detect language to parse query correctly
+            detected_lang = persona_engine.language_engine.detect_language(query)
+            selected_lang = persona_engine.language_engine.select_language(detected_lang)
+            
+            # 2. Logical reasoning
+            res = reasoner.process_query(query, interactive=True, language=selected_lang)
+            
+            # 3. Multilingual Persona response generation
+            history = reasoner.conversation_manager.get_history()
+            engine_res = persona_engine.process_response(query, res, conversation_history=history)
+            response = engine_res["response"]
+            lang = engine_res["language"]
+            persona = engine_res["persona"]
             
             print("\n" + "=" * 50)
-            print(f"العالم النشط: '{handler.active_world}'")
-            print(f"الرد النهائي:\n👉 {response}")
+            print(f"العالم النشط / Active World: '{handler.active_world}'")
+            print(f"اللغة / Language: {lang} | الشخصية / Persona: {persona}")
+            print(f"الرد النهائي / Final Response:\n👉 {response}")
             print("=" * 50)
             
             # Print logical trace
-            print("\n📋 مسار الاستدلال المنطقي والتتبع:")
-            for idx, step in enumerate(res.get("trace", [])):
-                print(f"  [{idx + 1}] {step}")
-            print(f"🎯 معامل اليقين/الثقة: {res.get('confidence', 1.0):.2f}")
+            formatted_trace = persona_engine.expression_renderer.format_trace(res.get("trace", []), lang)
+            print(formatted_trace)
+            print(f"🎯 معامل اليقين/الثقة / Confidence: {res.get('confidence', 1.0):.2f}")
             print("=" * 50)
             
         elif choice == "2":

@@ -370,7 +370,7 @@ class GraphHandler:
             return 0.0
         return len(intersection) / len(union)
 
-    def dynamic_morphological_lookup(self, word):
+    def dynamic_morphological_lookup(self, word, language="ar"):
         """
         Dynamic morphological analyzer.
         Matches input words to concept IDs using rules loaded in self.language_rules.
@@ -378,6 +378,21 @@ class GraphHandler:
         # Clean word of punctuation
         word = word.strip().replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "")
         
+        if language in ["en", "fr"]:
+            word = word.lower()
+            # 1. Lookup in the language-specific lexicon
+            lang_rules = self.language_rules.get(language, {})
+            lexicon = lang_rules.get("lexicon", {})
+            if word in lexicon:
+                return lexicon[word]
+                
+            # 2. Direct lookup in node IDs (as fallback)
+            for node in self.graph.nodes:
+                if word == node.lower():
+                    return node
+            return None
+
+        # --- Arabic Morphological Lookup (Existing logic) ---
         # Direct lookup in concept labels
         for node, data in self.graph.nodes(data=True):
             if data.get("type") == "concept":
