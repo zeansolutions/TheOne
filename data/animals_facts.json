@@ -32,6 +32,22 @@
       "predicate": "lives_in",
       "object": "arctic",
       "confidence": 1.0
+    },
+    {
+      "id": "fact_sun_reality",
+      "world": "reality",
+      "subject": "c_sun",
+      "predicate": "rises_from",
+      "object": "c_east",
+      "confidence": 1.0
+    },
+    {
+      "id": "fact_sun_arctic",
+      "world": "arctic_scenario",
+      "subject": "c_sun",
+      "predicate": "rises_from",
+      "object": "c_west",
+      "confidence": 1.0
     }
   ],
   "personas": [

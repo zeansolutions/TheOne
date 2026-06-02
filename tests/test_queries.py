@@ -73,3 +73,49 @@ def test_query_comparison(setup_engine):
     assert "أسد" in response
     assert "دب قطبي" in response
     assert "فرو خفيف" in response or "فرو خفيف" in response or "فرو سميك" in response
+
+def test_query_unknown_fail_safe(setup_engine):
+    reasoner, generator = setup_engine
+    
+    res = reasoner.process_query("هل الفيل بيطير؟")
+    assert res["type"] == "unknown"
+    assert res["confidence"] == 0.0
+    
+    response = generator.generate(res)
+    assert "معنديش أي معلومة" in response or "معرفش" in response
+
+def test_query_multi_turn_context(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # Turn 1: Establish subject "الأسد"
+    res1 = reasoner.process_query("هل الأسد حيوان؟")
+    assert res1["type"] == "classification"
+    assert res1["result"] is True
+    
+    # Turn 2: Query location implicitly (using verb 'يعيش')
+    res2 = reasoner.process_query("أين يعيش؟")
+    assert res2["type"] == "location"
+    assert res2["concept"] == "feline_carnivore"
+    assert res2["location"] == "savanna"
+    
+    response = generator.generate(res2)
+    assert "السافانا" in response
+
+def test_world_switching_and_conflict(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # 1. Check in reality
+    res1 = reasoner.process_query("هل الشمس تشرق من الشرق؟")
+    assert res1["type"] == "classification"
+    assert res1["result"] is True
+    
+    # 2. Teach new fact in fantasy world and query (combined query)
+    res2 = reasoner.process_query("في عالم خيالي الشمس تشرق من الغرب. هل الشمس تشرق من الشرق؟")
+    assert res2["type"] == "classification"
+    assert res2["result"] is False
+    
+    # 3. Query direction in active fantasy world
+    res3 = reasoner.process_query("أين تشرق الشمس؟")
+    assert res3["type"] == "location"
+    assert res3["location"] == "c_west"
+

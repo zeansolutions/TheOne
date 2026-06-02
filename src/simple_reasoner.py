@@ -1,6 +1,15 @@
+from src.world_manager import WorldManager
+from src.conflict_resolver import ConflictResolver
+from src.conversation_manager import ConversationManager
+from src.entity_resolver import EntityResolver
+
 class SimpleReasoner:
     def __init__(self, graph_handler):
         self.handler = graph_handler
+        self.conversation_manager = ConversationManager()
+        self.entity_resolver = EntityResolver(self.conversation_manager, self.handler)
+        self.world_manager = WorldManager(self.handler)
+        self.conflict_resolver = ConflictResolver(self.handler)
 
     def check_is_a_relationship(self, concept_id, target_category_id):
         """Checks if concept_id is a target_category_id directly or via transitive inheritance."""
@@ -136,7 +145,7 @@ class SimpleReasoner:
                 for p in properties:
                     if p["relation"] == "lives_in" and p["property"] == environment_id:
                         candidates.append(node)
-                        
+        candidates = list(set(candidates))
         trace.append(f"الكائنات البديلة التي تعيش في {environment_id}: {candidates}")
         
         # 2. Calculate similarity and find best match solving the requirement
@@ -177,133 +186,199 @@ class SimpleReasoner:
     def process_query(self, query):
         """
         Pipeline: Parsing -> Dynamic Morphological Lookup -> Logical Reasoning.
-        Supports the 5 dynamic queries mapped dynamically to graph queries.
+        Supports 5 dynamic queries, multi-world state, dynamic fact teaching, and dialog context.
         """
-        # Clean and segment query into words to extract concepts
-        raw_words = query.strip().split()
-        words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "") for w in raw_words]
+        # Detect and set active world
+        query, world = self.world_manager.detect_and_set_world(query)
         
-        # Look up concepts
-        mapped_concepts = []
-        for word in words:
-            if not word:
-                continue
-            concept = self.handler.dynamic_morphological_lookup(word)
-            if concept and concept not in mapped_concepts:
-                mapped_concepts.append(concept)
-                
-        # 1. Classification query (e.g. "هل الأسد حيوان؟")
-        if "هل" in words and len(mapped_concepts) >= 2:
-            # We want to check if C1 is a C2
-            c1, c2 = mapped_concepts[0], mapped_concepts[1]
-            # Verify order (first concept in query should be the child)
-            # Find which concept appears first in query
-            idx1 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w) == c1])
-            idx2 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w) == c2])
-            if idx1 > idx2:
-                c1, c2 = c2, c1
-                
-            res = self.check_is_a_relationship(c1, c2)
-            return {
-                "type": "classification",
-                "result": res["result"],
-                "concept1": c1,
-                "concept2": c2,
-                "trace": res["trace"],
-                "confidence": 1.0
-            }
+        # Split into sentences to support combined fact teaching + question
+        parts = [p.strip() for p in query.replace("؟", "؟.").split(".") if p.strip()]
+        
+        last_result = None
+        
+        for idx, part in enumerate(parts):
+            raw_words = part.strip().split()
+            words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "") for w in raw_words]
             
-        # 2. Location query (e.g. "أين يعيش الأسد؟")
-        elif "أين" in words and len(mapped_concepts) >= 1:
-            concept = mapped_concepts[0]
-            props = self.handler.get_properties(concept, world="reality")
-            location = None
-            for p in props:
-                if p["relation"] == "lives_in":
-                    location = p["property"]
-                    break
-                    
-            if location:
-                # Find Arabic label of location in graph
-                loc_label = self.handler.graph.nodes[location].get("labels", [location])[0]
-                return {
-                    "type": "location",
-                    "result": True,
-                    "concept": concept,
-                    "location": location,
-                    "location_label": loc_label,
-                    "trace": [f"البحث عن مكان عيش {concept} في عوالم الحقائق الواقعية", f"← وجدنا أن {concept} يعيش في {location}"],
+            # Check if this part is a question
+            is_question = any(q in words for q in self.handler.language_rules.get("grammar", {}).get("question_particles", [])) or part.endswith("؟") or "الفرق" in words or "إزاي" in words or "ازاي" in words
+            
+            if not is_question:
+                # Teach fact to world manager
+                teach_res = self.world_manager.parse_and_add_fact(part, world)
+                last_result = {
+                    "type": "teaching",
+                    "result": teach_res["success"],
+                    "message": teach_res["msg"],
+                    "trace": [f"تحليل الجملة الخبرية وإدخالها في العالم النشط '{world}'"],
                     "confidence": 1.0
                 }
+                if idx == len(parts) - 1:
+                    return last_result
+            else:
+                # Identify mapped concepts
+                mapped_concepts = []
+                for word in words:
+                    if not word:
+                        continue
+                    concept = self.handler.dynamic_morphological_lookup(word)
+                    if concept and concept not in mapped_concepts:
+                        mapped_concepts.append(concept)
+                        
+                # Resolve implicit references (pronouns, verbs) using EntityResolver
+                mapped_concepts = self.entity_resolver.resolve(part, mapped_concepts)
                 
-        # 3. Hypothetical Scenario query (e.g. "لو الأسد في القطب، ماذا يحتاج؟")
-        elif ("لو" in words or "إذا" in words) and len(mapped_concepts) >= 2:
-            # We have entity and target environment
-            entity = None
-            env = None
-            for c in mapped_concepts:
-                cat = self.handler.graph.nodes[c].get("category", "")
-                # feline_carnivore is animal, arctic is environment
-                if c == "feline_carnivore" or cat == "animal":
-                    entity = c
-                elif c == "arctic" or cat == "environment":
-                    env = c
-                    
-            if entity and env:
-                # 1. Causal Reasoning
-                causal_res = self.causal_reasoning(entity, env)
-                trace = list(causal_res["trace"])
+                # Record turn in conversation manager
+                self.conversation_manager.record_turn(part, mapped_concepts)
                 
-                if causal_res.get("needs_adaptation"):
-                    req = causal_res["requirement"]
-                    # 2. Analogy Transfer
-                    analogy_res = self.analogical_reasoning(entity, env, req)
-                    trace.extend(analogy_res["trace"])
+                # 1. Custom celestial/direction query handling for astronomical world questions
+                if "c_sun" in mapped_concepts:
+                    props = self.handler.get_properties("c_sun", world=world)
+                    target = None
+                    for p in props:
+                        if p["relation"] == "rises_from":
+                            target = p["property"]
+                            break
+                            
+                    conflicts = self.conflict_resolver.resolve_conflict("c_sun", "rises_from")
+                    conflict_trace = [c["description"] for c in conflicts]
                     
-                    if analogy_res.get("success"):
+                    if "هل" in words:
+                        dir_concept = None
+                        for c in mapped_concepts:
+                            if c in ["c_east", "c_west"]:
+                                dir_concept = c
+                                break
+                        if dir_concept and target:
+                            is_correct = (target == dir_concept)
+                            return {
+                                "type": "classification",
+                                "result": is_correct,
+                                "concept1": "c_sun",
+                                "concept2": dir_concept,
+                                "trace": [f"الاستعلام عن شروق الشمس في العالم النشط '{world}'", f"الشمس تشرق من {target} في هذا العالم"] + conflict_trace,
+                                "confidence": 1.0
+                            }
+                            
+                    if target:
+                        target_lbl = self.handler.graph.nodes[target].get("labels")[0]
+                        return {
+                            "type": "location",
+                            "result": True,
+                            "concept": "c_sun",
+                            "location": target,
+                            "location_label": target_lbl,
+                            "trace": [f"الاستعلام عن شروق الشمس في العالم النشط '{world}'", f"الشمس تشرق من {target_lbl} في هذا العالم"] + conflict_trace,
+                            "confidence": 1.0
+                        }
+
+                # 2. Classification
+                if "هل" in words and len(mapped_concepts) >= 2:
+                    c1, c2 = mapped_concepts[0], mapped_concepts[1]
+                    # Verify order
+                    idx1 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w) == c1]) if any(self.handler.dynamic_morphological_lookup(w) == c1 for w in words) else 0
+                    idx2 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w) == c2]) if any(self.handler.dynamic_morphological_lookup(w) == c2 for w in words) else 1
+                    if idx1 > idx2:
+                        c1, c2 = c2, c1
+                        
+                    res = self.check_is_a_relationship(c1, c2)
+                    return {
+                        "type": "classification",
+                        "result": res["result"],
+                        "concept1": c1,
+                        "concept2": c2,
+                        "trace": res["trace"],
+                        "confidence": 1.0
+                    }
+                    
+                # 3. Hypothetical
+                elif ("لو" in words or "إذا" in words or "اذا" in words) and len(mapped_concepts) >= 2:
+                    entity = None
+                    env = None
+                    for c in mapped_concepts:
+                        cat = self.handler.graph.nodes[c].get("category", "")
+                        if c == "feline_carnivore" or cat == "animal":
+                            entity = c
+                        elif c == "arctic" or cat == "environment":
+                            env = c
+                            
+                    if entity and env:
+                        causal_res = self.causal_reasoning(entity, env)
+                        trace = list(causal_res["trace"])
+                        
+                        if causal_res.get("needs_adaptation"):
+                            req = causal_res["requirement"]
+                            analogy_res = self.analogical_reasoning(entity, env, req)
+                            trace.extend(analogy_res["trace"])
+                            
+                            if analogy_res.get("success"):
+                                return {
+                                    "type": "hypothetical",
+                                    "result": True,
+                                    "entity": entity,
+                                    "environment": env,
+                                    "needs_adaptation": True,
+                                    "transferred_property": analogy_res["transferred_property"],
+                                    "analogy_candidate": analogy_res["analogy_candidate"],
+                                    "trace": trace,
+                                    "confidence": analogy_res["similarity"]
+                                }
                         return {
                             "type": "hypothetical",
-                            "result": True,
+                            "result": False,
                             "entity": entity,
                             "environment": env,
-                            "needs_adaptation": True,
-                            "transferred_property": analogy_res["transferred_property"],
-                            "analogy_candidate": analogy_res["analogy_candidate"],
+                            "needs_adaptation": False,
                             "trace": trace,
-                            "confidence": analogy_res["similarity"]
+                            "confidence": 1.0
+                        }
+
+                # 4. Location (lives_in)
+                elif ("أين" in words or "اين" in words or "يعيش" in words or "عاش" in words) and len(mapped_concepts) >= 1:
+                    concept = mapped_concepts[0]
+                    props = self.handler.get_properties(concept, world=world)
+                    location = None
+                    for p in props:
+                        if p["relation"] == "lives_in":
+                            location = p["property"]
+                            break
+                            
+                    if location:
+                        loc_label = self.handler.graph.nodes[location].get("labels", [location])[0]
+                        conflicts = self.conflict_resolver.resolve_conflict(concept, "lives_in")
+                        conflict_trace = [c["description"] for c in conflicts]
+                        return {
+                            "type": "location",
+                            "result": True,
+                            "concept": concept,
+                            "location": location,
+                            "location_label": loc_label,
+                            "trace": [f"البحث عن موطن {concept} في العالم '{world}'", f"← وجدنا أن {concept} يعيش في {location}"] + conflict_trace,
+                            "confidence": 1.0
                         }
                         
+                # 5. Comparison
+                elif "الفرق" in words and len(mapped_concepts) >= 2:
+                    c1, c2 = mapped_concepts[0], mapped_concepts[1]
+                    props1 = self.handler.get_properties(c1, world=world)
+                    props2 = self.handler.get_properties(c2, world=world)
+                    return {
+                        "type": "comparison",
+                        "result": True,
+                        "concept1": c1,
+                        "concept2": c2,
+                        "props1": props1,
+                        "props2": props2,
+                        "trace": [f"مقارنة الخصائص للـ {c1} والـ {c2} في العالم النشط '{world}'"],
+                        "confidence": 1.0
+                    }
+                    
+                # Default unknown fail-safe
                 return {
-                    "type": "hypothetical",
+                    "type": "unknown",
                     "result": False,
-                    "entity": entity,
-                    "environment": env,
-                    "needs_adaptation": False,
-                    "trace": trace,
-                    "confidence": 1.0
+                    "trace": ["لم نجد مسار استدلالي منطقي أو تصنيفي واضح يربط بين الكلمات المدخلة في قاعدة المعرفة المتاحة"],
+                    "confidence": 0.0
                 }
                 
-        # 4. Comparison query (e.g. "ما الفرق بين الأسد والدب القطبي؟")
-        elif "الفرق" in words and len(mapped_concepts) >= 2:
-            c1, c2 = mapped_concepts[0], mapped_concepts[1]
-            props1 = self.handler.get_properties(c1, world="reality")
-            props2 = self.handler.get_properties(c2, world="reality")
-            
-            return {
-                "type": "comparison",
-                "result": True,
-                "concept1": c1,
-                "concept2": c2,
-                "props1": props1,
-                "props2": props2,
-                "trace": [f"البحث عن الخصائص الفيزيائية والبيئية للـ {c1}", f"البحث عن الخصائص الفيزيائية والبيئية للـ {c2}", "مقارنة الفروق الجوهرية والتشابهات التصنيفية"],
-                "confidence": 1.0
-            }
-            
-        # Honest Fail-safe
-        return {
-            "type": "unknown",
-            "result": False,
-            "trace": ["لم نجد مسار استدلالي منطقي أو تصنيفي واضح يربط بين الكلمات المدخلة في قاعدة المعرفة المتاحة"],
-            "confidence": 0.0
-        }
+        return last_result

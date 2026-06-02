@@ -10,7 +10,11 @@
     {"id": "arctic", "labels": ["القطب", "الأرض المتجمدة", "القطب الشمالي"]},
     {"id": "savanna", "labels": ["السافانا"]},
     {"id": "extreme_cold", "labels": ["برد شديد", "البرد"]},
-    {"id": "warm_climate", "labels": ["مناخ دافئ"]}
+    {"id": "warm_climate", "labels": ["مناخ دافئ"]},
+    {"id": "c_sun", "labels": ["الشمس", "شمس"], "category": "celestial"},
+    {"id": "c_east", "labels": ["الشرق", "شرق"], "category": "direction"},
+    {"id": "c_west", "labels": ["الغرب", "غرب"], "category": "direction"},
+    {"id": "c_underground", "labels": ["تحت الأرض", "أسفل الأرض"], "category": "location"}
   ],
   "relations": [
     {

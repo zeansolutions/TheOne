@@ -151,6 +151,7 @@ def main():
             response = generator.generate(res)
             
             print("\n" + "=" * 50)
+            print(f"العالم النشط: '{handler.active_world}'")
             print(f"الرد النهائي:\n👉 {response}")
             print("=" * 50)
             

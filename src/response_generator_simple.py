@@ -80,6 +80,10 @@ class ResponseGeneratorSimple:
                 f"لكن التشابه الجوهري أن كلاهما ثدييات مفترسة تصنيفياً."
             )
             
+        # 6. Teaching Response
+        elif type_ == "teaching":
+            return f"{p_ref}، {res.get('message', 'تم حفظ المعلومة بنجاح.')}"
+            
         # 5. Honest Fail-safe (No Hallucination!)
         else:
             return f"{p_ref}، بص بقى، معنديش أي معلومة أو حقيقة منطقية تسند السؤال ده في قاعدة البيانات حالياً، وأنا بفضل أقول معرفش على إني أهلس!"
