@@ -183,7 +183,7 @@ class SimpleReasoner:
         trace.append("لم نجد أي كائن مماثل يعيش في تلك البيئة ولديه الخاصية المطلوبة لقياسها")
         return {"success": False, "trace": trace}
 
-    def process_query(self, query):
+    def process_query(self, query, interactive=False):
         """
         Pipeline: Parsing -> Dynamic Morphological Lookup -> Logical Reasoning.
         Supports 5 dynamic queries, multi-world state, dynamic fact teaching, and dialog context.
@@ -205,7 +205,7 @@ class SimpleReasoner:
             
             if not is_question:
                 # Teach fact to world manager
-                teach_res = self.world_manager.parse_and_add_fact(part, world)
+                teach_res = self.world_manager.parse_and_add_fact(part, world, interactive=interactive)
                 last_result = {
                     "type": "teaching",
                     "result": teach_res["success"],

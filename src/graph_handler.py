@@ -55,8 +55,227 @@ class GraphHandler:
                     world=fact["world"],
                     confidence=fact.get("confidence", 1.0),
                     type="fact",
-                    reason=fact.get("reason", None)
+                    reason=fact.get("reason", None),
+                    timestamp="2026-06-02T00:00:00Z",
+                    source="database",
+                    status="active",
+                    update_history=[]
                 )
+
+    def add_or_update_fact(self, subj, obj, relation, world, confidence=1.0, reason=None, interactive=False):
+        """
+        Adds a new fact edge, or resolves conflicts if a fact already exists for (subj, relation, world)
+        or if opposite properties are taught (e.g. thin_fur vs thick_fur).
+        """
+        import datetime
+        timestamp = datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z")
+        
+        # 1. Identify opposite properties
+        OPPOSITE_PROPERTIES = {
+            ("thin_fur", "thick_fur"),
+            ("thick_fur", "thin_fur"),
+        }
+        
+        # 2. Get existing facts of type 'fact' for this subject in the target world
+        existing_edges = []
+        if self.graph.has_node(subj):
+            for u, v, key, data in list(self.graph.out_edges(subj, data=True, keys=True)):
+                if data.get("type") == "fact" and data.get("world") == world:
+                    # Check if it's the same relation
+                    if data.get("relation") == relation:
+                        existing_edges.append((u, v, key, data))
+                    # Also check if it's has_property and we have conflicting property objects
+                    elif relation == "has_property" and data.get("relation") == "has_property":
+                        if (v, obj) in OPPOSITE_PROPERTIES or (obj, v) in OPPOSITE_PROPERTIES:
+                            existing_edges.append((u, v, key, data))
+                            
+        # 3. If there are no existing conflicting facts, simply add the new fact
+        if not existing_edges:
+            self.graph.add_edge(
+                subj,
+                obj,
+                relation=relation,
+                world=world,
+                confidence=confidence,
+                type="fact",
+                reason=reason,
+                timestamp=timestamp,
+                source="user_interactive" if interactive else "automated",
+                status="active",
+                update_history=[]
+            )
+            subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
+            obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+            return {
+                "success": True,
+                "status": "added",
+                "message": f"تم حفظ الحقيقة الجديدة: [{subj_lbl}] --({relation})--> [{obj_lbl}] في عالم '{world}'"
+            }
+            
+        # 4. We found one or more existing/conflicting edges. Let's process the first one.
+        u, v, key, data = existing_edges[0]
+        
+        # Check if identical (same relation and same object)
+        is_identical = (data.get("relation") == relation and v == obj)
+        
+        if is_identical:
+            # Update attributes of the existing edge
+            data["confidence"] = confidence
+            data["reason"] = reason or data.get("reason")
+            data["timestamp"] = timestamp
+            data["source"] = "user_interactive" if interactive else data.get("source", "database")
+            
+            subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
+            obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+            return {
+                "success": True,
+                "status": "identical",
+                "message": f"المعلومة [{subj_lbl}] --({relation})--> [{obj_lbl}] موجودة بالفعل في عالم '{world}' (تم تحديث الثقة لـ {confidence})."
+            }
+            
+        # Contradiction detected! (v != obj for a functional relation, or opposite properties)
+        old_conf = data.get("confidence", 1.0)
+        
+        # Tier 1: Auto-Resolution based on confidence difference
+        if confidence > old_conf + 0.3:
+            # Auto-replace
+            history_entry = {
+                "old_object": v,
+                "old_relation": data.get("relation"),
+                "old_confidence": old_conf,
+                "old_reason": data.get("reason"),
+                "timestamp": data.get("timestamp"),
+                "source": data.get("source"),
+                "resolution": "auto_replaced_higher_confidence"
+            }
+            new_history = data.get("update_history", []) + [history_entry]
+            
+            # Remove old edge
+            self.graph.remove_edge(u, v, key=key)
+            # Add new edge
+            self.graph.add_edge(
+                subj,
+                obj,
+                relation=relation,
+                world=world,
+                confidence=confidence,
+                type="fact",
+                reason=reason,
+                timestamp=timestamp,
+                source="user_interactive" if interactive else "automated",
+                status="active",
+                update_history=new_history
+            )
+            
+            subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
+            old_obj_lbl = self.graph.nodes[v].get("labels", [v])[0]
+            new_obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+            return {
+                "success": True,
+                "status": "auto_replaced",
+                "message": f"⚠️ تم تحديث الحقيقة تلقائياً لـ [{subj_lbl}] من [{old_obj_lbl}] إلى [{new_obj_lbl}] لأن ثقة المعلومة الجديدة أعلى بكثير ({confidence} مقابل {old_conf})."
+            }
+            
+        elif confidence < old_conf - 0.3:
+            # Auto-reject
+            subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
+            old_obj_lbl = self.graph.nodes[v].get("labels", [v])[0]
+            new_obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+            return {
+                "success": True,
+                "status": "auto_rejected",
+                "message": f"⚠️ تم رفض الحقيقة الجديدة تلقائياً [{subj_lbl}] --({relation})--> [{new_obj_lbl}] لأن ثقة المعلومة الحالية أعلى بكثير ({old_conf} مقابل {confidence})."
+            }
+            
+        # Tier 3: Interactive Confirmation or Fallback
+        if interactive:
+            # Ask the user in the CLI
+            subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
+            old_obj_lbl = self.graph.nodes[v].get("labels", [v])[0]
+            new_obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+            
+            print(f"\n⚠️  [تعارض معلومات] الحقيقة الجديدة تتعارض مع حقيقة مسجلة في عالم '{world}'!")
+            print(f"المعلومة الحالية: [{subj_lbl}] --({data.get('relation')})--> [{old_obj_lbl}] (ثقة: {old_conf})")
+            print(f"المعلومة الجديدة: [{subj_lbl}] --({relation})--> [{new_obj_lbl}] (ثقة: {confidence})")
+            print("-" * 50)
+            print("الرجاء اختيار خيار الحل:")
+            print(" 1. استبدال (احذف المعلومة القديمة واحفظ الجديدة مع تسجيل السابقة في الأرشيف)")
+            print(" 2. دمج (احفظ المعلومة الجديدة إلى جانب القديمة)")
+            print(" 3. تجاهل (ألغِ الإضافة الجديدة واحتفظ بالقديمة فقط)")
+            
+            choice = ""
+            while choice not in ["1", "2", "3"]:
+                choice = input("اختر رقم الحل (1-3): ").strip()
+                
+            if choice == "1":
+                # Replace
+                history_entry = {
+                    "old_object": v,
+                    "old_relation": data.get("relation"),
+                    "old_confidence": old_conf,
+                    "old_reason": data.get("reason"),
+                    "timestamp": data.get("timestamp"),
+                    "source": data.get("source"),
+                    "resolution": "user_replaced"
+                }
+                new_history = data.get("update_history", []) + [history_entry]
+                
+                self.graph.remove_edge(u, v, key=key)
+                self.graph.add_edge(
+                    subj,
+                    obj,
+                    relation=relation,
+                    world=world,
+                    confidence=confidence,
+                    type="fact",
+                    reason=reason,
+                    timestamp=timestamp,
+                    source="user_interactive",
+                    status="active",
+                    update_history=new_history
+                )
+                return {
+                    "success": True,
+                    "status": "replaced",
+                    "message": f"تم استبدال المعلومة القديمة [{old_obj_lbl}] بالجديدة [{new_obj_lbl}] بناءً على اختيارك."
+                }
+            elif choice == "2":
+                # Add both (Merge)
+                self.graph.add_edge(
+                    subj,
+                    obj,
+                    relation=relation,
+                    world=world,
+                    confidence=confidence,
+                    type="fact",
+                    reason=reason,
+                    timestamp=timestamp,
+                    source="user_interactive",
+                    status="active",
+                    update_history=[]
+                )
+                return {
+                    "success": True,
+                    "status": "merged",
+                    "message": f"تم دمج المعلومتين معاً (أصبحت كل من [{old_obj_lbl}] و [{new_obj_lbl}] مسجلة لـ [{subj_lbl}])."
+                }
+            else:
+                # Cancel/Ignore
+                return {
+                    "success": True,
+                    "status": "ignored",
+                    "message": f"تم تجاهل المعلومة الجديدة والاحتفاظ بـ [{old_obj_lbl}] بناءً على اختيارك."
+                }
+        else:
+            # Fallback for non-interactive (tests): reject/keep old
+            subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
+            old_obj_lbl = self.graph.nodes[v].get("labels", [v])[0]
+            new_obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+            return {
+                "success": True,
+                "status": "non_interactive_rejected",
+                "message": f"⚠️ تم تجاهل الحقيقة الجديدة [{subj_lbl}] --({relation})--> [{new_obj_lbl}] في عالم '{world}' افتراضياً لعدم وجود تفاعل بشري."
+            }
 
     def set_active_world(self, world_name):
         self.active_world = world_name
@@ -81,7 +300,7 @@ class GraphHandler:
         
         # Look at relations in ontology
         for _, to_node, data in self.graph.out_edges(concept_id, data=True):
-            if data.get("relation") in ["has_property", "lives_in"]:
+            if data.get("type") == "relation" and data.get("relation") in ["has_property", "lives_in"]:
                 properties.append({
                     "property": to_node,
                     "relation": data.get("relation"),
@@ -91,11 +310,12 @@ class GraphHandler:
         # Look at facts matching the world
         for _, to_node, data in self.graph.out_edges(concept_id, data=True):
             if data.get("type") == "fact" and data.get("world") == world:
-                properties.append({
-                    "property": to_node,
-                    "relation": data.get("relation"),
-                    "reason": data.get("reason")
-                })
+                if data.get("status", "active") == "active":
+                    properties.append({
+                        "property": to_node,
+                        "relation": data.get("relation"),
+                        "reason": data.get("reason")
+                    })
         return properties
 
     def get_requirements(self, environment_id):

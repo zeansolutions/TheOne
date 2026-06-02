@@ -32,7 +32,7 @@ class WorldManager:
         self.handler.set_active_world(world)
         return cleaned_query, world
 
-    def parse_and_add_fact(self, text, world):
+    def parse_and_add_fact(self, text, world, interactive=False):
         """
         Dynamically extracts a fact from clean statement text and saves it in the Graph.
         Expected format: [Subject] [Relation Verb] [Object] (e.g. "الأسد يعيش في القطب" or "الشمس تشرق من تحت الأرض")
@@ -73,25 +73,23 @@ class WorldManager:
             subj = mapped_concepts[0]
             obj = mapped_concepts[1]
             
-            # Add edge to the NetworkX graph under the active world
-            self.handler.graph.add_edge(
+            # Use add_or_update_fact to handle duplicates and contradictions
+            update_res = self.handler.add_or_update_fact(
                 subj,
                 obj,
                 relation=relation,
                 world=world,
                 confidence=1.0,
-                type="fact"
+                interactive=interactive
             )
             
-            # Print for debugging
-            subj_lbl = self.handler.graph.nodes[subj].get("labels", [subj])[0]
-            obj_lbl = self.handler.graph.nodes[obj].get("labels", [obj])[0]
             return {
-                "success": True,
+                "success": update_res["success"],
                 "subject": subj,
                 "relation": relation,
                 "object": obj,
-                "msg": f"تم حفظ الحقيقة الجديدة: [{subj_lbl}] --({relation})--> [{obj_lbl}] في عالم '{world}'"
+                "msg": update_res["message"],
+                "status": update_res.get("status")
             }
             
         return {"success": False, "msg": "لم نتمكن من استخراج مفاهيم وعلاقات كافية من الجملة الخبرية."}

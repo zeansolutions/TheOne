@@ -95,17 +95,16 @@ def teach_system(handler):
             
             world_choice = input("ما هو العالم الذي تنتمي إليه هذه الحقيقة؟ (افتراضياً reality): ") or "reality"
             
-            # Add to graph
-            handler.graph.add_edge(
+            # Use add_or_update_fact to handle duplicates and contradictions
+            update_res = handler.add_or_update_fact(
                 from_c,
                 to_c,
                 relation=rel,
                 world=world_choice,
-                type="fact",
-                confidence=1.0
+                confidence=1.0,
+                interactive=True
             )
-            
-            print(f"\nتم بنجاح! إضافة العلاقة: [{handler.graph.nodes[from_c].get('labels')[0]}] --({rel})--> [{handler.graph.nodes[to_c].get('labels')[0]}] في العالم '{world_choice}'")
+            print(f"\n{update_res['message']}")
         else:
             print("اختيار غير صالح.")
     except Exception as e:
@@ -147,7 +146,7 @@ def main():
                 continue
                 
             # Run pipeline
-            res = reasoner.process_query(query)
+            res = reasoner.process_query(query, interactive=True)
             response = generator.generate(res)
             
             print("\n" + "=" * 50)
