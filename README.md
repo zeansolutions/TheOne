@@ -1,5 +1,20 @@
-# TheOne - Neuro-Symbolic AI Engine 🧠🔗
-### A Hybrid Neuro-Symbolic AI System — An Honest, Transparent, and 100% Hallucination-Free Alternative to Large Language Models
+<p align="center">
+  <img src="images/logo.png" alt="TheOne Logo" width="220px" style="border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);"/>
+</p>
+
+<h1 align="center">TheOne — Neuro-Symbolic AI Engine 🧠🔗</h1>
+
+<p align="center">
+  <strong>Honest, Transparent, and 100% Hallucination-Free Symbolic-Hybrid Reasoning Engine</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Tests-50%20passed-brightgreen?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests status"/>
+  <img src="https://img.shields.io/badge/Python-3.12+-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python version"/>
+  <img src="https://img.shields.io/badge/Graph-NetworkX-orange?style=for-the-badge" alt="NetworkX"/>
+  <img src="https://img.shields.io/badge/Runtime-Zero--LLM-red?style=for-the-badge" alt="Zero LLM Runtime"/>
+  <img src="https://img.shields.io/badge/Languages-11--supported-purple?style=for-the-badge" alt="11 Languages"/>
+</p>
 
 ---
 
