@@ -1,19 +1,6 @@
 {
   "languages": [
     {
-      "id": "ar",
-      "name": "العربية",
-      "name_en": "Arabic",
-      "locale": "ar-SA",
-      "is_rtl": true,
-      "metadata": {
-        "grammar_family": "semitic",
-        "morphology_complexity": "high",
-        "default_persona": "sage_friend"
-      },
-      "enabled": true
-    },
-    {
       "id": "en",
       "name": "English",
       "name_ar": "الإنجليزية",
@@ -27,6 +14,19 @@
       "enabled": true
     },
     {
+      "id": "ar",
+      "name": "العربية",
+      "name_en": "Arabic",
+      "locale": "ar-SA",
+      "is_rtl": true,
+      "metadata": {
+        "grammar_family": "semitic",
+        "morphology_complexity": "high",
+        "default_persona": "sage_friend"
+      },
+      "enabled": true
+    },
+    {
       "id": "fr",
       "name": "Français",
       "name_ar": "الفرنسية",
@@ -36,6 +36,110 @@
         "grammar_family": "romance",
         "morphology_complexity": "moderate",
         "default_persona": "witty_mentor"
+      },
+      "enabled": true
+    },
+    {
+      "id": "es",
+      "name": "Español",
+      "name_ar": "الإسبانية",
+      "locale": "es-ES",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "romance",
+        "morphology_complexity": "moderate",
+        "default_persona": "scientist"
+      },
+      "enabled": true
+    },
+    {
+      "id": "zh",
+      "name": "中文",
+      "name_ar": "الصينية",
+      "locale": "zh-CN",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "sino-tibetan",
+        "morphology_complexity": "low",
+        "default_persona": "sage_friend"
+      },
+      "enabled": true
+    },
+    {
+      "id": "tr",
+      "name": "Türkçe",
+      "name_ar": "التركية",
+      "locale": "tr-TR",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "turkic",
+        "morphology_complexity": "high",
+        "default_persona": "scientist"
+      },
+      "enabled": true
+    },
+    {
+      "id": "de",
+      "name": "Deutsch",
+      "name_ar": "الألمانية",
+      "locale": "de-DE",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "germanic",
+        "morphology_complexity": "moderate",
+        "default_persona": "scientist"
+      },
+      "enabled": true
+    },
+    {
+      "id": "ru",
+      "name": "Русский",
+      "name_ar": "الروسية",
+      "locale": "ru-RU",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "slavic",
+        "morphology_complexity": "high",
+        "default_persona": "sage_friend"
+      },
+      "enabled": true
+    },
+    {
+      "id": "pt",
+      "name": "Português",
+      "name_ar": "البرتغالية",
+      "locale": "pt-BR",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "romance",
+        "morphology_complexity": "moderate",
+        "default_persona": "witty_mentor"
+      },
+      "enabled": true
+    },
+    {
+      "id": "ja",
+      "name": "日本語",
+      "name_ar": "اليابانية",
+      "locale": "ja-JP",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "japonic",
+        "morphology_complexity": "moderate",
+        "default_persona": "sage_friend"
+      },
+      "enabled": true
+    },
+    {
+      "id": "ko",
+      "name": "한국어",
+      "name_ar": "الكورية",
+      "locale": "ko-KR",
+      "is_rtl": false,
+      "metadata": {
+        "grammar_family": "koreanic",
+        "morphology_complexity": "moderate",
+        "default_persona": "scientist"
       },
       "enabled": true
     }

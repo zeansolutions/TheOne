@@ -1,214 +1,198 @@
 # TheOne - Neuro-Symbolic AI Engine 🧠🔗
-### نظام ذكاء اصطناعي رمزي عصبي هجين — بديل منطقي، صادق، وشفّاف تماماً لنماذج اللغة الكبيرة
+### A Hybrid Neuro-Symbolic AI System — An Honest, Transparent, and 100% Hallucination-Free Alternative to Large Language Models
 
 ---
 
-## 📋 نظرة عامة (Overview)
+## 📋 Overview
 
-نظام **TheOne** هو محرك ذكاء اصطناعي رمزي عصبي (Neuro-Symbolic) هجين، مصمم ليعمل كـ **عقل منطقي يقيني وصادق 100%** في المحادثات والاستدلال باللغة العربية. 
+**TheOne** is a hybrid Neuro-Symbolic AI reasoning engine designed to operate as a **100% truthful and logically grounded cognitive mind** in natural language conversations and reasoning.
 
-على عكس نماذج اللغة الكبيرة (LLMs) التي تعتمد على الاحتمالات والإحصاء وقد تنتج معلومات مغلوطة (هلوسة)، يعتمد هذا النظام على **قاعدة معرفية منطقية محلية (Knowledge Graph)** مبنية باستخدام **NetworkX**. 
+Unlike generative Large Language Models (LLMs) that rely on probabilistic patterns and statistical correlations—often leading to factual inaccuracies and hallucinations—this system is built upon a **local symbolic Knowledge Graph** powered by **NetworkX**.
 
-يقتصر دور النموذج اللغوي (LLM) في هذا المشروع على **استخراج المعرفة وتدريس النظام (Extraction Time)** فقط، بينما يعمل النظام بالكامل عند التشغيل (Runtime) بشكل **محلي ورمزي مستقل تماماً** وخالٍ من استدعاء أي واجهات برمجة تطبيقات (APIs) خارجية.
-
----
-
-## 💡 الفلسفة الحاكمة (Core Philosophy)
-
-* 🚫 **صفر هلوسة (Zero Hallucination):** إذا لم تتوفر الحقيقة في قاعدة المعرفة، يصرّح النظام بصدق: "لا توجد لدي معلومة".
-* 🔍 **استدلال شفاف (Traceable Reasoning):** كل إجابة يولدها النظام تكون مصحوبة بسلسلة استدلال كاملة وواضحة خطوة بخطوة (Trace Chain).
-* 🔄 **تعلم مستمر (Continuous Learning):** النظام قابل للتعليم اللحظي أثناء التشغيل دون الحاجة لإعادة التدريب.
-* 🛡️ **مبدأ اللا-صلابة (Zero-Hardcoding Policy):** كود المحرك محايد بالكامل، ويتم تحميل كافة القواعد اللغوية (الصرفية والنحوية) والحقائق من عوالم مختلفة ديناميكياً من ملفات JSON الخارجية.
+The role of any LLM in this ecosystem is strictly restricted to the **knowledge extraction and ingestion phase (Extraction Time)**. At **Runtime**, the system functions as a **100% local, purely symbolic, and independent engine** that runs without calling any external APIs or generating statistical token sequences.
 
 ---
 
-## 📂 بنية مجلدات المشروع (Directory Structure)
+## 💡 Core Philosophy
+
+* 🚫 **Zero Hallucination (Zero-Hallucination Policy):** If a fact does not exist in the active Knowledge Graph, the system honestly states: "I do not have this information" instead of guessing.
+* 🔍 **Traceable Reasoning (Traceable AI):** Every response generated is backed by a step-by-step logical trace chain explaining exactly how the deduction was reached.
+* 🔄 **Continuous Ingestive Learning:** The system learns facts in real-time during conversations, dynamically updating the Knowledge Graph.
+* 🛡️ **Zero-Hardcoding Policy:** The reasoning engine is entirely domain-neutral. All grammatical rules, morphological affix tables, logic rules, and factual databases are loaded dynamically from external JSON files.
+
+---
+
+## 📂 Directory Structure
 
 ```text
 TheOne/
-├── data/                             # قواعد البيانات واللغة المفهومية (JSON)
-│   ├── animals_language_rules.json   # قواعد الصرف وجذور الكلمات والنحو الصوري
-│   ├── animals_ontology_small.json   # شبكة المفاهيم والعلاقات الرمزية
-│   └── animals_facts.json            # الحقائق المقسمة بحسب العوالم والشخصيات
+├── config/                           # System and Localization Configurations
+│   ├── languages.json                # Supported locales, RTL settings, default personas
+│   └── personas_multilingual.json    # Persona archetypes (Sage Friend, Scientist, Witty Mentor)
 │
-├── src/                              # الكود المصدري للنواة
+├── data/                             # Knowledge Bases & Language Rules (JSON)
+│   ├── animals_language_rules.json   # Morphological roots, affixes, and lexical mappings
+│   ├── animals_ontology_small.json   # Graph concepts and taxonomic relations
+│   ├── animals_facts.json            # Triples/facts segmented by worlds and personas
+│   ├── inference_rules.json          # Logical inference rules (Horn clauses)
+│   ├── semantic_roles.json           # Semantic frames (Agent, Patient, Location)
+│   ├── temporal_logic.json           # Temporal relations (BEFORE, AFTER)
+│   ├── modality.json                 # Modal logic rules (Necessity, Possibility)
+│   ├── causal_chains.json            # Causal propagation rules and chains
+│   ├── quantifiers.json              # Quantifier rules (Universal, Existential)
+│   ├── negation_rules.json           # Polarity rules and double negation mappings
+│   ├── entailment.json               # Propositional entailments and contradictions
+│   ├── pragmatic_knowledge.json      # Metaphorical and cultural context mappings
+│   ├── comparison.json               # Comparative ordering scales and relations
+│   └── anomaly_detection.json        # Exceptional facts and anomaly rules
+│
+├── src/                              # Core Engine Source Code
 │   ├── __init__.py
-│   ├── graph_handler.py              # إدارة NetworkX ومحرك التفكيك الصرفي الديناميكي
-│   ├── simple_reasoner.py            # منسق محرك الاستدلال والوراثة
-│   ├── response_generator_simple.py  # صياغة الردود العربية بمرشحات الشخصية
-│   ├── conversation_manager.py       # إدارة ذاكرة وسياق الحوار
-│   ├── entity_resolver.py            # حل إحالات الضمائر والفاعل المستتر في العربية
-│   ├── world_manager.py              # تبديل العوالم وتلقين الحقائق الجديدة ديناميكياً
-│   └── conflict_resolver.py          # كشف التعارض المنطقي بين عوالم الحقائق
+│   ├── graph_handler.py              # NetworkX manager, morphology, rules, and activation
+│   ├── simple_reasoner.py            # Coordinate reasoning and cognitive layer routing
+│   ├── response_generator_simple.py  # Response formatting, template rendering
+│   ├── conversation_manager.py       # Dialogue state tracking and memory
+│   ├── entity_resolver.py            # Pronoun and hidden subject reference resolution
+│   ├── world_manager.py              # Multi-world sandbox and real-time fact teaching
+│   ├── conflict_resolver.py          # Logical contradiction detection across worlds
+│   │
+│   ├── enrichment/
+│   │   └── fuzzy_modal.py            # Fuzzy confidence and modal logic weights
+│   ├── maintenance/
+│   │   └── sleep_cycle.py            # Consolidation, pruning, deduplication
+│   ├── manager/
+│   │   ├── language_selection_engine.py # Auto-detects/selects target language
+│   │   └── multilingual_persona_engine.py # Coordinates language, persona, and response
+│   ├── reasoner/
+│   │   ├── persona_selector.py       # Contextual persona classification
+│   │   ├── transitive_chaining.py    # Multi-hop transitive deduction
+│   │   ├── sandbox_manager.py        # Cloned memory graphs for sandboxes
+│   │   ├── curiosity_engine.py       # Curiosity questions generation
+│   │   # Cognitive Layer Processors
+│   │   ├── semantic_processor.py
+│   │   ├── temporal_processor.py
+│   │   ├── modality_processor.py
+│   │   ├── chain_processor.py
+│   │   ├── quantifier_processor.py
+│   │   ├── negation_processor.py
+│   │   ├── entailment_processor.py
+│   │   ├── pragmatic_processor.py
+│   │   ├── comparison_processor.py
+│   │   └── anomaly_processor.py
+│   └── renderer/
+│       └── expression_renderer.py    # Translates logical responses and traces
 │
-├── tests/                            # اختبارات التحقق التلقائية (pytest)
-│   ├── test_basic_reasoning.py       # اختبارات الاستدلال والنواة الصرفية
-│   └── test_queries.py               # اختبارات الأسئلة والسيناريوهات المتقدمة (13 اختبار)
+├── tests/                            # Automated Testing Suite (pytest)
+│   ├── test_basic_reasoning.py       # Core logic and morphological tests
+│   ├── test_queries.py               # Dialogue scenarios and multi-hop queries
+│   ├── test_contradiction.py         # Collision and update system tests
+│   ├── test_multilingual_persona.py  # Language and persona tests
+│   ├── test_spreading_activation.py  # Word disambiguation tests
+│   ├── test_dynamic_inference.py     # Rule induction and binding tests
+│   ├── test_transitive_chaining.py   # Multi-hop chain tests
+│   ├── test_sandbox.py               # Hypothetical thought experiments tests
+│   ├── test_sleep_cycle.py           # Pruning and dream cycle tests
+│   ├── test_curiosity.py             # Curiosity prompt generation tests
+│   ├── test_fuzzy_modal.py           # Modals and confidence adjustments tests
+│   └── test_advanced_reasoning_layers.py # Tests for the 10 cognitive layers
 │
-├── main.py                           # نقطة تشغيل واجهة التيرمينال التفاعلية (CLI)
-├── start.sh                          # نص تشغيل وإدارة المشروع التفاعلي
-├── requirements.txt                  # المكتبات والاعتمادات المطلوبة
-├── .gitignore                        # ملفات وإعدادات تجاهل Git
-└── README.md                         # هذا الملف التعريفي
+├── docs/                             # Project Feature Documentation
+│   ├── en/                           # Feature descriptions in English
+│   └── ar/                           # Feature descriptions in Arabic
+│
+├── main.py                           # Primary Interactive CLI entrypoint
+├── start.sh                          # Interactive setup, test, and runner script
+├── requirements.txt                  # Python dependencies
+├── .gitignore                        # Git ignore patterns
+└── README.md                         # This readme file
 ```
 
 ---
 
-## 🚀 التشغيل والبدء السريع (Quick Start)
+## 🚀 Quick Start
 
-لقد قمنا بتوفير نص برمجي موحد ومحمي لتسهيل إدارة وتشغيل وتجربة المشروع بالكامل وهو `start.sh`.
+The interactive wrapper script `start.sh` is provided to simplify dependencies setup, testing, and running the CLI.
 
-### 1. عرض دليل المساعدة والتعليمات:
+### 1. Show Help & Arguments:
 ```bash
 ./start.sh --help
 ```
 
-### 2. تشغيل المحرك التفاعلي (CLI):
-```bash
-./start.sh run
-```
-
-### 3. تشغيل اختبارات التحقق الآلية (pytest):
-```bash
-./start.sh test
-```
-
-### 4. تهيئة وإعداد البيئة الافتراضية لأول مرة:
+### 2. Configure Virtual Environment & Setup:
 ```bash
 ./start.sh setup
 ```
 
----
+### 3. Run the Interactive CLI (Terminal):
+```bash
+./start.sh run
+```
 
-## 🔬 الأسئلة الخمسة المدعومة في الـ MVP
-
-1. **الاستدلال التصنيفي المباشر:** `"هل الأسد حيوان؟"`
-2. **الوراثة المتداخلة عبر فروع التصنيف:** `"هل الأسد مفترس؟"`
-3. **استرجاع وقائع العوالم المباشرة:** `"أين يعيش الأسد؟"`
-4. **الاستدلال السببي والقياس التمثيلي (الأكثر تعقيداً):** `"لو الأسد عاش في القطب، ماذا يحتاج؟"`
-   *(يقوم النظام بتحليل برد القطب، وتحديد فجوة العزل الحراري للأسد، والقياس على الدب القطبي لنقل صفة الفرو السميك وتغيير النظام الغذائي).*
-5. **المقارنة والتعارض:** `"ما الفرق بين الأسد والدب القطبي؟"`
-
----
-
-## 🧠 الميزات المتقدمة المدمجة (Advanced Features)
-
-تتعدى النسخة الحالية مفهوم الـ MVP الأساسي لتدمج ميزات حوارية ومعرفية معقدة:
-
-### 1. إدارة سياق الحوار والضمائر (Conversation State & Entity Resolution)
-يقوم النظام بتسجيل وحفظ سياق الحوار في ذاكرة مؤقتة. إذا قمت بطرح سؤال يفتقر لوجود فاعل صريح ويحتوي على ضمائر أو إشارات (مثل: "أين يعيش؟" أو "ما سرعته؟")، يقوم النظام تلقائياً باسترجاع المفهوم النشط الأخير وإكمال مسار الاستدلال بنجاح.
-
-### 2. إدارة العوالم والتعلم اللحظي (World Management & Fact Teaching)
-* **تبديل العوالم:** يستطيع النظام تمييز سياق العالم من السؤال (مثل: "في عالم خيالي...") وتوجيه محرك البحث للتحقق من الحقائق التابعة لهذا العالم فقط.
-* **التعلم الذاتي التلقائي (Zero-LLM Fact Teaching):** إذا أدخلت جملة خبرية لتعليم النظام (مثل: "في عالم خيالي الشمس تشرق من الغرب")، يقوم النظام بتفكيك الجملة واستخراج المبتدأ والخبر والفعل، وتلقينها كحقيقة جديدة في الرسم البياني للـ Graph مباشرة وبشكل محلي 100% دون الحاجة لنموذج لغوي.
-
-### 3. كشف وحل تعارض العوالم (Conflict Resolution)
-عندما يتم الاستعلام عن حقيقة تختلف وتتعارض بين عالمين (مثل شروق الشمس من الشرق في الواقع ومن الغرب في عالم الخيال)، يقوم محرك كشف التعارض بمقارنة الحقائق وتوليد تنبيه شفاف للمستخدم يفصل فيه بين الحقائق في مختلف العوالم.
-
-### 4. اختبارات الحدود والصدق (Fail-Safe)
-تم تفعيل وتدشين اختبارات موثوقية للتحقق من عدم هلوسة النظام. عند الاستعلام عن مفاهيم غير مسجلة في قاعدة المعرفة (مثل: "هل الفيل بيطير؟")، يرجع النظام رد معامل ثقة 0.0 ويصرح بصدق بعدم المعرفة بدلاً من اختلاق الإجابات.
+### 4. Run the Automated Tests (pytest):
+```bash
+./start.sh test
+```
 
 ---
 
-## 🌐 محرك الشخصيات متعدد اللغات (Multilingual Persona Engine)
+## 🔬 Core Supported Queries in MVP
 
-تمت ترقية النظام لإضافة طبقة خارجية متعددة الأبعاد تدعم التفاعل التلقائي بثلاث لغات وبتأثيرات شخصية ديناميكية:
-
-### 1. اللغات المدعومة (Supported Languages)
-* **العربية (ar)**
-* **الإنجليزية (en)**
-* **الفرنسية (fr)**
-
-### 2. محرك كشف واختيار اللغة (Language Selection Engine)
-يتم الكشف التلقائي عن لغة السؤال المدخل محلياً وخارج الشبكة باستخدام فحص الأنماط والـ Regex، ويتم اختيار اللغة الأنسب بناءً على:
-1. تفضيل المستخدم الصريح.
-2. اللغة المكتشفة في السؤال الحالي.
-3. تاريخ وسياق الحوار الأخير.
-
-### 3. محرك اختيار الشخصية الديناميكي (Persona Selector)
-لا يقتصر النظام على رد جاف، بل يقوم بتقييم السياق واختيار الشخصية الأنسب عبر صيغة مطابقة معقدة تزن كلاً من:
-* **نوع السؤال (Question Type) - 35%:** (فلسفي، علمي، عملي، إلخ).
-* **الكلمات المفتاحية (Keywords) - 25%:** مطابقة الكلمات ذات الدلالة العالية.
-* **الحالة المزاجية (Mood) - 20%:** (هادئ، علمي، ظريف).
-* **سياق الحوار (Conversation Context) - 15%.**
-* **أهمية الكيانات (Entity Importance) - 5%.**
-
-**الشخصيات المدمجة:**
-1. **الحكيم الودود (Sage Friend):** متعاطف، هادئ، هادئ النبرة، ويفصل في الأجوبة.
-2. **الباحث العلمي (Scientist):** رسمي، موضوعي، يعتمد على البيانات والأدلة والأرقام.
-3. **المرشد الظريف (Witty Mentor):** عملي، حيوي، فكاهي، يستخدم تعابير عامية خفيفة.
-
-### 4. رندرة التعبيرات وترجمة التتبع (Expression Renderer & Trace Translator)
-* يقوم النظام بدمج التعبيرات الخاصة باللغة المحددة والشخصية المنتقاة (التحيات، المداخل التمهيدية، والنهايات).
-* **ترجمة التتبع:** يتم ترجمة مسار الاستدلال بالكامل ديناميكياً للغة الهدف، بما في ذلك ترجمة أسماء الكيانات وعلاقات الاستدلال (مثل: `is_a` أو `lives_in`).
+1. **Direct Taxonomic Reasoning:** `"Is a lion an animal?"`
+2. **Inherited Multi-hop Deduction:** `"Is a lion a predator?"`
+3. **Fact Retrieval:** `"Where does a lion live?"`
+4. **Causal Hypotheticals (Analogical Mapping):** `"If a lion lived in the arctic, what would it require?"`
+   *(The system detects the polar climate, identifies a thermal insulation gap for a lion, looks up the polar bear's traits, maps the "thick fur" property to the lion, and shifts food properties).*
+5. **Deductive Comparison:** `"What is the difference between a lion and a polar bear?"`
 
 ---
 
-## 🔍 تحليل ومطابقة الميزات المتقدمة مع الخطة النظرية (Features Gap & Detailed Analysis)
+## 🧠 Advanced Implemented Features
 
-فيما يلي تحليل تقني مفصل يوضح حالة كل ميزة من الميزات الـ 8 المذكورة في الخطة النظرية مقارنة بالتطبيق الفعلي في الكود:
+This version includes robust features going beyond a standard MVP:
 
-| الميزة المتقدمة | الحالة الفعلية في الكود | مستوى الأهمية | الملفات والمسارات البرمجية المسؤولة عن التطبيق |
-| :--- | :---: | :---: | :--- |
-| **1. المحلل الصرفي العربي المتقدم (Morphological Analyzer)** | **موجود بالكامل (Fully Implemented)** | 🔴 عالية جداً | `src/graph_handler.py` (الدالة [dynamic_morphological_lookup](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)) و [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) |
-| **2. حل الغموض بالـ Spreading Activation** | **موجود بالكامل (Fully Implemented)** | 🔴 عالية جداً | `src/graph_handler.py` (الدالة [spreading_activation](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)) |
-| **3. نظام قواعد الاستدلال المتقدم (Inference Rules)** | **موجود بالكامل (Fully Implemented)** | 🟠 عالية | `src/graph_handler.py` (الدالة [infer_facts](file:///home/zean/Projects/TheOne/src/graph_handler.py#L585)) و [inference_rules.json](file:///home/zean/Projects/TheOne/data/inference_rules.json) |
-| **4. تحديث وتضارب المعرفة (Knowledge Update System)** | **موجود بالكامل (Fully Implemented)** | 🟠 عالية | `src/graph_handler.py` (الدالة [add_or_update_fact](file:///home/zean/Projects/TheOne/src/graph_handler.py#L65)) و `main.py` |
-| **5. التلقينة الكاملة لـ LLM (Prompt Template)** | **مستبعدة للتصميم الصوري (Design-Only / Not Needed at Runtime)** | 🟠 متوسطة | التلقين عند التشغيل محلي 100% رمزي رمزي بدون مخرجات الـ LLM |
-| **6. قاعدة بيانات المصطلحات والـ Lexicon المتقدم** | **موجود جزئياً (Partially Implemented)** | 🟡 منخفضة | [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) (الجذور واللواصق ومفردات اللغات) |
-| **7. حل الإحالات والضمائر (Entity Resolution)** | **موجود بالكامل (Fully Implemented / Heuristic)** | 🟠 متوسطة | `src/entity_resolver.py` (الكلاس [EntityResolver](file:///home/zean/Projects/TheOne/src/entity_resolver.py#L1)) و `src/conversation_manager.py` |
-| **8. رندرة وترجمة التتبع (Trace Chain Rendering)** | **موجود بالكامل (Fully Implemented)** | 🟡 منخفضة | `src/renderer/expression_renderer.py` (الدالة [translate_trace_step](file:///home/zean/Projects/TheOne/src/renderer/expression_renderer.py#L96)) |
+### 1. Conversation State & Entity Resolution
+The system tracks dialogue history in memory. If a question lacks an explicit subject but contains pronouns or implicit indicators (e.g., `"Where does it live?"` or `"What is its speed?"`), the system automatically resolves the pronoun references using the last active concept in `ConversationManager` and resumes deduction.
 
----
+### 2. Multi-World Sandbox & Real-time Fact Ingestion
+* **Context-Driven Sandbox:** The system recognizes scenario shifts from the input (e.g., `"In a fantasy world..."`) and clones the main graph into an isolated sandbox to run hypothetical reasoning.
+* **Zero-LLM Fact Ingestion:** When teaching the system a declarative statement (e.g., `"In a fantasy world, the sun rises from the west"`), the engine parses the sentence structure, extracts concepts/relations locally, and updates the graph without relying on an external AI model.
 
-### 🛠️ التفاصيل البرمجية وآلية العمل لكل ميزة:
+### 3. Conflict Resolution & Knowledge Update System
+When ingesting new facts that conflict with existing ones, the system uses a multi-tier resolution logic:
+* **Confidence Auto-Resolution:** If the confidence difference between the new fact and old fact is $> 0.3$, the higher-confidence fact is kept, and the other is archived.
+* **Interactive Resolution:** If the confidence difference is $< 0.3$, the CLI prompts the user to select whether to overwrite, merge, or ignore the new fact.
 
-#### 1. المحلل الصرفي العربي المتقدم (Morphological Analyzer)
-* **آلية العمل:** يقوم المحرك بفك وتفكيك الكلمات المركبة والصعبة ديناميكياً بدون تشفير صلب (Hardcoding).
-* **التطبيق البرمجي:** في الدالة `dynamic_morphological_lookup` داخل [graph_handler.py](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)، يتم قراءة اللواصق (Affixes) مثل السوابق (Prefixes) من أداوت التعريف، حروف الجر، وحروف العطف ("ال"، "و"، "في"، "بـ"، "لـ") واللواحق (Suffixes) كضمائر الملكية ونون الجمع ("ـه"، "ـها"، "ـهم"، "ـين"، "ـات") من ملف [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json#L18).
-* **خوارزمية التجريد التكراري (Iterative Stripping):** يقوم المحلل بتجريد الكلمة من السوابق واللواحق بشكل تكراري (مثال: "وبكتابهم" -> تجريد "و" ثم "بـ" ثم "هم" لتبقى كلمة "كتاب"). بعد ذلك يتم مطابقة الجذر أو الكلمة المجردة مع وسوم الكيانات (Concept Labels) أو مع الجذور والأنماط المعرفة في قاعدة اللغات المفهومية لتحديد المفهوم الصحيح في الرسم البياني للـ Graph.
+### 4. Spreading Activation (Semantic Disambiguation)
+If a word has multiple semantic meanings (e.g., homographs like `"عين"` which can mean `c_eye_human` or `c_spring_water`), the system triggers a Spreading Activation algorithm. Starting from the context concepts tracked in the active session, activation energy flows through adjacent nodes. The node accumulating the highest energy is selected as the correct meaning.
 
-#### 2. حل الغموض بالـ Spreading Activation (Semantic Coherence)
-* **الوضع الحالي:** **موجود بالكامل**. تم إدراج خوارزمية انتشار التنشيط السياقي لحل غموض الكلمات المتشابهة لفظياً (Homographs).
-* **آلية العمل:** عند استعلام المستخدم عن كلمة غامضة لفظياً (مثل "عين" التي قد تشير لـ `c_eye_human` أو `c_spring_water`)، يقوم المحلل بجمع كافة المرشحين المحتملين. بعد ذلك، يقوم بتشغيل دالة `spreading_activation` انطلاقاً من المفاهيم النشطة في سياق الحوار الأخير (المسترجعة من الذاكرة عبر `ConversationManager`). تنتشر شحنات التنشيط عبر العقد المجاورة في الرسم البياني للـ Graph (مع اضمحلال وتخفيض عند التراجع العكسي) لاحتساب المفهوم الأقرب دلالياً وسياقاً وتحديده كفاعل للعملية.
-
-#### 3. نظام قواعد الاستدلال المتقدم (Inference Rules)
-* **الوضع الحالي:** **موجود بالكامل**. تم إدراج محرك استدلال استنتاجي أمامي ديناميكي (Dynamic Forward Chaining Engine) يقف وراء كافة عمليات منطق المعرفة.
-* **آلية العمل:** بدلاً من برمجة مسارات الاستدلال صلباً في الكود، يقوم النظام بقراءة حزمة قواعد منطقية (Horn Clauses) معرّفة بنموذج شرطي مرن (Conditions & Conclusions) ومتغيرات (مثل `?x`, `?y`, `?z`) من ملف تكوين خارجي [inference_rules.json](file:///home/zean/Projects/TheOne/data/inference_rules.json).
-* **التطبيق البرمجي:** في الدالة `infer_facts` داخل [graph_handler.py](file:///home/zean/Projects/TheOne/src/graph_handler.py#L585)، يتم إجراء مطابقة أنماط استعلامية تراجعية `find_bindings` لاكتشاف الكيانات التي تلبي الشروط، وتوليد روابط جديدة من نوع `inferred` مؤقتاً في شبكة الـ Graph وحساب ثقتها التراكمية وصياغة سلاسل التتبع العربية المناظرة تلقائياً لكل دورة استدلال (حتى الوصول لمرحلة الاستقرار). وتصبح دوال الاستدلال في [simple_reasoner.py](file:///home/zean/Projects/TheOne/src/simple_reasoner.py) بسيطة وتعتمد على البحث المباشر في العلاقات المستنتجة.
-
-#### 4. نظام تحديث وتضارب المعرفة المتقدم (Knowledge Update & Conflict Resolution)
-* **آلية العمل:** مدمج بالكامل ويتبع بنية ثلاثية الطبقات مع تخزين دائم لكافة البيانات الوصفية (Metadata).
-* **التطبيق البرمجي:** في الدالة `add_or_update_fact` داخل [graph_handler.py](file:///home/zean/Projects/TheOne/src/graph_handler.py#L65):
-  * **تخزين البيانات الوصفية:** يتم إرفاق سمات متكاملة مع كل حافة (Edge) في الرسم البياني تشمل: معامل الثقة `confidence`، الطابع الزمني `timestamp`، المصدر `source`، سبب الإضافة `reason`، الحالة `status`، وتاريخ التحديثات `update_history`.
-  * **الطبقة الأولى (Auto-Resolution):** حل تلقائي بناءً على فارق الثقة. إذا كان الفارق بين ثقة المعلومة الجديدة والمعلومة القديمة أكبر من `0.3` لصالح الجديدة، يتم استبدال القديمة وتأشيرها في الأرشيف؛ وإذا كانت القديمة أعلى ثقة بفارق `0.3` يتم رفض الجديدة تلقائياً.
-  * **الطبقة الثانية (Smart Detection):** الكشف الذكي عن التعارض بين العالم النشط والعوالم الأخرى، وتحديد ما إذا كانت الخصائص متعارضة صورياً (مثل thin_fur مقابل thick_fur).
-  * **الطبقة الثالثة (User Confirmation):** في الوضع التفاعلي، إذا تقاربت قيم الثقة (الفارق أقل من `0.3`)، يتدخل النظام ويطرح خيارات تفاعلية صريحة على المستخدم في CLI (استبدال مع الأرشفة، دمج الصفتين معاً، أو تجاهل المضافة).
-
-#### 5. التلقينة الكاملة لـ LLM (System Prompt / Prompt Template)
-* **الوضع الحالي:** **مستبعدة برمجياً لعدم الحاجة في التشغيل**. يدعم النظام الحقيقي حالياً خاصية التعليم التلقائي محلياً 100% ودون الحاجة لأي استدعاء لنماذج لغة خارجية (Zero-LLM Fact Teaching).
-* **آلية العمل الفعلية:** يتم تفكيك الجمل الخبرية المدخلة من المستخدم (مثال: "في عالم خيالي الشمس تشرق من الغرب") رمزياً بواسطة دالة `parse_and_add_fact` في [world_manager.py](file:///home/zean/Projects/TheOne/src/world_manager.py#L77) التي تستخلص الكيانات وتحدد نوع العلاقة بالاعتماد على الجذور الصرفية للفعل (مثل شروق -> `rises_from` أو عيش -> `lives_in`) لتثبيتها مباشرة في الشبكة المنطقية.
-
-#### 6. قاعدة بيانات المصطلحات والـ Lexicon المتقدم
-* **الوضع الحالي:** **مطبق جزئياً**. يتم حفظ قاموس المصطلحات، القواعد الصرفية، سياقات الأسئلة، والترجمات للغات الأخرى في ملف [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json). يحتوي الملف على جذور صرفية وعلاقات ترجمة للغات الإنجليزية والفرنسية، ولكنه لا يحتوي على روابط شبكية متكاملة ومترابطة مثل شبكة الـ WordNet المتقدمة.
-
-#### 7. حل الكيانات والضمائر والإشارات (Advanced Entity Resolution)
-* **آلية العمل:** يعتمد خوارزمية ذكية لمطابقة الأنماط مع تتبع سياق الحوار النشط لحل الضمائر والمستترات.
-* **التطبيق البرمجي:** في كلاس [EntityResolver](file:///home/zean/Projects/TheOne/src/entity_resolver.py#L1):
-  1. يفحص المحرك ما إذا كان السؤال يحتوي على كيان صريح يمثل الفاعل.
-  2. إذا غاب الفاعل الصريح، يبحث المحلل عن روابط أو إحالات مثل الضمائر المنفصلة ("هو"، "هي") أو الضمائر المتصلة وحروف الإشارة وسياقات السؤال أو الأفعال التي تبدأ بياء المضارعة أو تاء التذكير ("يعيش"، "بياكل"، "يتحمل").
-  3. عند كشف الإحالة، يرجع النظام إلى ذاكرة الحوار النشطة في `ConversationManager` ويسترجع الكيان النشط الأخير (مثل `feline_carnivore` أو `polar_bear`) ويقوم بحقنه كفاعل رئيسي لتشغيل مسار الاستدلال.
-
-#### 8. ترجمة ورندرة مسار التتبع (Trace Chain Rendering / Trace Translator)
-* **آلية العمل:** يقوم النظام بتوليد تفاصيل التتبع ومسار الاستدلال باللغة الهدف للمستخدم (العربية، الإنجليزية، أو الفرنسية) بشكل تلقائي ودقيق.
-* **التطبيق البرمجي:** في كلاس `MultilingualExpressionRenderer` داخل [expression_renderer.py](file:///home/zean/Projects/TheOne/src/renderer/expression_renderer.py#L96):
-  * يتم توليد مسار التتبع المنطقي داخلياً باللغة العربية كمسار موحد أثناء عمل المحرك المنطقي الرمزي.
-  * إذا كانت لغة الرد المحددة هي الإنجليزية أو الفرنسية، تمر سلسلة التتبع بالكامل على مترجم الخطوات `translate_trace_step` والذي يستند إلى 24 نمطاً مسبقاً وتعبيرات منتظمة (Regular Expressions) لترجمة مسارات الاستدلال وربط الكيانات وعلاقاتها اللفظية (مثل `is_a` -> `is a subcategory of` أو `relation` -> `has property`) بدقة وبما يلائم السياق اللغوي للغة الهدف.
+### 5. Multilingual Persona Engine
+All responses are formatted based on three variables:
+* **Language (ar, en, fr, etc.):** Translated responses and logical trace chains.
+* **Persona Selection:** Dynamic assignment of one of three personas:
+  1. **Sage Friend:** Compassionate, thorough, calm, and friendly.
+  2. **Scientist:** Formal, data-driven, objective, and precise.
+  3. **Witty Mentor:** Engaging, energetic, humorous, and uses colloquial tags.
+* **Trace Translation:** Translates the graph's internal nodes and relationships (e.g., `is_a` $\to$ `is a subcategory of`) to match the selected output language.
 
 ---
 
-## 🛠️ التقنيات المستخدمة (Tech Stack)
+## 🔍 Detailed Feature Match & Gap Analysis
 
-* **لغة البرمجة الأساسية:** `Python 3.12+`
-* **إدارة شبكة المعرفة والرسوم البيانية:** `NetworkX`
-* **إطار عمل الاختبارات الآلية:** `pytest` (يحتوي على 25 اختبار شامل للنظام)
+| Feature | Implementation Status | Path / File Responsibility |
+| :--- | :---: | :--- |
+| **1. Morphological Analyzer** | **Fully Implemented** | `src/graph_handler.py` ([dynamic_morphological_lookup](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)), [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) |
+| **2. Spreading Activation** | **Fully Implemented** | `src/graph_handler.py` ([spreading_activation](file:///home/zean/Projects/TheOne/src/graph_handler.py#L484)) |
+| **3. Inference Rules** | **Fully Implemented** | `src/graph_handler.py` ([infer_facts](file:///home/zean/Projects/TheOne/src/graph_handler.py#L585)), [inference_rules.json](file:///home/zean/Projects/TheOne/data/inference_rules.json) |
+| **4. Knowledge Update & Conflicts** | **Fully Implemented** | `src/graph_handler.py` ([add_or_update_fact](file:///home/zean/Projects/TheOne/src/graph_handler.py#L65)), `main.py` |
+| **5. LLM Prompt Ingestion** | **Design-Only / Not Needed** | Replaced by 100% local, offline Zero-LLM symbolic fact parser |
+| **6. Lexicon & Mappings** | **Partially Implemented** | [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) (Roots, patterns, affixes, and translations) |
+| **7. Entity & Pronoun Resolution** | **Fully Implemented** | `src/entity_resolver.py` ([EntityResolver](file:///home/zean/Projects/TheOne/src/entity_resolver.py#L1)), `src/conversation_manager.py` |
+| **8. Trace Chain Translation** | **Fully Implemented** | `src/renderer/expression_renderer.py` ([translate_trace_step](file:///home/zean/Projects/TheOne/src/renderer/expression_renderer.py#L96)) |
+
+---
+
+## 🛠️ Technology Stack
+
+* **Programming Language:** `Python 3.12+`
+* **Knowledge Graph Engine:** `NetworkX`
+* **Testing Framework:** `pytest`

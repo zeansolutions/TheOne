@@ -16,7 +16,7 @@ class LanguageSelectionEngine:
             self.languages_config = languages_data
             
         self.languages = {lang["id"]: lang for lang in self.languages_config.get("languages", [])}
-        self.default_language = "ar"
+        self.default_language = "en"
     
     def detect_language(self, text):
         """

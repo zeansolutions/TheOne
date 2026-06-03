@@ -41,7 +41,7 @@ class MultilingualPersonaEngine:
         self.persona_selector = MultilingualPersonaSelector(self.personas_db, language=None)
         self.expression_renderer = MultilingualExpressionRenderer(self.personas_db, graph_handler)
         
-    def process_response(self, question, logical_response, conversation_history=None):
+    def process_response(self, question, logical_response, conversation_history=None, user_preference=None):
         """
         Runs the complete rendering pipeline:
         1. Detects input language.
@@ -53,7 +53,7 @@ class MultilingualPersonaEngine:
         detected_lang = self.language_engine.detect_language(question)
         selected_language = self.language_engine.select_language(
             detected_lang,
-            user_preference=None,
+            user_preference=user_preference,
             conversation_history=conversation_history
         )
         

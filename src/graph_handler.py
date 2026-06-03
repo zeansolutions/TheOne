@@ -78,13 +78,59 @@ class GraphHandler:
                     update_history=[]
                 )
 
-    def add_or_update_fact(self, subj, obj, relation, world, confidence=1.0, reason=None, interactive=False, modality=None):
+    def add_or_update_fact(self, subj, obj, relation, world, confidence=1.0, reason=None, interactive=False, modality=None, language="ar"):
         """
         Adds a new fact edge, or resolves conflicts if a fact already exists for (subj, relation, world)
         or if opposite properties are taught (e.g. thin_fur vs thick_fur).
         """
         import datetime
         timestamp = datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z")
+        
+        # Local translations dictionary for fact updates and interactive options
+        msgs = {
+            "ar": {
+                "added": "تم حفظ الحقيقة الجديدة: [{subj}] --({relation})--> [{obj}] في عالم '{world}'",
+                "identical": "المعلومة [{subj}] --({relation})--> [{obj}] موجودة بالفعل في عالم '{world}' (تم تحديث الثقة لـ {confidence}).",
+                "sandbox_replaced": "تم تسجيل الفرضية المؤقتة في عالم الافتراض: [{subj}] --({relation})--> [{obj}]",
+                "auto_replaced": "⚠️ تم تحديث الحقيقة تلقائياً لـ [{subj}] من [{old_obj}] إلى [{new_obj}] لأن ثقة المعلومة الجديدة أعلى بكثير ({confidence} مقابل {old_conf}).",
+                "auto_rejected": "⚠️ تم رفض الحقيقة الجديدة تلقائياً [{subj}] --({relation})--> [{new_obj}] لأن ثقة المعلومة الحالية أعلى بكثير ({old_conf} مقابل {confidence}).",
+                "conflict_title": "\n⚠️  [تعارض معلومات] الحقيقة الجديدة تتعارض مع حقيقة مسجلة في عالم '{world}'!",
+                "conflict_curr": "المعلومة الحالية: [{subj}] --({relation})--> [{old_obj}] (ثقة: {old_conf})",
+                "conflict_new": "المعلومة الجديدة: [{subj}] --({relation})--> [{new_obj}] (ثقة: {confidence})",
+                "conflict_choose": "الرجاء اختيار خيار الحل:",
+                "choice1": " 1. استبدال (احذف المعلومة القديمة واحفظ الجديدة مع تسجيل السابقة في الأرشيف)",
+                "choice2": " 2. دمج (احفظ المعلومة الجديدة إلى جانب القديمة)",
+                "choice3": " 3. تجاهل (ألغِ الإضافة الجديدة واحتفظ بالقديمة فقط)",
+                "select_prompt": "اختر رقم الحل (1-3): ",
+                "user_replaced": "تم استبدال المعلومة القديمة [{old_obj}] بالجديدة [{new_obj}] بناءً على اختيارك.",
+                "user_merged": "تم دمج المعلومتين معاً (أصبحت كل من [{old_obj}] و [{new_obj}] مسجلة لـ [{subj}]).",
+                "user_ignored": "تم تجاهل المعلومة الجديدة والاحتفاظ بـ [{old_obj}] بناءً على اختيارك.",
+                "non_interactive_rejected": "⚠️ تم تجاهل الحقيقة الجديدة [{subj}] --({relation})--> [{new_obj}] في عالم '{world}' افتراضياً لعدم وجود تفاعل بشري."
+            },
+            "en": {
+                "added": "New fact saved: [{subj}] --({relation})--> [{obj}] in world '{world}'",
+                "identical": "The fact [{subj}] --({relation})--> [{obj}] already exists in world '{world}' (confidence updated to {confidence}).",
+                "sandbox_replaced": "Temporary hypothesis recorded in sandbox world: [{subj}] --({relation})--> [{obj}]",
+                "auto_replaced": "⚠️ Fact automatically updated for [{subj}] from [{old_obj}] to [{new_obj}] because the new fact confidence is significantly higher ({confidence} vs {old_conf}).",
+                "auto_rejected": "⚠️ New fact automatically rejected [{subj}] --({relation})--> [{new_obj}] because the current fact confidence is significantly higher ({old_conf} vs {confidence}).",
+                "conflict_title": "\n⚠️ [Fact Conflict] The new fact conflicts with a recorded fact in world '{world}'!",
+                "conflict_curr": "Current fact: [{subj}] --({relation})--> [{old_obj}] (confidence: {old_conf})",
+                "conflict_new": "New fact: [{subj}] --({relation})--> [{new_obj}] (confidence: {confidence})",
+                "conflict_choose": "Please choose a resolution option:",
+                "choice1": " 1. Replace (delete the old fact and save the new one, archiving the previous one)",
+                "choice2": " 2. Merge (save the new fact alongside the old one)",
+                "choice3": " 3. Ignore (cancel the new addition and keep only the old one)",
+                "select_prompt": "Choose resolution option (1-3): ",
+                "user_replaced": "The old fact [{old_obj}] has been replaced by the new one [{new_obj}] based on your choice.",
+                "user_merged": "Both facts have been merged (both [{old_obj}] and [{new_obj}] are now registered for [{subj}]).",
+                "user_ignored": "The new fact has been ignored, keeping [{old_obj}] based on your choice.",
+                "non_interactive_rejected": "⚠️ New fact [{subj}] --({relation})--> [{new_obj}] in world '{world}' was ignored by default due to lack of human interaction."
+            }
+        }
+        
+        # Get active translation dictionary
+        lang = language if language in msgs else "en"
+        tr = msgs[lang]
         
         if modality:
             from src.enrichment.fuzzy_modal import FuzzyModalEngine
@@ -99,7 +145,7 @@ class GraphHandler:
                     to_remove.append((u, v, key))
             for u, v, key in to_remove:
                 self.graph.remove_edge(u, v, key=key)
-
+ 
         # 1. Identify opposite properties
         OPPOSITE_PROPERTIES = {
             ("thin_fur", "thick_fur"),
@@ -140,7 +186,7 @@ class GraphHandler:
             return {
                 "success": True,
                 "status": "added",
-                "message": f"تم حفظ الحقيقة الجديدة: [{subj_lbl}] --({relation})--> [{obj_lbl}] في عالم '{world}'"
+                "message": tr["added"].format(subj=subj_lbl, relation=relation, obj=obj_lbl, world=world)
             }
             
         # 4. We found one or more existing/conflicting edges. Let's process the first one.
@@ -163,7 +209,7 @@ class GraphHandler:
             return {
                 "success": True,
                 "status": "identical",
-                "message": f"المعلومة [{subj_lbl}] --({relation})--> [{obj_lbl}] موجودة بالفعل في عالم '{world}' (تم تحديث الثقة لـ {confidence})."
+                "message": tr["identical"].format(subj=subj_lbl, relation=relation, obj=obj_lbl, world=world, confidence=confidence)
             }
             
         # Contradiction detected! (v != obj for a functional relation, or opposite properties)
@@ -178,7 +224,7 @@ class GraphHandler:
                 world=world,
                 confidence=confidence,
                 type="fact",
-                reason=reason or "افتراض افتراضي مؤقت في الساندبوكس",
+                reason=reason or ("Temporary hypothesis" if language == "en" else "افتراض افتراضي مؤقت في الساندبوكس"),
                 timestamp=timestamp,
                 source="sandbox_temp",
                 status="active",
@@ -190,7 +236,7 @@ class GraphHandler:
             return {
                 "success": True,
                 "status": "sandbox_replaced",
-                "message": f"تم تسجيل الفرضية المؤقتة في عالم الافتراض: [{subj_lbl}] --({relation})--> [{obj_lbl}]"
+                "message": tr["sandbox_replaced"].format(subj=subj_lbl, relation=relation, obj=obj_lbl)
             }
             
         # Tier 1: Auto-Resolution based on confidence difference
@@ -231,7 +277,7 @@ class GraphHandler:
             return {
                 "success": True,
                 "status": "auto_replaced",
-                "message": f"⚠️ تم تحديث الحقيقة تلقائياً لـ [{subj_lbl}] من [{old_obj_lbl}] إلى [{new_obj_lbl}] لأن ثقة المعلومة الجديدة أعلى بكثير ({confidence} مقابل {old_conf})."
+                "message": tr["auto_replaced"].format(subj=subj_lbl, old_obj=old_obj_lbl, new_obj=new_obj_lbl, confidence=confidence, old_conf=old_conf)
             }
             
         elif confidence < old_conf - 0.3:
@@ -242,7 +288,7 @@ class GraphHandler:
             return {
                 "success": True,
                 "status": "auto_rejected",
-                "message": f"⚠️ تم رفض الحقيقة الجديدة تلقائياً [{subj_lbl}] --({relation})--> [{new_obj_lbl}] لأن ثقة المعلومة الحالية أعلى بكثير ({old_conf} مقابل {confidence})."
+                "message": tr["auto_rejected"].format(subj=subj_lbl, relation=relation, new_obj=new_obj_lbl, old_conf=old_conf, confidence=confidence)
             }
             
         # Tier 3: Interactive Confirmation or Fallback
@@ -252,18 +298,18 @@ class GraphHandler:
             old_obj_lbl = self.graph.nodes[v].get("labels", [v])[0]
             new_obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
             
-            print(f"\n⚠️  [تعارض معلومات] الحقيقة الجديدة تتعارض مع حقيقة مسجلة في عالم '{world}'!")
-            print(f"المعلومة الحالية: [{subj_lbl}] --({data.get('relation')})--> [{old_obj_lbl}] (ثقة: {old_conf})")
-            print(f"المعلومة الجديدة: [{subj_lbl}] --({relation})--> [{new_obj_lbl}] (ثقة: {confidence})")
+            print(tr["conflict_title"].format(world=world))
+            print(tr["conflict_curr"].format(subj=subj_lbl, relation=data.get('relation'), old_obj=old_obj_lbl, old_conf=old_conf))
+            print(tr["conflict_new"].format(subj=subj_lbl, relation=relation, new_obj=new_obj_lbl, confidence=confidence))
             print("-" * 50)
-            print("الرجاء اختيار خيار الحل:")
-            print(" 1. استبدال (احذف المعلومة القديمة واحفظ الجديدة مع تسجيل السابقة في الأرشيف)")
-            print(" 2. دمج (احفظ المعلومة الجديدة إلى جانب القديمة)")
-            print(" 3. تجاهل (ألغِ الإضافة الجديدة واحتفظ بالقديمة فقط)")
+            print(tr["conflict_choose"])
+            print(tr["choice1"])
+            print(tr["choice2"])
+            print(tr["choice3"])
             
             choice = ""
             while choice not in ["1", "2", "3"]:
-                choice = input("اختر رقم الحل (1-3): ").strip()
+                choice = input(tr["select_prompt"]).strip()
                 
             if choice == "1":
                 # Replace
@@ -296,7 +342,7 @@ class GraphHandler:
                 return {
                     "success": True,
                     "status": "replaced",
-                    "message": f"تم استبدال المعلومة القديمة [{old_obj_lbl}] بالجديدة [{new_obj_lbl}] بناءً على اختيارك."
+                    "message": tr["user_replaced"].format(old_obj=old_obj_lbl, new_obj=new_obj_lbl)
                 }
             elif choice == "2":
                 # Add both (Merge)
@@ -317,14 +363,14 @@ class GraphHandler:
                 return {
                     "success": True,
                     "status": "merged",
-                    "message": f"تم دمج المعلومتين معاً (أصبحت كل من [{old_obj_lbl}] و [{new_obj_lbl}] مسجلة لـ [{subj_lbl}])."
+                    "message": tr["user_merged"].format(old_obj=old_obj_lbl, new_obj=new_obj_lbl, subj=subj_lbl)
                 }
             else:
                 # Cancel/Ignore
                 return {
                     "success": True,
                     "status": "ignored",
-                    "message": f"تم تجاهل المعلومة الجديدة والاحتفاظ بـ [{old_obj_lbl}] بناءً على اختيارك."
+                    "message": tr["user_ignored"].format(old_obj=old_obj_lbl)
                 }
         else:
             # Fallback for non-interactive (tests): reject/keep old
@@ -334,7 +380,7 @@ class GraphHandler:
             return {
                 "success": True,
                 "status": "non_interactive_rejected",
-                "message": f"⚠️ تم تجاهل الحقيقة الجديدة [{subj_lbl}] --({relation})--> [{new_obj_lbl}] في عالم '{world}' افتراضياً لعدم وجود تفاعل بشري."
+                "message": tr["non_interactive_rejected"].format(subj=subj_lbl, relation=relation, new_obj=new_obj_lbl, world=world)
             }
 
     def set_active_world(self, world_name):
