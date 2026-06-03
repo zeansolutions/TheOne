@@ -13,3 +13,6 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Private files
+/for me/
