@@ -1,0 +1,41 @@
+{
+  "weights": {
+    "always": 1.0,
+    "usually": 0.8,
+    "sometimes": 0.5,
+    "rarely": 0.2,
+    "possibly": 0.1
+  },
+  "keywords": {
+    "ar": {
+      "دائما": "always",
+      "دائماً": "always",
+      "عادة": "usually",
+      "عادةً": "usually",
+      "غالبا": "usually",
+      "غالباً": "usually",
+      "احيانا": "sometimes",
+      "أحياناً": "sometimes",
+      "نادرا": "rarely",
+      "نادراً": "rarely",
+      "ممكن": "possibly",
+      "محتمل": "possibly"
+    },
+    "en": {
+      "always": "always",
+      "usually": "usually",
+      "often": "usually",
+      "sometimes": "sometimes",
+      "rarely": "rarely",
+      "possibly": "possibly"
+    },
+    "fr": {
+      "toujours": "always",
+      "habituellement": "usually",
+      "souvent": "usually",
+      "parfois": "sometimes",
+      "rarement": "rarely",
+      "possiblement": "possibly"
+    }
+  }
+}

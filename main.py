@@ -111,6 +111,13 @@ def teach_system(handler):
         print(f"خطأ أثناء التعليم: {e}")
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="TheOne Neuro-Symbolic AI CLI")
+    parser.add_argument("--trace-level", type=str, choices=["detailed", "minimal"], default="detailed", help="Trace level verbosity")
+    args = parser.parse_args()
+    
+    trace_level = args.trace_level
+
     # 1. Initialize databases
     handler = GraphHandler()
     
@@ -151,7 +158,10 @@ def main():
             selected_lang = persona_engine.language_engine.select_language(detected_lang)
             
             # 2. Logical reasoning
+            import time
+            start_time = time.perf_counter()
             res = reasoner.process_query(query, interactive=True, language=selected_lang)
+            elapsed_ms = (time.perf_counter() - start_time) * 1000.0
             
             # 3. Multilingual Persona response generation
             history = reasoner.conversation_manager.get_history()
@@ -166,11 +176,13 @@ def main():
             print(f"الرد النهائي / Final Response:\n👉 {response}")
             print("=" * 50)
             
-            # Print logical trace
-            formatted_trace = persona_engine.expression_renderer.format_trace(res.get("trace", []), lang)
-            print(formatted_trace)
-            print(f"🎯 معامل اليقين/الثقة / Confidence: {res.get('confidence', 1.0):.2f}")
-            print("=" * 50)
+            # Print logical trace and performance if trace level is detailed
+            if trace_level == "detailed":
+                formatted_trace = persona_engine.expression_renderer.format_trace(res.get("trace", []), lang)
+                print(formatted_trace)
+                print(f"🎯 معامل اليقين/الثقة / Confidence: {res.get('confidence', 1.0):.2f}")
+                print(f"[PERF] Processing took {elapsed_ms:.2f}ms")
+                print("=" * 50)
             
         elif choice == "2":
             show_graph(handler)

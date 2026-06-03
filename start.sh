@@ -30,13 +30,19 @@ show_help() {
     echo -e "             - اختيار ديناميكي للشخصية المناسبة (الحكيم، الباحث، المرشد)"
     echo -e "             - تذكر سياق الكيانات والضمائر عبر اللغات المختلفة"
     echo -e "             - حل تعارض الحقائق التفاعلي والتعلم اللحظي للحقائق"
+    echo -e "  ${GREEN}sleep${NC}    : تشغيل دورة النوم المعرفية لتنظيف وتحسين شبكة المعرفة (Cognitive Sleep Cycle)"
+    echo -e "             - يدعم خيارات: --depth=2 --cleanup"
+    echo -e "  ${GREEN}curious${NC}  : تشغيل محرك الفضول المعرفي لرصد الفجوات المعرفية وتوليد الأسئلة (Curiosity Engine)"
+    echo -e "             - يدعم خيارات: --limit=5 --lang=ar"
     echo -e "  ${GREEN}test${NC}     : تشغيل اختبارات التحقق الآلية الكاملة (Run pytest Suite)"
-    echo -e "             - يختبر 25 سيناريو تشمل استدلال الصرف والمنطق والتعارض واللغات المتعددة والشخصيات"
+    echo -e "             - يختبر 32 سيناريو تشمل استدلال الصرف والمنطق والتعارض واللغات المتعددة والشخصيات"
     echo -e "  ${GREEN}setup${NC}    : تهيئة البيئة الافتراضية وتثبيت المكتبات المطلوبة (Initialize venv)"
     echo -e "  ${GREEN}help${NC}     : عرض دليل التعليمات الحالي (Display this help menu)"
     echo ""
     echo -e "${YELLOW}أمثلة (Examples):${NC}"
     echo -e "  ./start.sh run"
+    echo -e "  ./start.sh sleep --depth=2 --cleanup"
+    echo -e "  ./start.sh curious --limit=3"
     echo -e "  ./start.sh test"
     echo -e "${BLUE}======================================================================${NC}"
 }
@@ -74,6 +80,26 @@ case "$1" in
         echo -e "${BLUE}[+] جاري تشغيل واجهة التيرمينال التفاعلية لعقل منطقي...${NC}"
         echo ""
         PYTHONPATH=. ./venv/bin/python main.py
+        ;;
+    sleep)
+        show_banner
+        if [ ! -d "venv" ]; then
+            echo -e "${YELLOW}[!] البيئة الافتراضية غير مهيأة بعد. جاري التشغيل التلقائي للتنصيب...${NC}"
+            setup_env
+        fi
+        echo -e "${BLUE}[+] جاري تشغيل دورة النوم المعرفية...${NC}"
+        echo ""
+        PYTHONPATH=. ./venv/bin/python sleep.py "${@:2}"
+        ;;
+    curious|curiosity)
+        show_banner
+        if [ ! -d "venv" ]; then
+            echo -e "${YELLOW}[!] البيئة الافتراضية غير مهيأة بعد. جاري التشغيل التلقائي للتنصيب...${NC}"
+            setup_env
+        fi
+        echo -e "${BLUE}[+] جاري تشغيل محرك الفضول المعرفي...${NC}"
+        echo ""
+        PYTHONPATH=. ./venv/bin/python curious.py "${@:2}"
         ;;
     test)
         show_banner

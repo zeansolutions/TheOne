@@ -79,7 +79,11 @@ class WorldManager:
         Dynamically extracts a fact from clean statement text and saves it in the Graph.
         Expected format: [Subject] [Relation Verb] [Object] (e.g. "الأسد يعيش في القطب" or "الشمس تشرق من تحت الأرض")
         """
-        raw_words = text.strip().split()
+        from src.enrichment.fuzzy_modal import FuzzyModalEngine
+        modal_engine = FuzzyModalEngine()
+        modality, cleaned_text = modal_engine.detect_modality(text, language)
+
+        raw_words = cleaned_text.strip().split()
         words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "") for w in raw_words]
         if language in ["en", "fr"]:
             words = [w.lower() for w in words]
@@ -132,7 +136,8 @@ class WorldManager:
                 relation=relation,
                 world=world,
                 confidence=1.0,
-                interactive=interactive
+                interactive=interactive,
+                modality=modality
             )
             
             return {

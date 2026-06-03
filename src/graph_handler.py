@@ -12,6 +12,11 @@ class GraphHandler:
 
     def load_databases(self, ontology_path, facts_path, language_rules_path, inference_rules_path=None):
         """Loads and parses JSON databases, populating the NetworkX graph and dynamic rules."""
+        self.ontology_path = ontology_path
+        self.facts_path = facts_path
+        self.language_rules_path = language_rules_path
+        self.inference_rules_path = inference_rules_path
+        
         # 1. Load Language Rules
         with open(language_rules_path, 'r', encoding='utf-8') as f:
             self.language_rules = json.load(f)
@@ -73,7 +78,7 @@ class GraphHandler:
                     update_history=[]
                 )
 
-    def add_or_update_fact(self, subj, obj, relation, world, confidence=1.0, reason=None, interactive=False):
+    def add_or_update_fact(self, subj, obj, relation, world, confidence=1.0, reason=None, interactive=False, modality=None):
         """
         Adds a new fact edge, or resolves conflicts if a fact already exists for (subj, relation, world)
         or if opposite properties are taught (e.g. thin_fur vs thick_fur).
@@ -81,6 +86,20 @@ class GraphHandler:
         import datetime
         timestamp = datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z")
         
+        if modality:
+            from src.enrichment.fuzzy_modal import FuzzyModalEngine
+            modal_engine = FuzzyModalEngine()
+            mult = modal_engine.get_confidence_multiplier(modality)
+            confidence = confidence * mult
+        
+        if self.graph.graph.get("is_sandbox"):
+            to_remove = []
+            for u, v, key, data in list(self.graph.out_edges(subj, data=True, keys=True)):
+                if data.get("relation") == relation:
+                    to_remove.append((u, v, key))
+            for u, v, key in to_remove:
+                self.graph.remove_edge(u, v, key=key)
+
         # 1. Identify opposite properties
         OPPOSITE_PROPERTIES = {
             ("thin_fur", "thick_fur"),
@@ -113,7 +132,8 @@ class GraphHandler:
                 timestamp=timestamp,
                 source="user_interactive" if interactive else "automated",
                 status="active",
-                update_history=[]
+                update_history=[],
+                modality=modality
             )
             subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
             obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
@@ -135,6 +155,8 @@ class GraphHandler:
             data["reason"] = reason or data.get("reason")
             data["timestamp"] = timestamp
             data["source"] = "user_interactive" if interactive else data.get("source", "database")
+            if modality:
+                data["modality"] = modality
             
             subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
             obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
@@ -147,6 +169,30 @@ class GraphHandler:
         # Contradiction detected! (v != obj for a functional relation, or opposite properties)
         old_conf = data.get("confidence", 1.0)
         
+        if self.graph.graph.get("is_sandbox"):
+            self.graph.remove_edge(u, v, key=key)
+            self.graph.add_edge(
+                subj,
+                obj,
+                relation=relation,
+                world=world,
+                confidence=confidence,
+                type="fact",
+                reason=reason or "افتراض افتراضي مؤقت في الساندبوكس",
+                timestamp=timestamp,
+                source="sandbox_temp",
+                status="active",
+                update_history=[],
+                modality=modality
+            )
+            subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
+            obj_lbl = self.graph.nodes[obj].get("labels", [obj])[0]
+            return {
+                "success": True,
+                "status": "sandbox_replaced",
+                "message": f"تم تسجيل الفرضية المؤقتة في عالم الافتراض: [{subj_lbl}] --({relation})--> [{obj_lbl}]"
+            }
+            
         # Tier 1: Auto-Resolution based on confidence difference
         if confidence > old_conf + 0.3:
             # Auto-replace
@@ -175,7 +221,8 @@ class GraphHandler:
                 timestamp=timestamp,
                 source="user_interactive" if interactive else "automated",
                 status="active",
-                update_history=new_history
+                update_history=new_history,
+                modality=modality
             )
             
             subj_lbl = self.graph.nodes[subj].get("labels", [subj])[0]
@@ -243,7 +290,8 @@ class GraphHandler:
                     timestamp=timestamp,
                     source="user_interactive",
                     status="active",
-                    update_history=new_history
+                    update_history=new_history,
+                    modality=modality
                 )
                 return {
                     "success": True,
@@ -263,7 +311,8 @@ class GraphHandler:
                     timestamp=timestamp,
                     source="user_interactive",
                     status="active",
-                    update_history=[]
+                    update_history=[],
+                    modality=modality
                 )
                 return {
                     "success": True,
@@ -602,15 +651,51 @@ class GraphHandler:
         Applies rules in self.inference_rules to derive new edges of type 'inferred'
         and stores them in the NetworkX graph.
         """
+        import time
+        start_time = time.perf_counter()
+        
         # 1. Clear previous inferred edges for the active world to prevent duplicate build-up
         inferred_edges = [(u, v, k) for u, v, k, d in list(self.graph.edges(keys=True, data=True)) 
                           if d.get("type") == "inferred" and d.get("world") == active_world]
         self.graph.remove_edges_from(inferred_edges)
         
+        # Instantiate TransitiveChainingEngine
+        from src.reasoner.transitive_chaining import TransitiveChainingEngine
+        transitive_engine = TransitiveChainingEngine(self)
+        
         iteration = 0
         while iteration < max_iterations:
             new_edges_added = False
             
+            # Phase A: General Relation-Agnostic Transitive Chaining
+            t_start = time.perf_counter()
+            transitive_inferences = transitive_engine.apply_transitive_rules(active_world)
+            t_elapsed = (time.perf_counter() - t_start) * 1000.0
+            
+            for sub, rel, obj, conf, desc in transitive_inferences:
+                # Check if this edge already exists
+                exists = False
+                for _, target, data in self.graph.out_edges(sub, data=True):
+                    if target == obj and data.get("relation") == rel:
+                        if data.get("type") == "relation" or (data.get("type") in ["fact", "inferred"] and data.get("world") == active_world):
+                            exists = True
+                            break
+                if not exists:
+                    self.graph.add_edge(
+                        sub,
+                        obj,
+                        relation=rel,
+                        world=active_world,
+                        confidence=conf,
+                        type="inferred",
+                        rule_id=f"transitive_{rel}",
+                        reason=desc,
+                        timestamp="2026-06-03T00:00:00Z",
+                        source="transitive_chaining_engine"
+                    )
+                    new_edges_added = True
+            
+            # Phase B: Existing forward-chaining rules
             for rule in self.inference_rules:
                 rule_id = rule["id"]
                 conditions = rule["conditions"]
@@ -698,6 +783,74 @@ class GraphHandler:
             if not new_edges_added:
                 break
             iteration += 1
+            
+        elapsed = (time.perf_counter() - start_time) * 1000.0
+        # Print performance trace
+        # print(f"[PERF] Inference Engine took {elapsed:.2f}ms")
+
+    def save_databases(self, ontology_path=None, facts_path=None):
+        """
+        Saves the in-memory graph representation back to JSON database files.
+        """
+        if ontology_path is None:
+            ontology_path = getattr(self, "ontology_path", "data/animals_ontology_small.json")
+        if facts_path is None:
+            facts_path = getattr(self, "facts_path", "data/animals_facts.json")
+
+        # 1. Prepare Ontology Structure
+        concepts = []
+        for node, data in self.graph.nodes(data=True):
+            if data.get("type") == "concept":
+                concepts.append({
+                    "id": node,
+                    "labels": data.get("labels", []),
+                    "category": data.get("category", "")
+                })
+
+        relations = []
+        for u, v, data in self.graph.edges(data=True):
+            if data.get("type") == "relation":
+                relations.append({
+                    "from": u,
+                    "to": v,
+                    "relation": data.get("relation"),
+                    "causal_purpose": data.get("causal_purpose", None)
+                })
+
+        ontology_data = {
+            "concepts": concepts,
+            "relations": relations,
+            "inference_rules": self.graph.graph.get("inference_rules", [])
+        }
+
+        # 2. Prepare Facts Structure
+        facts = []
+        for u, v, data in self.graph.edges(data=True):
+            if data.get("type") == "fact":
+                fact_entry = {
+                    "subject": u,
+                    "predicate": data.get("relation"),
+                    "object": v,
+                    "world": data.get("world", "reality"),
+                    "confidence": data.get("confidence", 1.0)
+                }
+                if data.get("reason"):
+                    fact_entry["reason"] = data["reason"]
+                if data.get("modality"):
+                    fact_entry["modality"] = data["modality"]
+                facts.append(fact_entry)
+
+        facts_data = {
+            "facts": facts,
+            "personas": self.personas
+        }
+
+        # Write to files
+        with open(ontology_path, 'w', encoding='utf-8') as f:
+            json.dump(ontology_data, f, ensure_ascii=False, indent=2)
+
+        with open(facts_path, 'w', encoding='utf-8') as f:
+            json.dump(facts_data, f, ensure_ascii=False, indent=2)
 
     def get_persona(self, persona_id="persona_1"):
         for p in self.personas:

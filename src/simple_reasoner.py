@@ -200,7 +200,93 @@ class SimpleReasoner:
         trace.append("لم نجد أي كائن مماثل يعيش في تلك البيئة ولديه الخاصية المطلوبة لقياسها")
         return {"success": False, "trace": trace}
 
+    def detect_conditional_and_query(self, query: str, language: str) -> tuple:
+        """
+        Detects if query contains conditional particles (like لو, إذا, if, etc.).
+        Returns (is_conditional, premise_text, question_text).
+        """
+        words = query.strip().split()
+        cleaned_words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "") for w in words]
+        
+        conditionals = {
+            "ar": ["لو", "إذا", "اذا", "افترض"],
+            "en": ["if", "assume", "suppose"],
+            "fr": ["si", "supposons", "suppose"]
+        }
+        
+        lang_conds = conditionals.get(language, conditionals["ar"])
+        is_conditional = any(c in cleaned_words for c in lang_conds) or any(c in query for c in ["لو كان", "إذا كان", "اذا كان"])
+        
+        if not is_conditional:
+            return False, "", query
+            
+        import re
+        parts = re.split(r'[،,;\?؟]', query)
+        parts = [p.strip() for p in parts if p.strip()]
+        
+        if len(parts) >= 2:
+            premise = parts[0]
+            question = " ".join(parts[1:])
+        else:
+            premise = query
+            question = query
+            
+        # Clean premise from conditional words
+        for cond in lang_conds + ["كان", "افترضنا", "أن", "ان", "assumed", "we assume"]:
+            premise = re.sub(rf'\b{cond}\b', '', premise).strip()
+            
+        return True, premise, question
+
     def process_query(self, query, interactive=False, language=None):
+        """
+        Wrapper that detects conditional thought experiments (sandbox)
+        and executes query inside the sandbox or directly.
+        """
+        # Detect and set language if not provided
+        if language is None:
+            if self.language_engine:
+                detected = self.language_engine.detect_language(query)
+                language = self.language_engine.select_language(detected)
+            else:
+                language = "ar"
+
+        # Check for conditional
+        is_cond, premise, question = self.detect_conditional_and_query(query, language)
+        
+        if is_cond:
+            from src.reasoner.sandbox_manager import SandboxManager
+            sandbox = SandboxManager(self.handler)
+            sandbox.enter_sandbox(premise)
+            
+            sandbox_trace = [
+                f"[SANDBOX] دخول عالم الافتراض للسيناريو: '{premise}'",
+                f"[SANDBOX] استنساخ الرسم البياني المعرفي بأكمله بشكل آمن"
+            ]
+            
+            try:
+                # Add the temporary fact to the sandbox graph
+                teach_res = self.world_manager.parse_and_add_fact(premise, self.handler.active_world, interactive=False, language=language)
+                if teach_res.get("success"):
+                    sandbox_trace.append(f"[SANDBOX] إضافة حقيقة افتراضية مؤقتة: {teach_res.get('msg')}")
+                else:
+                    sandbox_trace.append(f"[SANDBOX] لم نتمكن من تلقين الفرضية الافتراضية بشكل كامل: {premise}")
+                
+                # Now run the reasoner pipeline on the original query
+                res = self._process_query_internal(query, interactive, language)
+                
+                # Add sandbox trace to the result
+                res["trace"] = sandbox_trace + [f"[SANDBOX] تشغيل الاستدلال الاستنتاجي التناظري..."] + res.get("trace", []) + [
+                    f"[SANDBOX] الخروج من عالم الافتراض واستعادة الرسم البياني الأصلي بأمان"
+                ]
+                res["is_sandbox"] = True
+                res["scenario"] = premise
+                return res
+            finally:
+                sandbox.exit_sandbox()
+        else:
+            return self._process_query_internal(query, interactive, language)
+
+    def _process_query_internal(self, query, interactive=False, language=None):
         """
         Pipeline: Parsing -> Dynamic Morphological Lookup -> Logical Reasoning.
         Supports 5 dynamic queries, multi-world state, dynamic fact teaching, and dialog context.
