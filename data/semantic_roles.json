@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "semantic_frames": {
+    "hunting": {
+      "predicate": "افترس",
+      "roles": [
+        {
+          "role_type": "AGENT",
+          "description": "الفاعل الذي يقوم بالافتراس",
+          "required": true,
+          "examples": ["أسد", "نمر", "حيوان مفترس"],
+          "constraints": ["is_a:carnivore"]
+        },
+        {
+          "role_type": "PATIENT",
+          "description": "الموضوع الذي يتم افتراسه",
+          "required": true,
+          "examples": ["غزال", "أرنب", "فريسة"],
+          "constraints": ["is_a:prey"]
+        },
+        {
+          "role_type": "LOCATION",
+          "description": "المكان الذي يحدث فيه الافتراس",
+          "required": false,
+          "examples": ["غابة", "صحراء", "مكان"]
+        },
+        {
+          "role_type": "TIME",
+          "description": "الزمن الذي يحدث فيه الافتراس",
+          "required": false,
+          "examples": ["ليلاً", "نهاراً", "يومياً"]
+        }
+      ]
+    },
+    "eating": {
+      "predicate": "يأكل",
+      "roles": [
+        {
+          "role_type": "AGENT",
+          "required": true,
+          "constraints": ["is_a:living_thing", "is_a:animal"]
+        },
+        {
+          "role_type": "PATIENT",
+          "required": true,
+          "constraints": ["is_a:food", "is_a:animal", "is_a:plant"]
+        },
+        {
+          "role_type": "LOCATION",
+          "required": false
+        },
+        {
+          "role_type": "TIME",
+          "required": false
+        }
+      ]
+    }
+  }
+}

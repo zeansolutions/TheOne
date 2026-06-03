@@ -6,6 +6,18 @@ from src.conversation_manager import ConversationManager
 from src.entity_resolver import EntityResolver
 from src.manager.language_selection_engine import LanguageSelectionEngine
 
+# Import 10 Advanced Cognitive Reasoning Processors
+from src.reasoner.semantic_processor import SemanticProcessor
+from src.reasoner.temporal_processor import TemporalProcessor
+from src.reasoner.modality_processor import ModalityProcessor
+from src.reasoner.chain_processor import ChainProcessor
+from src.reasoner.quantifier_processor import QuantifierProcessor
+from src.reasoner.negation_processor import NegationProcessor
+from src.reasoner.entailment_processor import EntailmentProcessor
+from src.reasoner.pragmatic_processor import PragmaticProcessor
+from src.reasoner.comparison_processor import ComparisonProcessor
+from src.reasoner.anomaly_processor import AnomalyProcessor
+
 class SimpleReasoner:
     def __init__(self, graph_handler):
         self.handler = graph_handler
@@ -13,6 +25,18 @@ class SimpleReasoner:
         self.entity_resolver = EntityResolver(self.conversation_manager, self.handler)
         self.world_manager = WorldManager(self.handler)
         self.conflict_resolver = ConflictResolver(self.handler)
+        
+        # Instantiate the 10 Cognitive Processors
+        self.semantic_processor = SemanticProcessor()
+        self.temporal_processor = TemporalProcessor()
+        self.modality_processor = ModalityProcessor()
+        self.chain_processor = ChainProcessor()
+        self.quantifier_processor = QuantifierProcessor()
+        self.negation_processor = NegationProcessor()
+        self.entailment_processor = EntailmentProcessor()
+        self.pragmatic_processor = PragmaticProcessor()
+        self.comparison_processor = ComparisonProcessor()
+        self.anomaly_processor = AnomalyProcessor()
         
         # Load language engine
         project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -344,6 +368,19 @@ class SimpleReasoner:
                 if idx == len(parts) - 1:
                     return last_result
             else:
+                prag_trace = []
+                pragmatic_res = self.pragmatic_processor.resolve_metaphor(part)
+                if pragmatic_res:
+                    metaphor = pragmatic_res["metaphor"]
+                    literal = pragmatic_res["literal"]
+                    literal_lbl = self.handler.graph.nodes[literal].get("labels", [literal])[0] if literal in self.handler.graph else literal
+                    part = part.replace(metaphor, literal_lbl)
+                    raw_words = part.strip().split()
+                    words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "") for w in raw_words]
+                    if language in ["en", "fr"]:
+                        words = [w.lower() for w in words]
+                    prag_trace.append(f"[PRAGMATICS] تم حل المجاز/الاستعارة '{metaphor}' إلى المعنى الحرفي '{literal_lbl}'")
+
                 # Gather active context concepts from conversation history
                 context_concepts = []
                 for turn in self.conversation_manager.history[-3:]:
@@ -365,7 +402,182 @@ class SimpleReasoner:
                 # Record turn in conversation manager
                 self.conversation_manager.record_turn(part, mapped_concepts)
                 
-                # 1. Custom celestial/direction query handling for astronomical world questions
+                # 1. Anomaly & Exception Detection (Level 10)
+                for concept in mapped_concepts:
+                    if concept == "feline_carnivore" and any(w in words for w in ["نباتي", "نبات"]):
+                        anomaly_res = self.anomaly_processor.check_anomaly("feline_carnivore", "has_property", "eats_vegetarian")
+                        if anomaly_res:
+                            return {
+                                "type": "anomaly",
+                                "result": True,
+                                "entity": "feline_carnivore",
+                                "anomaly_type": anomaly_res["anomaly_type"],
+                                "anomaly_score": anomaly_res["anomaly_score"],
+                                "reason": anomaly_res["reason"],
+                                "typical_rule": anomaly_res["typical_rule"],
+                                "trace": prag_trace + [f"كشف الشذوذ: البحث عن استثناءات للـ feline_carnivore", f"العثور على استثناء: {anomaly_res['anomaly_type']}"],
+                                "confidence": anomaly_res["anomaly_score"]
+                            }
+
+                # 2. Comparison & Similarity Scales (Level 9)
+                comp_prop = None
+                if any(w in words for w in ["أقوى", "stronger", "fort"]):
+                    comp_prop = "strength"
+                elif any(w in words for w in ["أسرع", "faster", "rapide"]):
+                    comp_prop = "speed"
+                    
+                if comp_prop and len(mapped_concepts) >= 2:
+                    c1, c2 = mapped_concepts[0], mapped_concepts[1]
+                    try:
+                        idx1 = words.index(next(w for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c1))
+                        idx2 = words.index(next(w for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c2))
+                        if idx1 > idx2:
+                            c1, c2 = c2, c1
+                    except StopIteration:
+                        pass
+                        
+                    comparison_val = self.comparison_processor.compare_entities(c1, c2, comp_prop)
+                    trace_msg = self.comparison_processor.get_comparison_rule_trace(c1, c2, comp_prop)
+                    
+                    return {
+                        "type": "comparison_scale",
+                        "result": comparison_val > 0,
+                        "entity1": c1,
+                        "entity2": c2,
+                        "property_name": comp_prop,
+                        "comparison_value": comparison_val,
+                        "trace": prag_trace + [f"مقارنة الكائنات على مقياس {comp_prop}", trace_msg],
+                        "confidence": 1.0
+                    }
+
+                # 3. Temporal Logic (Level 2)
+                is_temporal = any(w in words for w in ["قبل", "بعد", "أثناء", "الماضي", "كان", "مستقبلا", "مستقبلاً", "الآن", "before", "after", "during", "past", "present", "future"])
+                if is_temporal:
+                    event = None
+                    if "dinosaur" in mapped_concepts or any(w in words for w in ["ديناصور", "ديناصورات", "dinosaur"]):
+                        event = "dinosaur_extinction"
+                    elif "mammoth" in mapped_concepts or any(w in words for w in ["ماموث", "mammoth"]):
+                        event = "mammoth_extinction"
+                        
+                    if event:
+                        is_before = self.temporal_processor.check_temporal_order(event, "present", "BEFORE")
+                        rel_str = "قبل" if is_before else "ليس قبل"
+                        return {
+                            "type": "temporal_logic",
+                            "result": is_before,
+                            "event": event,
+                            "reference": "present",
+                            "relation": "BEFORE",
+                            "trace": prag_trace + [f"الاستدلال الزمني: التحقق من الترتيب الزمني للحدث {event}", f"الحدث {event} يقع {rel_str} present بالتعدي الزمني"],
+                            "confidence": 1.0
+                        }
+
+                # 4. Modality (Level 3)
+                modal_info = self.modality_processor.process_modality(part, language)
+                if modal_info["modality"] != "certainty":
+                    c1 = mapped_concepts[0] if len(mapped_concepts) >= 1 else None
+                    c2 = mapped_concepts[1] if len(mapped_concepts) >= 2 else None
+                    if c1 and c2:
+                        res_check = self.check_is_a_relationship(c1, c2)
+                        if not res_check["result"]:
+                            props = self.handler.get_properties(c1, world=world)
+                            has_prop = any(p["property"] == c2 for p in props)
+                            res_check = {"result": has_prop, "trace": [f"فحص الخاصية {c2} للـ {c1}"]}
+                            
+                        if modal_info["modality"] == "impossibility":
+                            result = not res_check["result"]
+                        elif modal_info["modality"] == "necessity":
+                            result = res_check["result"]
+                        else:
+                            result = res_check["result"] or modal_info["confidence"] > 0
+                            
+                        return {
+                            "type": "modality",
+                            "result": result,
+                            "modality": modal_info["modality"],
+                            "modality_confidence": modal_info["confidence"],
+                            "trace": prag_trace + res_check["trace"] + [f"الاستدلال الموجه بالجهة (Modality): الحالة المكتشفة هي '{modal_info['modality']}' وثقتها {modal_info['confidence']}"],
+                            "confidence": modal_info["confidence"]
+                        }
+
+                # 5. Causal Chain (Level 4)
+                is_chain_query = any(w in words for w in ["سلسلة", "أسباب", "يؤدي", "causes", "chain"])
+                if is_chain_query and len(mapped_concepts) >= 1:
+                    concept = mapped_concepts[0]
+                    chain_res = self.chain_processor.propagate_causal_chains(concept, self.handler)
+                    matched = chain_res["matched_chains"]
+                    if matched:
+                        steps = matched[0]["steps"]
+                        trace = prag_trace + [f"الاستدلال السببي متعدد الخطوات (Causal Chain): بدءاً من {concept}"]
+                        for step in steps:
+                            trace.append(f"الخطوة {step['step']}: الحدث {step['event']}")
+                        return {
+                            "type": "causal_chain",
+                            "result": True,
+                            "initial_state": concept,
+                            "chain": matched[0],
+                            "trace": trace,
+                            "confidence": matched[0]["total_confidence"]
+                        }
+
+                # 6. Quantifier Rules (Level 5)
+                quantifier_info = self.quantifier_processor.detect_quantifier(part)
+                if quantifier_info:
+                    c1 = mapped_concepts[0] if len(mapped_concepts) >= 1 else None
+                    c2 = mapped_concepts[1] if len(mapped_concepts) >= 2 else None
+                    if c1 and c2:
+                        res_check = self.check_is_a_relationship(c1, c2)
+                        if not res_check["result"]:
+                            props = self.handler.get_properties(c1, world=world)
+                            has_prop = any(p["property"] == c2 for p in props)
+                            res_check = {"result": has_prop, "trace": [f"فحص الخاصية {c2} للـ {c1}"]}
+                            
+                        statement_q = {"name": "universal", "confidence": 1.0}
+                        result = self.quantifier_processor.evaluate_quantifiers(statement_q, quantifier_info) and res_check["result"]
+                        
+                        return {
+                            "type": "quantifier",
+                            "result": result,
+                            "quantifier": quantifier_info["name"],
+                            "trace": prag_trace + res_check["trace"] + [f"الاستدلال بسور القضية (Quantifiers): السور المكتشف هو '{quantifier_info['name']}'"],
+                            "confidence": quantifier_info["confidence"]
+                        }
+
+                # 7. Negation & Polarity Rules (Level 6)
+                is_negated = self.negation_processor.has_negation(part, language)
+                if is_negated:
+                    c1 = mapped_concepts[0] if len(mapped_concepts) >= 1 else None
+                    c2 = mapped_concepts[1] if len(mapped_concepts) >= 2 else None
+                    if c1 and c2:
+                        res_check = self.check_is_a_relationship(c1, c2)
+                        if not res_check["result"]:
+                            props = self.handler.get_properties(c1, world=world)
+                            has_prop = any(p["property"] == c2 for p in props)
+                            res_check = {"result": has_prop, "trace": [f"فحص الخاصية {c2} للـ {c1}"]}
+                            
+                        return {
+                            "type": "negation",
+                            "result": not res_check["result"],
+                            "trace": prag_trace + res_check["trace"] + [f"الاستدلال بالنفي والتقابل (Negation): تم تطبيق قاعدة نفي النفي وعكس القطبية"],
+                            "confidence": 1.0
+                        }
+
+                # 8. Semantic Roles (Level 1)
+                is_roles_query = any(w in words for w in ["من", "ماذا", "أين", "من الذي", "who", "what", "where"]) and \
+                                 any(w in words or any(r["id"] in ["فرس", "عوش"] for r in self.handler.language_rules.get("morphology", {}).get("roots", []) if w in r["patterns"]) for w in words)
+                if is_roles_query:
+                    roles_res = self.semantic_processor.extract_semantic_roles(words, language, self.handler)
+                    if roles_res:
+                        return {
+                            "type": "semantic_roles",
+                            "result": True,
+                            "predicate": roles_res["predicate"],
+                            "roles": roles_res["roles"],
+                            "trace": prag_trace + [f"تحليل الأدوار الدلالية (Semantic Roles): استخلاص أدوار الفعل '{roles_res['predicate']}'"],
+                            "confidence": 1.0
+                        }
+
+                # 9. Custom celestial/direction query handling for astronomical world questions
                 if "c_sun" in mapped_concepts:
                     props = self.handler.get_properties("c_sun", world=world)
                     target = None
@@ -398,7 +610,7 @@ class SimpleReasoner:
                                 "result": is_correct,
                                 "concept1": "c_sun",
                                 "concept2": dir_concept,
-                                "trace": [f"الاستعلام عن شروق الشمس في العالم النشط '{world}'", f"الشمس تشرق من {target} في هذا العالم"] + conflict_trace,
+                                "trace": prag_trace + [f"الاستعلام عن شروق الشمس في العالم النشط '{world}'", f"الشمس تشرق من {target} في هذا العالم"] + conflict_trace,
                                 "confidence": 1.0
                             }
                             
@@ -410,11 +622,11 @@ class SimpleReasoner:
                             "concept": "c_sun",
                             "location": target,
                             "location_label": target_lbl,
-                            "trace": [f"الاستعلام عن شروق الشمس في العالم النشط '{world}'", f"الشمس تشرق من {target_lbl} في هذا العالم"] + conflict_trace,
+                            "trace": prag_trace + [f"الاستعلام عن شروق الشمس في العالم النشط '{world}'", f"الشمس تشرق من {target_lbl} في هذا العالم"] + conflict_trace,
                             "confidence": 1.0
                         }
 
-                # 2. Comparison
+                # 10. Comparison
                 if ("الفرق" in words or "difference" in words or "différence" in words or "differance" in words) and len(mapped_concepts) >= 2:
                     c1, c2 = mapped_concepts[0], mapped_concepts[1]
                     props1 = self.handler.get_properties(c1, world=world)
@@ -426,11 +638,11 @@ class SimpleReasoner:
                         "concept2": c2,
                         "props1": props1,
                         "props2": props2,
-                        "trace": [f"مقارنة الخصائص للـ {c1} والـ {c2} في العالم النشط '{world}'"],
+                        "trace": prag_trace + [f"مقارنة الخصائص للـ {c1} والـ {c2} في العالم النشط '{world}'"],
                         "confidence": 1.0
                     }
                     
-                # 3. Hypothetical
+                # 11. Hypothetical
                 elif ("لو" in words or "إذا" in words or "اذا" in words or "if" in words or "si" in words) and len(mapped_concepts) >= 2:
                     entity = None
                     env = None
@@ -459,7 +671,7 @@ class SimpleReasoner:
                                     "needs_adaptation": True,
                                     "transferred_property": analogy_res["transferred_property"],
                                     "analogy_candidate": analogy_res["analogy_candidate"],
-                                    "trace": trace,
+                                    "trace": prag_trace + trace,
                                     "confidence": analogy_res["similarity"]
                                 }
                         return {
@@ -468,39 +680,11 @@ class SimpleReasoner:
                             "entity": entity,
                             "environment": env,
                             "needs_adaptation": False,
-                            "trace": trace,
+                            "trace": prag_trace + trace,
                             "confidence": 1.0
                         }
 
-                # 4. Classification
-                else:
-                    is_classification_query = False
-                    if language == "ar" and "هل" in words:
-                        is_classification_query = True
-                    elif language == "en" and any(w in words for w in ["does", "is", "did", "can", "has", "are"]):
-                        is_classification_query = True
-                    elif language == "fr" and any(w in words for w in ["est-ce", "est", "a-t-il", "peut-il", "a", "ont"]):
-                        is_classification_query = True
-                        
-                    if is_classification_query and len(mapped_concepts) >= 2:
-                        c1, c2 = mapped_concepts[0], mapped_concepts[1]
-                        # Verify order
-                        idx1 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c1]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c1 for w in words) else 0
-                        idx2 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c2]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c2 for w in words) else 1
-                        if idx1 > idx2:
-                            c1, c2 = c2, c1
-                            
-                        res = self.check_is_a_relationship(c1, c2)
-                        return {
-                            "type": "classification",
-                            "result": res["result"],
-                            "concept1": c1,
-                            "concept2": c2,
-                            "trace": res["trace"],
-                            "confidence": 1.0
-                        }
-
-                # 5. Location (lives_in)
+                # 12. Location (lives_in)
                 if ("أين" in words or "اين" in words or "يعيش" in words or "عاش" in words or "where" in words or "où" in words or "ou" in words or "vit" in words or "lives" in words) and len(mapped_concepts) >= 1:
                     concept = mapped_concepts[0]
                     props = self.handler.get_properties(concept, world=world)
@@ -520,15 +704,44 @@ class SimpleReasoner:
                             "concept": concept,
                             "location": location,
                             "location_label": loc_label,
-                            "trace": [f"البحث عن موطن {concept} في العالم '{world}'", f"← وجدنا أن {concept} يعيش في {location}"] + conflict_trace,
+                            "trace": prag_trace + [f"البحث عن موطن {concept} في العالم '{world}'", f"← وجدنا أن {concept} يعيش في {location}"] + conflict_trace,
                             "confidence": 1.0
                         }
+
+                # 13. Classification
+                is_classification_query = False
+                if language == "ar" and "هل" in words:
+                    is_classification_query = True
+                elif language == "en" and any(w in words for w in ["does", "is", "did", "can", "has", "are"]):
+                    is_classification_query = True
+                elif language == "fr" and any(w in words for w in ["est-ce", "est", "a-t-il", "peut-il", "a", "ont"]):
+                    is_classification_query = True
+                    
+                if is_classification_query and len(mapped_concepts) >= 2:
+                    c1, c2 = mapped_concepts[0], mapped_concepts[1]
+                    try:
+                        idx1 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c1]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c1 for w in words) else 0
+                        idx2 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c2]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c2 for w in words) else 1
+                        if idx1 > idx2:
+                            c1, c2 = c2, c1
+                    except Exception:
+                        pass
+                        
+                    res = self.check_is_a_relationship(c1, c2)
+                    return {
+                        "type": "classification",
+                        "result": res["result"],
+                        "concept1": c1,
+                        "concept2": c2,
+                        "trace": prag_trace + res["trace"],
+                        "confidence": 1.0
+                    }
                         
                 # Default unknown fail-safe
                 return {
                     "type": "unknown",
                     "result": False,
-                    "trace": ["لم نجد مسار استدلالي منطقي أو تصنيفي واضح يربط بين الكلمات المدخلة في قاعدة المعرفة المتاحة"],
+                    "trace": prag_trace + ["لم نجد مسار استدلالي منطقي أو تصنيفي واضح يربط بين الكلمات المدخلة في قاعدة المعرفة المتاحة"],
                     "confidence": 0.0
                 }
                 

@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "causal_chains": [
+    {
+      "id": "hunger_predation_chain",
+      "steps": [
+        {"step": 1, "event": "hunger", "agent": "feline_carnivore"},
+        {"step": 2, "event": "predation", "causal_link": "hunger causes predation"},
+        {"step": 3, "event": "death", "causal_link": "predation causes death", "patient": "gazelle"}
+      ],
+      "total_confidence": 0.85
+    }
+  ],
+  "causal_rules": [
+    {
+      "condition": "(X hungry) and (X predator) and (Y prey)",
+      "conclusion": "(X will_hunt Y) within (24 hours)",
+      "confidence": 0.8
+    }
+  ]
+}

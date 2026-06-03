@@ -780,6 +780,37 @@ class GraphHandler:
                         )
                         new_edges_added = True
                         
+            # Phase C: Dynamic Entailment Rules
+            from src.reasoner.entailment_processor import EntailmentProcessor
+            entailment_proc = EntailmentProcessor()
+            for u, v, edge_data in list(self.graph.edges(data=True)):
+                edge_world = edge_data.get("world", "reality")
+                edge_type = edge_data.get("type", "relation")
+                if edge_type == "relation" or (edge_type in ["fact", "inferred"] and edge_world == active_world):
+                    entailed = entailment_proc.check_entailment(edge_data.get("relation"), v, self)
+                    for ent in entailed:
+                        # Check if edge already exists
+                        exists = False
+                        for _, target, out_data in self.graph.out_edges(u, data=True):
+                            if target == ent["to"] and out_data.get("relation") == ent["relation"]:
+                                if out_data.get("type") == "relation" or (out_data.get("type") in ["fact", "inferred"] and out_data.get("world") == active_world):
+                                    exists = True
+                                    break
+                        if not exists:
+                            self.graph.add_edge(
+                                u,
+                                ent["to"],
+                                relation=ent["relation"],
+                                world=active_world,
+                                confidence=ent["confidence"],
+                                type="inferred",
+                                rule_id="dynamic_entailment",
+                                reason=f"الاستلزام المنطقي (Entailment): {u} {edge_data.get('relation')} {v} يستلزم {u} {ent['relation']} {ent['to']}",
+                                timestamp="2026-06-03T00:00:00Z",
+                                source="entailment_processor"
+                            )
+                            new_edges_added = True
+                            
             if not new_edges_added:
                 break
             iteration += 1

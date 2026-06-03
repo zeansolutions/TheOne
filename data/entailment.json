@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "entailments": [
+    {
+      "premise": {
+        "relation": "is_a",
+        "to": "animal"
+      },
+      "conclusion": {
+        "relation": "is_a",
+        "to": "living_thing"
+      },
+      "relation": "entails",
+      "confidence": 1.0
+    },
+    {
+      "premise": {
+        "relation": "is_a",
+        "to": "carnivore"
+      },
+      "conclusion": {
+        "relation": "eats",
+        "to": "meat"
+      },
+      "relation": "entails",
+      "confidence": 0.9
+    }
+  ],
+  "contradiction_detection": [
+    {
+      "statement1": "is_alive",
+      "statement2": "is_dead",
+      "relation": "contradicts"
+    }
+  ]
+}

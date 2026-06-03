@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "pragmatic_facts": [
+    {
+      "metaphor": "lion",
+      "literal": "feline_carnivore",
+      "metaphorical_meaning": "king, powerful, majestic",
+      "cultural_context": "human tradition and mythology"
+    },
+    {
+      "metaphor": "ملك الغابة",
+      "literal": "feline_carnivore",
+      "metaphorical_meaning": "king of the jungle, lion",
+      "cultural_context": "common folklore"
+    }
+  ],
+  "contextual_rules": [
+    {
+      "condition": "speaking_about(X, praise)",
+      "implicature": "positive_sentiment"
+    }
+  ]
+}

@@ -16,7 +16,12 @@
     {"id": "c_west", "labels": ["الغرب", "غرب"], "category": "direction"},
     {"id": "c_underground", "labels": ["تحت الأرض", "أسفل الأرض"], "category": "location"},
     {"id": "c_eye_human", "labels": ["عين", "عين الإنسان", "العين"], "category": "anatomy"},
-    {"id": "c_spring_water", "labels": ["عين", "عين الماء", "نبع"], "category": "nature"}
+    {"id": "c_spring_water", "labels": ["عين", "عين الماء", "نبع"], "category": "nature"},
+    {"id": "gazelle", "labels": ["غزال", "الغزال"], "category": "animal"},
+    {"id": "prey", "labels": ["فريسة", "فرائس"], "category": "animal"},
+    {"id": "forest", "labels": ["غابة", "الغابة"], "category": "location"},
+    {"id": "dinosaur", "labels": ["ديناصور", "ديناصورات", "الديناصورات"], "category": "animal"},
+    {"id": "mammoth", "labels": ["ماموث", "الماموث"], "category": "animal"}
   ],
   "relations": [
     {
@@ -85,6 +90,16 @@
       "from": "c_spring_water",
       "relation": "located_in",
       "to": "savanna"
+    },
+    {
+      "from": "gazelle",
+      "relation": "is_a",
+      "to": "prey"
+    },
+    {
+      "from": "prey",
+      "relation": "is_a",
+      "to": "animal"
     }
   ],
   "inference_rules": [

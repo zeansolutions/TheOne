@@ -88,43 +88,64 @@ class WorldManager:
         if language in ["en", "fr"]:
             words = [w.lower() for w in words]
             
-        # Identify mapped concepts
+        # 1. Identify relation and the matching word/verb first
+        relation = "has_property"
+        relation_word = None
+        
+        if language in ["en", "fr"]:
+            lang_rules = self.handler.language_rules.get(language, {})
+            relations_dict = lang_rules.get("relations", {})
+            for word in words:
+                if word in relations_dict:
+                    relation = relations_dict[word]
+                    relation_word = word
+                    break
+        else:
+            for root in self.handler.language_rules.get("morphology", {}).get("roots", []):
+                for word in words:
+                    if word in root["patterns"]:
+                        if root["id"] == "عوش":
+                            relation = "lives_in"
+                            relation_word = word
+                            break
+                        elif root["id"] == "شروق":
+                            relation = "rises_from"
+                            relation_word = word
+                            break
+                        elif root["id"] == "حتاج":
+                            relation = "requires"
+                            relation_word = word
+                            break
+                        elif root["id"] == "حمي":
+                            relation = "provides"
+                            relation_word = word
+                            break
+                        elif root["id"] == "فرس":
+                            relation = "hunting"
+                            relation_word = word
+                            break
+                if relation_word:
+                    break
+
+        # 2. Identify mapped concepts, skipping the relation word and sharing roots
         mapped_concepts = []
         for word in words:
+            if word == relation_word:
+                continue
+            shares_relation_root = False
+            if relation_word:
+                for root in self.handler.language_rules.get("morphology", {}).get("roots", []):
+                    if word in root["patterns"] and relation_word in root["patterns"]:
+                        shares_relation_root = True
+                        break
+            if shares_relation_root:
+                continue
+                
             concept = self.handler.dynamic_morphological_lookup(word, language=language)
             if concept and concept not in mapped_concepts:
                 mapped_concepts.append(concept)
                 
-        # If we have 2 mapped concepts, we need to find the relation verb/root
         if len(mapped_concepts) >= 2:
-            # We want to identify the relationship.
-            # Look for roots/particles that match known relations.
-            # Default to lives_in if "يعيش" or "عاش" is present.
-            # Default to rises_from if "تشرق" or "شرق" is present.
-            relation = "has_property" # default fallback
-            
-            if language in ["en", "fr"]:
-                lang_rules = self.handler.language_rules.get(language, {})
-                relations_dict = lang_rules.get("relations", {})
-                for word in words:
-                    if word in relations_dict:
-                        relation = relations_dict[word]
-                        break
-            else:
-                # Simple root/verb checks
-                for root in self.handler.language_rules.get("morphology", {}).get("roots", []):
-                    for word in words:
-                        if word in root["patterns"]:
-                            # Map known roots to relations
-                            if root["id"] == "عوش":
-                                relation = "lives_in"
-                            elif root["id"] == "شروق":
-                                relation = "rises_from"
-                            elif root["id"] == "حتاج":
-                                relation = "requires"
-                            elif root["id"] == "حمي":
-                                relation = "provides"
-            
             # Deduce direction (subject usually comes first in statement)
             subj = mapped_concepts[0]
             obj = mapped_concepts[1]

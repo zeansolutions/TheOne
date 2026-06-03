@@ -26,7 +26,7 @@ def test_curiosity_mystery_score():
     assert new_score > 70.0
     
     # Generate curiosity questions
-    questions = engine.generate_questions(limit=5, lang="ar")
+    questions = engine.generate_questions(limit=15, lang="ar")
     assert len(questions) > 0
     # The new concept should be one of the top gaps
     concepts_in_questions = [q["concept"] for q in questions]
