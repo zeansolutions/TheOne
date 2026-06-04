@@ -7,23 +7,19 @@
 ---
 
 ## 📂 الملفات المسؤولة
-* **الكود المصدري:** [src/graph_handler.py](file:///home/zean/Projects/TheOne/src/graph_handler.py)
-* **ملف الأنطولوجيا:** [data/animals_ontology_small.json](file:///home/zean/Projects/TheOne/data/animals_ontology_small.json)
-* **ملف الحقائق:** [data/animals_facts.json](file:///home/zean/Projects/TheOne/data/animals_facts.json)
+* **الكود المصدري:** [src/graph_handler.py](file:///home/zean/Projects/TheOne/src/graph_handler.py) و [src/maintenance/db_io_handler.py](file:///home/zean/Projects/TheOne/src/maintenance/db_io_handler.py)
+* **ملف الأنطولوجيا:** [data/ontology.json](file:///home/zean/Projects/TheOne/data/ontology.json) (قاعدة بيانات المفاهيم الفارغة للبدء)
+* **ملف الحقائق:** [data/facts.json](file:///home/zean/Projects/TheOne/data/facts.json) (قاعدة بيانات الحقائق الأساسية الفارغة للبدء)
 
 ---
 
 ## ⚙️ تفاصيل واجهة البرمجة (Python API)
 
-### كلاس `GraphHandler`
-الموجود في `src/graph_handler.py`. يدير الرسم البياني لـ NetworkX ويقوم بتحميل قواعد البيانات وتحديث العلاقات.
-
-#### `__init__(self)`
-* **الوصف:** يهيئ رسماً بيانياً فارغاً لـ NetworkX من النوع `MultiDiGraph` والإعدادات الافتراضية.
-* **المخرجات:** لا شيء (None).
+### كلاس `GraphHandler` و `DbIoHandler`
+الموجود في `src/graph_handler.py` و `src/maintenance/db_io_handler.py`. يدير الرسم البياني لـ NetworkX ويقوم بتحميل قواعد البيانات وتخزينها واستيراد ملفات الحقائق وتحديث العلاقات.
 
 #### `load_databases(self, ontology_path, facts_path, language_rules_path)`
-* **الوصف:** يحلل ملفات الأنطولوجيا والحقائق والقواعد اللغوية من صيغة JSON ويقوم بملء العقد والعلاقات في الرسم البياني.
+* **الوصف:** يحلل ملفات الأنطولوجيا والحقائق والقواعد اللغوية من صيغة JSON ويقوم بملء العقد والعلاقات في الرسم البياني عبر تفويض المهمة لكلاس `DbIoHandler`.
 * **المعاملات:**
   * `ontology_path` (*str*): مسار ملف JSON الخاص بالأنطولوجيا.
   * `facts_path` (*str*): مسار ملف JSON الخاص بالحقائق.
@@ -39,10 +35,20 @@
 
 ---
 
-## 🖥️ طريقة الاستخدام من التيرمينال
-1. قم بتشغيل الواجهة التفاعلية:
-   ```bash
-   ./start.sh run
-   ```
-2. اختر الخيار رقم **2** لعرض شبكة المفاهيم والعلاقات الحالية.
-3. سيقوم التيرمينال بطباعة كافة المفاهيم المسجلة مقسمة بحسب تصنيفاتها، بالإضافة للروابط النشطة مع توضيح العالم الخاص بكل حقيقة.
+## 🚀 التكامل مع واجهة الاستدعاء (API) والواجهة الرسومية (GUI)
+
+### نقطة استدعاء REST API:
+* **GET `/api/graph`**: تصدير قائمة العقد والروابط للرسم البياني بهيكل متوافق مع العرض الرسومي:
+  ```json
+  {
+    "nodes": [{"id": "concept_id", "label": "Concept Label", "category": "category_name", "type": "concept"}],
+    "edges": [{"source": "u", "target": "v", "relation": "relation_name", "world": "reality", "confidence": 1.0, "type": "fact"}]
+  }
+  ```
+
+### لوحة الرسم البياني التفاعلية بالواجهة الرسومية (GUI):
+توفر واجهة Electron الرسومية لوحة مميزة لعرض الشبكة العصبية والسيالات المعصبية ديناميكياً مبنية على محاكي فيزيائي تفاعلي (Canvas-based physics simulation):
+* يتم تلوين الكيانات (Nodes) وفقاً لتصنيفاتها.
+* يتم تمثيل الروابط الحقيقية (Facts) بخطوط متصلة.
+* الروابط المستنتجة (Inferred) تمثلها خطوط وردية متقطعة (Dashed pink lines).
+* عند الضغط على أي عقدة في الرسم البياني، يتم تحديدها وتظليل مساراتها النشطة، ويتم ملؤها تلقائياً في حقول التلقين والتعليم (Teach Form) لتسهيل الإدخال.

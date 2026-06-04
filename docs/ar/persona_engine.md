@@ -1,43 +1,47 @@
-# محرك الشخصيات المتعدد ورندرة التعبيرات (Multilingual Persona Engine)
+# اختيار الشخصيات المعرفية وصياغة التعبيرات (Persona Engine)
 
 ## 📋 نظرة عامة
-يحتوي محرك **TheOne** على **محرك شخصيات متعدد اللغات** يهدف إلى صياغة الرد المنطقي الخالص بأسلوب تعبيري يحمل ملامح شخصية تفاعلية محددة.
-يقيم النظام ميزات وسياق الحوار لاختيار الشخصية الأنسب، ويقوم بدمج العبارات التمهيدية والتحيات المترجمة، بالإضافة لترجمة مسار الاستدلال بالكامل إلى اللغة المحددة.
+يحتوي محرك **TheOne** على **محرك الشخصيات اللغوية المتعددة (Multilingual Persona Engine)** الذي يقوم بصياغة الإجابات المنطقية الجافة ووضعها في قالب لغوي يعكس طبيعة الشخصية المختارة.
+يقوم النظام بتقييم سمات السؤال وسياق الحوار لاختيار الشخصية الأنسب ذاتياً، ثم ينشئ الرد النهائي باستخدام قوالب لغوية مترجمة وسلاسل استدلال مطابقة للغة الحوار.
 
 ---
 
 ## 📂 الملفات المسؤولة
-* **الكود المصدري:** [src/manager/multilingual_persona_engine.py](file:///home/zean/Projects/TheOne/src/manager/multilingual_persona_engine.py)
-* **كاشف الشخصية:** [src/reasoner/persona_selector.py](file:///home/zean/Projects/TheOne/src/reasoner/persona_selector.py)
-* **رندرة التعبيرات:** [src/renderer/expression_renderer.py](file:///home/zean/Projects/TheOne/src/renderer/expression_renderer.py)
-* **ملف الشخصيات والتعبيرات:** [config/personas_multilingual.json](file:///home/zean/Projects/TheOne/config/personas_multilingual.json)
+* **محرك الشخصية الرئيسي:** [src/manager/multilingual_persona_engine.py](file:///home/zean/Projects/TheOne/src/manager/multilingual_persona_engine.py)
+* **محدد الشخصية:** [src/reasoner/persona_selector.py](file:///home/zean/Projects/TheOne/src/reasoner/persona_selector.py)
+* **مصيغ التعبيرات اللغوية:** [src/renderer/expression_renderer.py](file:///home/zean/Projects/TheOne/src/renderer/expression_renderer.py)
+* **ملف إعدادات الشخصيات:** [config/personas_multilingual.json](file:///home/zean/Projects/config/personas_multilingual.json)
 
 ---
 
 ## ⚙️ تفاصيل واجهة البرمجة (Python API)
 
 ### كلاس `MultilingualPersonaEngine`
-منسق العملية بأكملها في `src/manager/multilingual_persona_engine.py`.
+الذي ينسق عملية الصياغة في `src/manager/multilingual_persona_engine.py`.
 
-#### `process_response(self, question, logical_response, conversation_history=None, user_preference=None)`
-* **الوصف:** ينفذ كامل خطوات رندرة الرد: يكتشف لغة الإدخال، ويحدد لغة الرد، ويحلل ميزات السياق لاختيار الشخصية، ثم يولد التعبير التفاعلي النهائي.
-* **المخرجات:** يعيد قاموساً يحتوي على: الرد النهائي `"response"`، لغة الرد `"language"`، الشخصية المنتقاة `"persona"`، ومستوى اليقين `"confidence"`.
+#### `process_response(self, question, logical_response, conversation_history=None, user_preference=None, force_persona_id=None)`
+* **الوصف:** ينفذ خط معالجة الصياغة اللغوية بالكامل: كشف لغة الإدخال، تحديد لغة الرد، تصنيف سياق الحديث، اختيار الشخصية المنشودة، وصياغة وتنسيق الرد النهائي.
+* **المعاملات:**
+  * `question` (*str*): نص سؤال المستخدم.
+  * `logical_response` (*dict*): الإجابة المنطقية المستخرجة من الرسم البياني.
+  * `conversation_history` (*list*): قائمة تحتوي على تاريخ المحادثة.
+  * `user_preference` (*str*): تخطي وتحديد لغة الرد يدوياً.
+  * `force_persona_id` (*str*): تحديد شخصية معينة لفرض استخدامها (`sage_friend` أو `scientist` أو `witty_mentor`).
+* **المخرجات:** قاموس يحتوي على الرد النصي النهائي `"response"`، واللغة المستخدمة `"language"`، والشخصية المفعلة `"persona"`.
 
 ### كلاس `MultilingualPersonaSelector`
-الموجود في `src/reasoner/persona_selector.py`. يقوم بوزن السياق لاختيار إحدى الشخصيات الثلاث:
-1. **الحكيم الودود (Sage Friend):** هادئ النبرة، متعاطف، يفصل الردود.
-2. **الباحث العلمي (Scientist):** رسمي، موضوعي، يستند للأرقام والبيانات الدقيقة.
-3. **المرشد الظريف (Witty Mentor):** فكاهي، حيوي، يستخدم تعبيرات عامية خفيفة.
-
-#### `select_best_persona(self, context)`
-* **الوصف:** يعيد معرف الشخصية التي حصلت على الوزن الأعلى بناءً على نوع السؤال، الكلمات المفتاحية، والحالة المزاجية للسياق.
-* **المخرجات:** معرف الشخصية (*str*).
+الموجود في `src/reasoner/persona_selector.py`. يطابق سياق السؤال بالشخصية الأنسب:
+1. **الصديق الحكيم (Sage Friend):** رد متعاطف، تفصيلي، هادئ ولطيف.
+2. **العالِم (Scientist):** رد رسمي، حيادي، موضوعي ومبني على الأدلة العلمية الجافة.
+3. **المرشد المرح (Witty Mentor):** رد مرح، نشط، فكاهي ويستخدم بعض التعبيرات الدارجة.
 
 ---
 
-## 🖥️ طريقة الاستخدام من التيرمينال
+## 🖥️ الاستخدام من التيرمينال والواجهة الرسومية (GUI)
+
+### التفاعل عبر التيرمينال:
 1. اطرح سؤالاً على النظام في الواجهة التفاعلية (الخيار رقم **1**).
-2. يطبع النظام تفاصيل الشخصية التي تمت محاكاتها ولغة الرد، مثل:
+2. يطبع النظام اسم الشخصية التي صاغت الرد:
    ```text
    ==================================================
    Active World: 'reality'
@@ -46,4 +50,11 @@
    👉 Based on empirical facts, a lion is a subcategory of animal.
    ==================================================
    ```
-3. غير أسلوب وكلمات سؤالك لتغيير استجابة محرك الشخصيات تلقائياً. على سبيل المثال، السؤال بـ `"لماذا يأكل الأسد اللحم؟"` سيحفز شخصية الباحث العلمي (`scientist`)، بينما السؤال بـ `"من هو ملك الغابة؟"` سيحفز شخصية الحكيم الودود (`sage_friend`).
+
+### عناصر الواجهة الرسومية (GUI):
+* **قائمة اختيار الشخصية (Persona Selector Dropdown):** تقع بجانب حقل إدخال الرسائل مباشرة في شاشة الدردشة، وتتيح للمستخدم تحديد أحد الخيارات التالية يدوياً:
+  * **الاختيار التلقائي (Auto-Select):** يترك للنظام تحديد الشخصية المناسبة تلقائياً بناءً على سياق الحوار.
+  * **الصديق الحكيم (Sage Friend).**
+  * **العالِم (Scientist).**
+  * **المرشد المرح (Witty Mentor).**
+* **ربط واجهة الاستدعاء (API):** يتم تمرير كود الشخصية المحددة يدوياً كمعامل `force_persona_id` في متن طلب الاستعلام المرسل لـ POST `/api/query` لفرض أسلوب الرد المطلوب.

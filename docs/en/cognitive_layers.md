@@ -24,7 +24,7 @@ Each layer is implemented as a dedicated class model in `src/reasoner/`:
 * **Role:** Detects event temporal relations (`BEFORE`, `AFTER`, `DURING`) and sorts timelines.
 * **Method:** `apply_temporal_reasoning(self, facts, query, language)`
 
-### 3. Modality Layer (`modality_processor.py` / `modality.json`)
+### 3. Modality Layer (`modality_processor.py` / `modalities.json`)
 * **Role:** Identifies logical necessity, possibility, or impossibility modifiers (e.g. "must", "can").
 * **Method:** `process_modality(self, text, language)`
 
@@ -58,13 +58,14 @@ Each layer is implemented as a dedicated class model in `src/reasoner/`:
 
 ---
 
-## 🖥️ Terminal Usage
-1. To run automated tests for all 10 layers, execute:
-   ```bash
-   ./start.sh test
-   ```
-2. In the interactive CLI (Option **1**), ask complex questions. For example:
-   * **Negation:** `"Is a lion not an animal?"` (System detects negation operator and rejects the premise).
-   * **Comparison:** `"Which is faster, a lion or a polar bear?"` (System resolves speeds and returns the comparison result).
-   * **Temporal:** `"Does event A happen before event B?"`
-   * **Anomaly:** `"A lion that eats grass"` (System flags as an anomaly with confidence deduction).
+## 🖥️ Terminal & GUI Integration
+
+### 1. Terminal Verification
+To run automated unit tests testing all 10 layers:
+```bash
+./start.sh test
+```
+
+### 2. GUI Representation
+* **Procedural Tab (Cognitive step-by-step executor):** Allows configuring sequences of tasks or cognitive operations.
+* **Trace Log Accordion:** The chat bubble renders details showing which layers processed parts of the query (e.g. Negation processing logs, comparative scale evaluations, and modal probability decay statistics).

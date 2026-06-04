@@ -1,7 +1,7 @@
 # Conflict Resolution & Contradiction Detection
 
 ## 📋 Overview
-To maintain logical consistency, **TheOne** includes a **Conflict Resolution and Contradiction Detection System**. When teaching the system new facts, it checks for logical collisions (e.g. contradictory properties or multiple objects for functional relations). It automatically resolves these based on confidence scores or prompts the user interactively in the terminal.
+To maintain logical consistency, **TheOne** includes a **Conflict Resolution and Contradiction Detection System**. When teaching the system new facts, it checks for logical collisions (e.g. contradictory properties or multiple objects for functional relations). It automatically resolves these based on confidence scores or prompts the user interactively.
 
 ---
 
@@ -29,18 +29,17 @@ Located in `src/graph_handler.py`.
 #### `add_or_update_fact(self, subj, obj, relation, world, confidence=1.0, reason=None, interactive=False, modality=None, language="en")`
 * **Description:** Safely inserts new fact edges, applying the three-tier resolution strategy:
   1. **Auto-Resolution:** Overwrites if new fact confidence is $> 0.3$ higher than current fact, or rejects if current fact is $> 0.3$ higher.
-  2. **Interactive Selection:** If confidence difference is $< 0.3$, prints a conflict menu to let the user select between:
+  2. **Interactive Selection / GUI Interception:** If confidence difference is $< 0.3$, raises/indicates a conflict to let the user select between:
      * **Replace:** Delete old fact, add new fact, archive previous fact.
      * **Merge:** Save both parallel facts.
      * **Ignore:** Discard new fact.
-* **Returns:** `dict` status report containing success status and localized message.
+* **Returns:** `dict` status report containing success status, conflict flag, and localized message.
 
 ---
 
 ## 🖥️ Terminal Usage
 1. Open the CLI and select Option **3** to teach the system.
-2. Select `feline_carnivore` (lion) as Source, `thin_fur` as Target, and choose relation `3` (`has_property`) in world `reality`.
-3. If the graph already has `feline_carnivore` $\to$ `thick_fur` in world `reality`, the system will halt and prompt you in the terminal:
+2. If teaching a conflicting property in the same world (e.g., teaching `feline_carnivore` $\to$ `thin_fur` when it is already `thick_fur` in world `reality`), the system will halt and prompt you:
    ```text
    ⚠️ [Fact Conflict] The new fact conflicts with a recorded fact in world 'reality'!
    Current fact: [lion] --(has_property)--> [thick fur] (confidence: 1.0)
@@ -52,4 +51,43 @@ Located in `src/graph_handler.py`.
     3. Ignore
    Choose resolution option (1-3): 
    ```
-4. Enter `1`, `2`, or `3` to resolve the contradiction.
+
+---
+
+## 🚀 HTTP API & Desktop GUI Integration
+
+### REST API Endpoints:
+* **POST `/api/teach`** - If a contradiction is detected and confidence difference is $< 0.3$, it returns a status of `"conflict"` along with details of both facts:
+  ```json
+  {
+    "status": "conflict",
+    "conflict": {
+      "subject": "feline_carnivore",
+      "relation": "has_property",
+      "old_object": "thick_fur",
+      "new_object": "thin_fur",
+      "world": "reality"
+    }
+  }
+  ```
+* **POST `/api/resolve_conflict`** - Resolves a pending conflict. Accepts body:
+  ```json
+  {
+    "action": "replace | merge | ignore",
+    "subject": "subject_concept",
+    "relation": "relation_type",
+    "old_object": "old_val",
+    "new_object": "new_val",
+    "world": "world_name",
+    "confidence": 1.0,
+    "modality": "modality_val",
+    "reason": "reason_string"
+  }
+  ```
+
+### Desktop GUI Conflict Modal:
+In the desktop app, when teaching a fact through the Teach dashboard that triggers a logical contradiction, an elegant **Conflict Resolution Glassmorphic Modal** pops up automatically. 
+It displays side-by-side cards comparing the current fact and the new conflicting assertion, and presents three clear buttons:
+1. **Overwrite / Replace:** Replaces the old assertion with the new one.
+2. **Merge Parallel:** Retains both facts concurrently.
+3. **Discard / Ignore:** Dismisses the new assertion, keeping the original database intact.

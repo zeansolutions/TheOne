@@ -19,8 +19,14 @@ It evaluates query features and dialogue context to select the most appropriate 
 ### `MultilingualPersonaEngine` Class
 Coordinates the pipeline in `src/manager/multilingual_persona_engine.py`.
 
-#### `process_response(self, question, logical_response, conversation_history=None, user_preference=None)`
+#### `process_response(self, question, logical_response, conversation_history=None, user_preference=None, force_persona_id=None)`
 * **Description:** Runs the entire rendering pipeline: detects input language, selects output language, classifies context, selects persona, and formats the output.
+* **Arguments:**
+  * `question` (*str*): The query string.
+  * `logical_response` (*dict*): Structural facts response from reasoner.
+  * `conversation_history` (*list*): Context memory turns.
+  * `user_preference` (*str*): Target language code override.
+  * `force_persona_id` (*str*): Persona ID override (`sage_friend`, `scientist`, or `witty_mentor`).
 * **Returns:** `dict` containing `"response"`, `"language"`, `"persona"`, and `"confidence"`.
 
 ### `MultilingualPersonaSelector` Class
@@ -29,13 +35,11 @@ Located in `src/reasoner/persona_selector.py`. Matches contexts to the best pers
 2. **Scientist:** Formal, objective, data-driven.
 3. **Witty Mentor:** Humorous, energetic, uses light slang.
 
-#### `select_best_persona(self, context)`
-* **Description:** Returns the persona ID with the highest context matching weight (question type, keywords, mood, context).
-* **Returns:** `str` persona ID.
-
 ---
 
-## 🖥️ Terminal Usage
+## 🖥️ Terminal & GUI Usage
+
+### Terminal Interaction:
 1. Ask the system questions in the terminal (Option **1**).
 2. The system outputs which persona generated the response, e.g.:
    ```text
@@ -46,4 +50,11 @@ Located in `src/reasoner/persona_selector.py`. Matches contexts to the best pers
    👉 Based on empirical facts, a lion is a subcategory of animal.
    ==================================================
    ```
-3. Change your phrasing to shift the system's mood. For example, asking `"Why does a lion eat meat?"` triggers the `scientist` persona, whereas asking `"Who is the king of the forest?"` triggers the `sage_friend` or `witty_mentor` persona.
+
+### Desktop GUI Integration:
+* **Persona Selection Dropdown:** Located right next to the message input box, users can explicitly choose between:
+  * **Auto-Select:** Let the system automatically choose based on context matching.
+  * **Sage Friend:** Force friendly/calm tone.
+  * **Scientist:** Force formal/scientific response.
+  * **Witty Mentor:** Force humorous/slang tone.
+* **REST API integration:** Passes `force_persona_id` in the POST `/api/query` payload body to override dynamic context selection.

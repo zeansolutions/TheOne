@@ -7,7 +7,7 @@ To process natural language inputs locally without LLM parsing at runtime, **The
 
 ## 📂 Responsible Files
 * **Source Code:** [src/graph_handler.py](file:///home/zean/Projects/TheOne/src/graph_handler.py) (`dynamic_morphological_lookup`)
-* **Grammar File:** [data/animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json)
+* **Grammar File:** [data/language_rules.json](file:///home/zean/Projects/TheOne/data/language_rules.json)
 
 ---
 
@@ -24,7 +24,7 @@ Methods in `GraphHandler` class for linguistic search.
 * **Returns:** `str` concept ID (e.g. `"feline_carnivore"` for `"الأسد"`), or `None`.
 
 #### Morphology Rules JSON Format
-Defines affixes and roots in `animals_language_rules.json`:
+Defines affixes and roots in `language_rules.json`:
 ```json
 "morphology": {
   "prefixes": ["ال", "و", "في", "بـ", "لـ", "كـ"],
@@ -40,11 +40,17 @@ Defines affixes and roots in `animals_language_rules.json`:
 
 ---
 
-## 🖥️ Terminal Usage
-1. Ask the system a question using inflected or prefixed words, e.g.:
-   `"هل الأسد يعيش في السافانا؟"`
-   The morphological analyzer parses:
-   * `"الأسد"` $\to$ strips `"ال"` $\to$ `"أسد"` $\to$ maps to `"feline_carnivore"`.
-   * `"يعيش"` $\to$ maps to root `"عوش"` $\to$ maps to `"lives_in"`.
-   * `"السافانا"` $\to$ strips `"ال"` $\to$ `"سافانا"` $\to$ maps to `"savanna"`.
-2. The engine translates the sentence into the semantic triple: `(feline_carnivore, lives_in, savanna)`.
+## 🖥️ Usage
+
+### Input Parsing:
+Ask the system a question using inflected or prefixed words, e.g.:
+`"هل الأسد يعيش في السافانا؟"`
+The morphological analyzer parses:
+* `"الأسد"` $\to$ strips `"ال"` $\to$ `"أسد"` $\to$ maps to `"feline_carnivore"`.
+* `"يعيش"` $\to$ maps to root `"عوش"` $\to$ maps to `"lives_in"`.
+* `"السافانا"` $\to$ strips `"ال"` $\to$ `"سافانا"` $\to$ maps to `"savanna"`.
+
+The engine translates the sentence into the semantic triple: `(feline_carnivore, lives_in, savanna)`.
+
+### GUI Ingestion:
+In the desktop GUI, when teaching facts or typing queries, the morphological analyzer runs on the backend server to resolve inputs dynamically in any of the supported languages.
