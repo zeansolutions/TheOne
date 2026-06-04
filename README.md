@@ -119,9 +119,9 @@ TheOne/
 │   │   └── animals_language_rules.json # Animals mock language rules for test cases
 │   └── test_*.py                     # Unit test suites for reasoner layers
 │
-├── docs/                             # Project Feature Documentation
-│   ├── en/                           # Feature descriptions in English
-│   └── ar/                           # Feature descriptions in Arabic
+├── docs/                             # Project Feature Documentation & User Guides
+│   ├── en/                           # Feature descriptions & GUI Guide in English
+│   └── ar/                           # Feature descriptions & GUI Guide in Arabic
 │
 ├── api.py                            # Custom Python HTTP REST API Server
 ├── main.py                           # Primary Interactive CLI entrypoint
@@ -130,6 +130,15 @@ TheOne/
 ├── .gitignore                        # Git ignore patterns
 └── README.md                         # This readme file
 ```
+
+---
+
+## 📖 User Guides & Documentation
+
+To help you get the most out of the system, we have created comprehensive guides:
+
+* **Arabic GUI Guide / دليل واجهة الاستخدام بالعربية:** [docs/ar/gui_guide.md](file:///home/zean/Projects/TheOne/docs/ar/gui_guide.md)
+* **English GUI Guide / English User Guide:** [docs/en/gui_guide.md](file:///home/zean/Projects/TheOne/docs/en/gui_guide.md)
 
 ---
 
