@@ -31,10 +31,22 @@ Your task is to analyze the user's input text (story, article, or factual descri
    - The Arabic morphology section `"morphology"` must contain valid linguistic roots (`roots`) and particles (`particles`).
    - **Arabic roots MUST be written as a single, continuous string of characters WITHOUT any spaces or separators (e.g., use `"طلب"` not `"ط ل ب"` or `"ط-ل-ب"`).** The system uses exact substring matching for root processing, and spaces will break this.
    - The translation lexicon (`"ar"`, `"en"`, etc.) must link all Arabic words (including root variations and forms like `"نجمة"` / `"نجمة صغيرة"` / `"النجمة"`) to their exact concept IDs in `"concepts"`.
-5. **Mandatory Question Particles (CRITICAL):**
-   - The `"grammar"."question_particles"` array and the `"ar"."question_particles"` array MUST ALWAYS be populated with the complete set of question words for the language, even if the input text has no questions. Without these, the system cannot recognize user questions at all.
-   - Arabic question particles MUST include at minimum: `["ما", "من", "هل", "أين", "كيف", "لماذا", "ماذا", "متى", "كم", "أي", "هي"]`
-   - English question particles MUST include at minimum: `["what", "who", "where", "when", "why", "how", "which", "is", "are", "do", "does"]`
+5. **Mandatory Multilingual Sections and Question Particles (CRITICAL):**
+   - You MUST include a language mapping block for ALL 11 supported languages: `"en"`, `"ar"`, `"fr"`, `"es"`, `"zh"`, `"tr"`, `"de"`, `"ru"`, `"pt"`, `"ja"`, and `"ko"`.
+   - Each language block MUST contain a `"lexicon"` mapping (associating translated words of the extracted concepts to their concept IDs), a `"relations"` mapping (associating translated relation verbs to relation type IDs), and a `"question_particles"` array.
+   - The `"question_particles"` array for each of the 11 languages must be fully populated with its standard question words, even if the text has no questions. Without this, the query engine cannot recognize questions in those languages.
+   - Example minimum question particles:
+     - `en`: `["what", "who", "where", "when", "why", "how", "which", "is", "are", "do", "does"]`
+     - `ar`: `["ما", "من", "هل", "أين", "كيف", "لماذا", "ماذا", "متى", "كم", "أي", "هي"]`
+     - `fr`: `["que", "qui", "où", "quand", "pourquoi", "comment", "quel", "quelle", "est-ce"]`
+     - `es`: `["qué", "quién", "dónde", "cuándo", "por qué", "cómo", "cuál", "es", "son"]`
+     - `zh`: `["什么", "谁", "哪里", "什么时候", "为什么", "怎么", "哪个", "吗", "呢"]`
+     - `tr`: `["ne", "kim", "nerede", "ne zaman", "neden", "nasıl", "hangi", "mi", "mı"]`
+     - `de`: `["was", "wer", "wo", "wann", "warum", "wie", "welcher", "ist", "sind"]`
+     - `ru`: `["что", "кто", "где", "когда", "почему", "как", "какой", "ли"]`
+     - `pt`: `["o que", "quem", "onde", "quando", "por que", "como", "qual", "é", "são"]`
+     - `ja`: `["なに", "だれ", "どこ", "いつ", "なぜ", "どうやって", "どちら", "か", "ね"]`
+     - `ko`: `["무엇", "누구", "어디", "언제", "왜", "어떻게", "어느", "가", "이"]`
 6. **Output Format:**
    - Output ONLY a single JSON code block. Do NOT split the output into multiple markdown blocks or files. Do NOT add introductory or concluding remarks.
 
@@ -135,6 +147,15 @@ Your output JSON must have this exact structure (include only the keys that are 
     ],
     "question_particles": ["ما", "من", "هل", "أين", "كيف", "لماذا", "ماذا", "متى", "كم", "أي", "هي"]
   },
+  "en": {
+    "lexicon": {
+      "english_word": "concept_id"
+    },
+    "relations": {
+      "english_verb": "relation_type_id"
+    },
+    "question_particles": ["what", "who", "where", "when", "why", "how", "which", "is", "are", "do", "does"]
+  },
   "ar": {
     "lexicon": {
       "الكلمة_العربية": "concept_id"
@@ -144,14 +165,86 @@ Your output JSON must have this exact structure (include only the keys that are 
     },
     "question_particles": ["ما", "من", "هل", "أين", "كيف", "لماذا", "ماذا", "متى", "كم", "أي", "هي"]
   },
-  "en": {
+  "fr": {
     "lexicon": {
-      "english_word": "concept_id"
+      "mot_français": "concept_id"
     },
     "relations": {
-      "english_verb": "relation_type_id"
+      "verbe_français": "relation_type_id"
     },
-    "question_particles": ["what", "who"]
+    "question_particles": ["que", "qui", "où", "quand", "pourquoi", "comment", "quel", "quelle", "est-ce"]
+  },
+  "es": {
+    "lexicon": {
+      "palabra_española": "concept_id"
+    },
+    "relations": {
+      "verbo_español": "relation_type_id"
+    },
+    "question_particles": ["qué", "quién", "dónde", "cuándo", "por qué", "cómo", "cuál", "es", "son"]
+  },
+  "zh": {
+    "lexicon": {
+      "中文词汇": "concept_id"
+    },
+    "relations": {
+      "中文动词": "relation_type_id"
+    },
+    "question_particles": ["什么", "谁", "哪里", "什么时候", "为什么", "怎么", "哪个", "吗", "呢"]
+  },
+  "tr": {
+    "lexicon": {
+      "türkçe_kelime": "concept_id"
+    },
+    "relations": {
+      "türkçe_fiil": "relation_type_id"
+    },
+    "question_particles": ["ne", "kim", "nerede", "ne zaman", "neden", "nasıl", "hangi", "mi", "mı"]
+  },
+  "de": {
+    "lexicon": {
+      "deutsches_wort": "concept_id"
+    },
+    "relations": {
+      "deutsches_verb": "relation_type_id"
+    },
+    "question_particles": ["was", "wer", "wo", "wann", "warum", "wie", "welcher", "ist", "sind"]
+  },
+  "ru": {
+    "lexicon": {
+      "русское_слово": "concept_id"
+    },
+    "relations": {
+      "русский_глагол": "relation_type_id"
+    },
+    "question_particles": ["что", "кто", "где", "когда", "почему", "как", "какой", "ли"]
+  },
+  "pt": {
+    "lexicon": {
+      "palavra_portuguesa": "concept_id"
+    },
+    "relations": {
+      "verbo_português": "relation_type_id"
+    },
+    "question_particles": ["o que", "quem", "onde", "quando", "por que", "como", "qual", "é", "são"]
+  },
+  "ja": {
+    "lexicon": {
+      "日本語の単語": "concept_id"
+    },
+    "relations": {
+      "日本語の動詞": "relation_type_id"
+    },
+    "question_particles": ["なに", "だれ", "どこ", "いつ", "なぜ", "どうやって", "どちら", "か", "ね"]
+  },
+  "ko": {
+    "lexicon": {
+      "한국어_단어": "concept_id"
+    },
+    "relations": {
+      "한국어_동사": "relation_type_id"
+    },
+    "question_particles": ["무엇", "누구", "어디", "언제", "왜", "어떻게", "어느", "가", "이"]
   },
   "weights": {
     "always": 1.0,
@@ -335,6 +428,19 @@ Your output JSON must have this exact structure (include only the keys that are 
     ],
     "question_particles": ["هل", "لماذا"]
   },
+  "en": {
+    "lexicon": {
+      "lion": "lion",
+      "gazelle": "gazelle",
+      "savanna": "savanna",
+      "grass": "grass"
+    },
+    "relations": {
+      "lives in": "lives_in",
+      "eats": "eats"
+    },
+    "question_particles": ["what", "who", "where", "when", "why", "how", "which", "is", "are", "do", "does"]
+  },
   "ar": {
     "lexicon": {
       "أسد": "lion",
@@ -349,7 +455,125 @@ Your output JSON must have this exact structure (include only the keys that are 
       "يعيش في": "lives_in",
       "يأكل": "eats",
       "يفترس": "eats"
-    }
+    },
+    "question_particles": ["ما", "من", "هل", "أين", "كيف", "لماذا", "ماذا", "متى", "كم", "أي", "هي"]
+  },
+  "fr": {
+    "lexicon": {
+      "lion": "lion",
+      "gazelle": "gazelle",
+      "savane": "savanna",
+      "herbe": "grass"
+    },
+    "relations": {
+      "vit dans": "lives_in",
+      "mange": "eats"
+    },
+    "question_particles": ["que", "qui", "où", "quand", "pourquoi", "comment", "quel", "quelle", "est-ce"]
+  },
+  "es": {
+    "lexicon": {
+      "león": "lion",
+      "gacela": "gazelle",
+      "sabana": "savanna",
+      "hierba": "grass"
+    },
+    "relations": {
+      "vive en": "lives_in",
+      "come": "eats"
+    },
+    "question_particles": ["qué", "quién", "dónde", "cuándo", "por qué", "cómo", "cuál", "es", "son"]
+  },
+  "zh": {
+    "lexicon": {
+      "狮子": "lion",
+      "羚羊": "gazelle",
+      "稀树草原": "savanna",
+      "草": "grass"
+    },
+    "relations": {
+      "居住在": "lives_in",
+      "吃": "eats"
+    },
+    "question_particles": ["什么", "谁", "哪里", "什么时候", "为什么", "怎么", "哪个", "吗", "呢"]
+  },
+  "tr": {
+    "lexicon": {
+      "aslan": "lion",
+      "ceylan": "gazelle",
+      "savan": "savanna",
+      "çimen": "grass"
+    },
+    "relations": {
+      "-de yaşar": "lives_in",
+      "yer": "eats"
+    },
+    "question_particles": ["ne", "kim", "nerede", "ne zaman", "neden", "nasıl", "hangi", "mi", "mı"]
+  },
+  "de": {
+    "lexicon": {
+      "löwe": "lion",
+      "gazelle": "gazelle",
+      "savanne": "savanna",
+      "gras": "grass"
+    },
+    "relations": {
+      "lebt in": "lives_in",
+      "frisst": "eats"
+    },
+    "question_particles": ["was", "wer", "wo", "wann", "warum", "wie", "welcher", "ist", "sind"]
+  },
+  "ru": {
+    "lexicon": {
+      "лев": "lion",
+      "газель": "gazelle",
+      "саванна": "savanna",
+      "трава": "grass"
+    },
+    "relations": {
+      "живет в": "lives_in",
+      "ест": "eats"
+    },
+    "question_particles": ["что", "кто", "где", "когда", "почему", "как", "какой", "ли"]
+  },
+  "pt": {
+    "lexicon": {
+      "leão": "lion",
+      "gazela": "gazelle",
+      "savana": "savanna",
+      "grama": "grass"
+    },
+    "relations": {
+      "vive em": "lives_in",
+      "come": "eats"
+    },
+    "question_particles": ["o que", "quem", "onde", "quando", "por que", "como", "qual", "é", "são"]
+  },
+  "ja": {
+    "lexicon": {
+      "ライオン": "lion",
+      "ガゼル": "gazelle",
+      "サバンナ": "savanna",
+      "草": "grass"
+    },
+    "relations": {
+      "に生息する": "lives_in",
+      "食べる": "eats"
+    },
+    "question_particles": ["なに", "だれ", "どこ", "いつ", "なぜ", "どうやって", "どちら", "か", "ね"]
+  },
+  "ko": {
+    "lexicon": {
+      "사자": "lion",
+      "가젤": "gazelle",
+      "사바나": "savanna",
+      "풀": "grass"
+    },
+    "relations": {
+      "~에 살다": "lives_in",
+      "먹다": "eats"
+    },
+    "question_particles": ["무엇", "누구", "어디", "언제", "왜", "어떻게", "어느", "가", "이"]
   },
   "weights": {
     "usually": 0.8,
