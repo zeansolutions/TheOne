@@ -44,7 +44,7 @@ class GraphHandler:
                 "user_replaced": "تم استبدال المعلومة القديمة [{old_obj}] بالجديدة [{new_obj}] بناءً على اختيارك.",
                 "user_merged": "تم دمج المعلومتين معاً (أصبحت كل من [{old_obj}] و [{new_obj}] مسجلة لـ [{subj}]).",
                 "user_ignored": "تم تجاهل المعلومة الجديدة والاحتفاظ بـ [{old_obj}] بناءً على اختيارك.",
-                "non_interactive_rejected": "⚠️ تم تجاهل الحقيقة الجديدة [{subj}] --({relation})--> [{new_obj}] في عالم '{world}' افتراضياً لعدم وجود تفاعل بشري."
+                "non_interactive_rejected": "⚠️ تعارض: تم تجاهل الحقيقة الجديدة [{subj}] --({relation})--> [{new_obj}] في عالم '{world}' افتراضياً لعدم وجود تفاعل بشري."
             },
             "en": {
                 "added": "New fact saved: [{subj}] --({relation})--> [{obj}] in world '{world}'",
@@ -63,7 +63,7 @@ class GraphHandler:
                 "user_replaced": "The old fact [{old_obj}] has been replaced by the new one [{new_obj}] based on your choice.",
                 "user_merged": "Both facts have been merged (both [{old_obj}] and [{new_obj}] are now registered for [{subj}]).",
                 "user_ignored": "The new fact has been ignored, keeping [{old_obj}] based on your choice.",
-                "non_interactive_rejected": "⚠️ New fact [{subj}] --({relation})--> [{new_obj}] in world '{world}' was ignored by default due to lack of human interaction."
+                "non_interactive_rejected": "⚠️ Conflict: New fact [{subj}] --({relation})--> [{new_obj}] in world '{world}' was ignored by default due to lack of human interaction."
             }
         }
         
