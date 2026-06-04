@@ -119,6 +119,37 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                         if r not in relations:
                             relations.append(r)
                 
+                # Load language rules statistics
+                language_stats = {}
+                try:
+                    lang_rules = handler.language_rules or {}
+                    morph = lang_rules.get("morphology", {})
+                    roots_count = len(morph.get("roots", []))
+                    particles_count = len(morph.get("particles", []))
+                    
+                    for key, val in lang_rules.items():
+                        if key == "morphology" or not isinstance(val, dict):
+                            continue
+                        lexicon_count = len(val.get("lexicon", {}))
+                        grammar_block = val.get("grammar", {})
+                        grammar_rules_count = 0
+                        for g_key, g_val in grammar_block.items():
+                            if isinstance(g_val, list):
+                                grammar_rules_count += len(g_val)
+                            elif isinstance(g_val, dict):
+                                grammar_rules_count += len(g_val)
+                        language_stats[key] = {
+                            "lexicon_count": lexicon_count,
+                            "grammar_rules_count": grammar_rules_count
+                        }
+                    
+                    language_stats["global_morphology"] = {
+                        "roots_count": roots_count,
+                        "particles_count": particles_count
+                    }
+                except Exception:
+                    pass
+
                 response_data = {
                     "status": "online",
                     "active_world": handler.active_world,
@@ -128,7 +159,8 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                     "inferred_count": inferred_count,
                     "worlds": list(worlds) if worlds else ["reality"],
                     "personas": [p.get("id") for p in persona_engine.personas_db] if (hasattr(persona_engine, "personas_db") and persona_engine.personas_db) else ["sage_friend", "scientist", "witty_mentor"],
-                    "relations": relations
+                    "relations": relations,
+                    "language_stats": language_stats
                 }
                 
             elif path == "/api/graph":

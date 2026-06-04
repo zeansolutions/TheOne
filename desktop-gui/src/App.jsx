@@ -709,7 +709,7 @@ export default function App() {
       </header>
 
       {/* Main Database Stats Strip */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <div className="glass-panel p-3 d-flex align-center justify-between">
           <span className="text-xs text-slate-400">{t('concepts')}</span>
           <span className="text-lg font-bold text-cyan">{status.concepts_count}</span>
@@ -721,6 +721,59 @@ export default function App() {
         <div className="glass-panel p-3 d-flex align-center justify-between">
           <span className="text-xs text-slate-400">{t('inferred')}</span>
           <span className="text-lg font-bold text-pink">{status.inferred_count}</span>
+        </div>
+        <div className="glass-panel p-3 d-flex align-center justify-between lang-stats-trigger cursor-pointer" title={lang === 'ar' ? 'عرض تفاصيل القواعد اللغوية' : 'View grammar rules details'}>
+          <span className="text-xs text-slate-400">{lang === 'ar' ? 'القواعد اللغوية' : 'Linguistic Rules'}</span>
+          <span className="text-lg font-bold text-teal">
+            {Object.keys(status.language_stats || {}).filter(k => k !== 'global_morphology').length} {lang === 'ar' ? 'لغات' : 'Langs'}
+          </span>
+          
+          {/* Tooltip / Popover showing details on hover */}
+          <div className="lang-stats-popover">
+            <h4 className="text-xs font-bold text-cyan border-b border-slate-800 pb-1 mb-2">
+              {lang === 'ar' ? 'تفاصيل القواعد اللغوية النشطة' : 'Active Linguistic Rules'}
+            </h4>
+            {status.language_stats && Object.keys(status.language_stats).filter(k => k !== 'global_morphology').map(langCode => {
+              const stats = status.language_stats[langCode];
+              const langNames = {
+                ar: lang === 'ar' ? 'العربية' : 'Arabic',
+                en: lang === 'ar' ? 'الإنجليزية' : 'English',
+                fr: lang === 'ar' ? 'الفرنسية' : 'French',
+                es: lang === 'ar' ? 'الإسبانية' : 'Spanish'
+              };
+              return (
+                <div key={langCode} className="mb-2 last:mb-0">
+                  <div className="text-xs font-semibold text-slate-200" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '2px', marginBottom: '4px' }}>
+                    {langNames[langCode] || langCode.toUpperCase()}
+                  </div>
+                  <div className="d-flex justify-between text-xxs text-slate-400 mt-0.5" style={{ fontSize: '10px' }}>
+                    <span>{lang === 'ar' ? 'المفردات (Lexicon):' : 'Vocabulary (Lexicon):'}</span>
+                    <span className="font-mono text-cyan" style={{ fontSize: '10px' }}>{stats.lexicon_count}</span>
+                  </div>
+                  <div className="d-flex justify-between text-xxs text-slate-400" style={{ fontSize: '10px' }}>
+                    <span>{lang === 'ar' ? 'القواعد والروابط:' : 'Grammar & Rules:'}</span>
+                    <span className="font-mono text-purple" style={{ fontSize: '10px' }}>{stats.grammar_rules_count}</span>
+                  </div>
+                </div>
+              );
+            })}
+            
+            {status.language_stats?.global_morphology && (
+              <div className="mt-2 pt-2 border-t border-slate-800" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="text-xs font-semibold text-slate-300" style={{ fontSize: '11px', marginBottom: '4px' }}>
+                  {lang === 'ar' ? 'المورفولوجيا والجذور المشتركة' : 'Common Morphology & Roots'}
+                </div>
+                <div className="d-flex justify-between text-xxs text-slate-400 mt-0.5" style={{ fontSize: '10px' }}>
+                  <span>{lang === 'ar' ? 'الجذور الصرفية:' : 'Morphological Roots:'}</span>
+                  <span className="font-mono text-teal" style={{ fontSize: '10px' }}>{status.language_stats.global_morphology.roots_count}</span>
+                </div>
+                <div className="d-flex justify-between text-xxs text-slate-400" style={{ fontSize: '10px' }}>
+                  <span>{lang === 'ar' ? 'السوابق واللواحق:' : 'Particles/Affixes:'}</span>
+                  <span className="font-mono text-pink" style={{ fontSize: '10px' }}>{status.language_stats.global_morphology.particles_count}</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
