@@ -19,15 +19,17 @@ Your task is to analyze the user's input text (story, article, or factual descri
 #### ⚠️ CRITICAL ENGINEERING RULES FOR EXTRACTION:
 1. **Absolute Concept Coverage (No Missing Concepts):** 
    - Every single concept/entity ID referenced anywhere in the JSON (including in `relations`, `facts`, `rules`, `exceptions`, `temporal_facts`, `causal_chains`, and `comparative_properties`) **MUST be explicitly defined** in the `"concepts"` array with its corresponding labels and category. 
-   - For example, if you output a relation or fact involving `"sky"`, then `"sky"` MUST exist in the `"concepts"` array.
+   - For example, if you output a relation, fact, or rule involving a concept (e.g., `"sky"` or `"arabic_speech"`), then that exact concept ID **MUST** exist in the `"concepts"` array. Do not use implicit concepts in rules.
 2. **Strict Key Separation (Metadata vs Instances):**
    - `"relations"`: Use this array **ONLY** for ontology relation instances (edges between concepts in the graph). Objects here MUST contain only: `"from"`, `"relation"`, and `"to"` (and optional `"causal_purpose"`).
    - `"relations_metadata"`: Use this array **ONLY** for declaring and configuring the logical attributes of a relation. Objects here MUST contain: `"id"`, `"name"`, `"transitive"`, `"symmetric"`, and `"decay"`.
    - Never mix relation instances (e.g. `from`/`to`) and metadata attributes inside the same array!
-3. **Logic & Rule Alignment:**
+3. **Logic & Rule Alignment & Completeness:**
    - Any relation predicate used in the `conditions` or `conclusion` of a rule inside `"rules"` (or `"inference_rules"`) MUST be declared in `"relations_metadata"` and instantiated in `"facts"`.
-4. **Complete Morphological Lexicon:**
+   - If a rule is defined for one instance of a class (e.g. classifying a noun), write equivalent complete rules for the other instances of that class (e.g. verbs, particles) to ensure complete logical coverage.
+4. **Complete Morphological Lexicon & Space-less Roots (CRITICAL):**
    - The Arabic morphology section `"morphology"` must contain valid linguistic roots (`roots`) and particles (`particles`).
+   - **Arabic roots MUST be written as a single, continuous string of characters WITHOUT any spaces or separators (e.g., use `"طلب"` not `"ط ل ب"` or `"ط-ل-ب"`).** The system uses exact substring matching for root processing, and spaces will break this.
    - The translation lexicon (`"ar"`, `"en"`, etc.) must link all Arabic words (including root variations and forms like `"نجمة"` / `"نجمة صغيرة"` / `"النجمة"`) to their exact concept IDs in `"concepts"`.
 5. **Mandatory Question Particles (CRITICAL):**
    - The `"grammar"."question_particles"` array and the `"ar"."question_particles"` array MUST ALWAYS be populated with the complete set of question words for the language, even if the input text has no questions. Without these, the system cannot recognize user questions at all.
