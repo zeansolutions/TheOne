@@ -13,6 +13,37 @@ class GraphHandler:
         self.active_world = "reality"
         self.io_handler = DbIoHandler(self)
 
+    def canonicalize_concept(self, word, language="ar"):
+        """
+        Canonicalizes a concept word by stripping definite articles defined dynamically
+        in the morphology configuration of the language rules database.
+        """
+        if not word:
+            return word
+        word = word.strip()
+        
+        # English/French canonicalization (e.g. lowercase)
+        if language in ["en", "fr"]:
+            return word.lower()
+            
+        # Arabic or other languages using particles
+        # Get morphology particles from language rules
+        particles = self.language_rules.get("morphology", {}).get("particles", [])
+        definite_articles = [
+            p["form"].replace("ـ", "")
+            for p in particles
+            if p.get("type") == "definite_article"
+        ]
+        
+        # Sort definite articles by length descending to match longest prefixes first
+        definite_articles.sort(key=len, reverse=True)
+        
+        for art in definite_articles:
+            if word.startswith(art) and len(word) > len(art):
+                return word[len(art):]
+                
+        return word
+
     def load_databases(self, ontology_path, facts_path, language_rules_path, inference_rules_path=None):
         """Loads and parses JSON databases by delegating to DbIoHandler."""
         return self.io_handler.load_databases(ontology_path, facts_path, language_rules_path, inference_rules_path)
@@ -24,6 +55,10 @@ class GraphHandler:
         """
         import datetime
         timestamp = datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z")
+        
+        # Canonicalize inputs dynamically
+        subj = self.canonicalize_concept(subj, language)
+        obj = self.canonicalize_concept(obj, language)
         
         # Local translations dictionary for fact updates and interactive options
         msgs = {
