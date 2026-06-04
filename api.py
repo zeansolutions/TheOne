@@ -38,6 +38,15 @@ active_lang = "en"
 
 procedural_steps_path = os.path.join(project_root, "data/procedural_steps.json")
 
+def canonicalize_concept(concept, lang):
+    if not concept:
+        return concept
+    concept = concept.strip()
+    if lang == "ar" or not lang:
+        if concept.startswith("ال") and len(concept) > 2:
+            return concept[2:]
+    return concept
+
 def load_procedural_steps():
     if os.path.exists(procedural_steps_path):
         try:
@@ -260,6 +269,10 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                 modality = body.get("modality", None)
                 lang = body.get("lang", active_lang)
                 
+                # Canonicalize subject and object to canonical indefinite stems
+                subj = canonicalize_concept(subj, lang)
+                obj = canonicalize_concept(obj, lang)
+                
                 # Check for dynamic concepts adding if they do not exist
                 if subj and not handler.graph.has_node(subj):
                     handler.graph.add_node(subj, labels=[subj], category="user_defined", type="concept")
@@ -294,6 +307,10 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                 relation = body.get("relation")
                 world = body.get("world", "reality")
                 action = body.get("action") # "replace" | "merge" | "ignore"
+                
+                # Canonicalize subject and object to canonical indefinite stems
+                subj = canonicalize_concept(subj, active_lang)
+                obj = canonicalize_concept(obj, active_lang)
                 
                 # Locate existing conflict edge
                 existing_edges = []
