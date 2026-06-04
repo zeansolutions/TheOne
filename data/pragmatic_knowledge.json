@@ -12,6 +12,11 @@
       "literal": "feline_carnivore",
       "metaphorical_meaning": "king of the jungle, lion",
       "cultural_context": "common folklore"
+    },
+    {
+      "context": "moral_lesson",
+      "literal": "value_of_light_is_not_in_intensity",
+      "implied": "The worth of a person or entity lies in the benefit and goodness they provide to others, not in mere appearances or power."
     }
   ],
   "contextual_rules": [

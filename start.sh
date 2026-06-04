@@ -30,6 +30,10 @@ show_help() {
     echo -e "             - اختيار ديناميكي للشخصية المناسبة (الحكيم، الباحث، المرشد)"
     echo -e "             - تذكر سياق الكيانات والضمائر عبر اللغات المختلفة"
     echo -e "             - حل تعارض الحقائق التفاعلي والتعلم اللحظي للحقائق"
+    echo -e "  ${GREEN}gui${NC}      : تشغيل الواجهة الرسومية المستقبلية للتطبيق باستخدام Electron & React (Futuristic Desktop GUI)"
+    echo -e "             - يدعم 11 لغة مع التحول لاتجاه RTL تلقائياً"
+    echo -e "             - محاكاة للشبكات العصبية والسيالات العصبية مع حركة ديناميكية"
+    echo -e "             - التحكم بالحقائق وقائمة المفاهيم ودورة النوم والتلقين المباشر وحل التعارضات"
     echo -e "  ${GREEN}sleep${NC}    : تشغيل دورة النوم المعرفية لتنظيف وتحسين شبكة المعرفة (Cognitive Sleep Cycle)"
     echo -e "             - يدعم خيارات: --depth=2 --cleanup"
     echo -e "  ${GREEN}curious${NC}  : تشغيل محرك الفضول المعرفي لرصد الفجوات المعرفية وتوليد الأسئلة (Curiosity Engine)"
@@ -80,6 +84,24 @@ case "$1" in
         echo -e "${BLUE}[+] جاري تشغيل واجهة التيرمينال التفاعلية لعقل منطقي...${NC}"
         echo ""
         PYTHONPATH=. ./venv/bin/python main.py
+        ;;
+    gui)
+        show_banner
+        if [ ! -d "venv" ]; then
+            echo -e "${YELLOW}[!] البيئة الافتراضية غير مهيأة بعد. جاري التشغيل التلقائي للتنصيب...${NC}"
+            setup_env
+        fi
+        echo -e "${BLUE}[+] التحقق من وجود الاعتمادات للواجهة الرسومية...${NC}"
+        if [ ! -d "desktop-gui/node_modules" ]; then
+            echo -e "${YELLOW}[!] المجلد node_modules غير موجود. جاري تثبيت المكتبات عبر npm...${NC}"
+            (cd desktop-gui && npm install)
+        fi
+        
+        echo -e "${BLUE}[+] جاري بناء واجهة React...${NC}"
+        (cd desktop-gui && npm run build)
+        
+        echo -e "${GREEN}[✓] جاري تشغيل تطبيق Electron...${NC}"
+        (cd desktop-gui && npm run electron)
         ;;
     sleep)
         show_banner

@@ -11,9 +11,9 @@ def setup_engine():
     tests_dir = os.path.dirname(os.path.abspath(__file__))
     project_dir = os.path.dirname(tests_dir)
     
-    ontology_path = os.path.join(project_dir, "data", "animals_ontology_small.json")
-    facts_path = os.path.join(project_dir, "data", "animals_facts.json")
-    language_rules_path = os.path.join(project_dir, "data", "animals_language_rules.json")
+    ontology_path = os.path.join(project_dir, "tests", "mock_data", "animals_ontology_small.json")
+    facts_path = os.path.join(project_dir, "tests", "mock_data", "animals_facts.json")
+    language_rules_path = os.path.join(project_dir, "tests", "mock_data", "animals_language_rules.json")
     
     handler.load_databases(ontology_path, facts_path, language_rules_path)
     reasoner = SimpleReasoner(handler)
@@ -118,4 +118,40 @@ def test_world_switching_and_conflict(setup_engine):
     res3 = reasoner.process_query("أين تشرق الشمس؟")
     assert res3["type"] == "location"
     assert res3["location"] == "c_west"
+
+
+def test_relation_path_queries(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # Test 1: Direct specific relationship (lives_in)
+    res_direct = reasoner.process_query("ما علاقة الأسد بالسافانا؟")
+    assert res_direct["type"] == "relation_path"
+    assert res_direct["is_deep"] is False
+    assert res_direct["path_found"] is True
+    assert len(res_direct["path_nodes"]) == 2
+    
+    response_direct = generator.generate(res_direct)
+    assert "علاقة مباشرة" in response_direct
+    assert "أسد" in response_direct
+    assert "السافانا" in response_direct
+    
+    # Test 2: Indirect/deep relationship exists, but query is specific (should return path_found=False)
+    res_indirect_specific = reasoner.process_query("ما علاقة الأسد بعين الماء؟")
+    assert res_indirect_specific["type"] == "relation_path"
+    assert res_indirect_specific["is_deep"] is False
+    assert res_indirect_specific["path_found"] is False
+    
+    # Test 3: Indirect/deep relationship with deep keyword (should find path)
+    res_deep = reasoner.process_query("ما العلاقة العميقة بين الأسد وعين الماء؟")
+    assert res_deep["type"] == "relation_path"
+    assert res_deep["is_deep"] is True
+    assert res_deep["path_found"] is True
+    assert len(res_deep["path_nodes"]) >= 3
+    
+    response_deep = generator.generate(res_deep)
+    assert "علاقة غير مباشر" in response_deep or "عميق" in response_deep
+    assert "أسد" in response_deep
+    assert "عين" in response_deep or "نبع" in response_deep
+
+
 

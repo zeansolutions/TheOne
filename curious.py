@@ -10,9 +10,9 @@ def main():
 
     handler = GraphHandler()
     handler.load_databases(
-        "data/animals_ontology_small.json",
-        "data/animals_facts.json",
-        "data/animals_language_rules.json"
+        "data/ontology.json",
+        "data/facts.json",
+        "data/language_rules.json"
     )
 
     engine = CuriosityEngine(handler)

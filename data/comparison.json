@@ -3,19 +3,58 @@
   "comparative_properties": {
     "strength": {
       "scale": [
-        {"entity": "ant", "value": 0.1},
-        {"entity": "gazelle", "value": 0.3},
-        {"entity": "polar_bear", "value": 0.8},
-        {"entity": "feline_carnivore", "value": 0.9},
-        {"entity": "elephant", "value": 1.0}
+        {
+          "entity": "ant",
+          "value": 0.1
+        },
+        {
+          "entity": "gazelle",
+          "value": 0.3
+        },
+        {
+          "entity": "polar_bear",
+          "value": 0.8
+        },
+        {
+          "entity": "feline_carnivore",
+          "value": 0.9
+        },
+        {
+          "entity": "elephant",
+          "value": 1.0
+        }
       ]
     },
     "speed": {
       "scale": [
-        {"entity": "ant", "value": 0.05},
-        {"entity": "polar_bear", "value": 0.4},
-        {"entity": "feline_carnivore", "value": 0.8},
-        {"entity": "gazelle", "value": 0.9}
+        {
+          "entity": "ant",
+          "value": 0.05
+        },
+        {
+          "entity": "polar_bear",
+          "value": 0.4
+        },
+        {
+          "entity": "feline_carnivore",
+          "value": 0.8
+        },
+        {
+          "entity": "gazelle",
+          "value": 0.9
+        }
+      ]
+    },
+    "brightness_scale": {
+      "scale": [
+        {
+          "entity": "little_star",
+          "value": 0.3
+        },
+        {
+          "entity": "large_stars",
+          "value": 0.9
+        }
       ]
     }
   },

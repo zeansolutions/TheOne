@@ -45,10 +45,10 @@ TheOne/
 │   ├── languages.json                # Supported locales, RTL settings, default personas
 │   └── personas_multilingual.json    # Persona archetypes (Sage Friend, Scientist, Witty Mentor)
 │
-├── data/                             # Knowledge Bases & Language Rules (JSON)
-│   ├── animals_language_rules.json   # Morphological roots, affixes, and lexical mappings
-│   ├── animals_ontology_small.json   # Graph concepts and taxonomic relations
-│   ├── animals_facts.json            # Triples/facts segmented by worlds and personas
+├── data/                             # Zero-State Database & Config Rules (JSON)
+│   ├── ontology.json                 # Core concepts and taxonomic relations (Starts empty)
+│   ├── facts.json                    # Fact triples segmented by worlds/personas (Starts empty)
+│   ├── language_rules.json           # Morphological roots/affixes for translation (Starts empty)
 │   ├── inference_rules.json          # Logical inference rules (Horn clauses)
 │   ├── semantic_roles.json           # Semantic frames (Agent, Patient, Location)
 │   ├── temporal_logic.json           # Temporal relations (BEFORE, AFTER)
@@ -61,6 +61,12 @@ TheOne/
 │   ├── comparison.json               # Comparative ordering scales and relations
 │   └── anomaly_detection.json        # Exceptional facts and anomaly rules
 │
+├── tests/                            # Automated Pytest Suite
+│   ├── mock_data/                    # Isolated Mock Test Data
+│   │   ├── animals_facts.json        # Animals mock facts for test cases
+│   │   ├── animals_ontology_small.json # Animals mock ontology for test cases
+│   │   └── animals_language_rules.json # Animals mock language rules for test cases
+│   └── test_*.py                     # Unit test suites for reasoner layers
 ├── src/                              # Core Engine Source Code
 │   ├── __init__.py
 │   ├── graph_handler.py              # NetworkX manager, morphology, rules, and activation
@@ -195,12 +201,12 @@ All responses are formatted based on three variables:
 
 | Feature | Implementation Status | Path / File Responsibility |
 | :--- | :---: | :--- |
-| **1. Morphological Analyzer** | **Fully Implemented** | `src/graph_handler.py` ([dynamic_morphological_lookup](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)), [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) |
+| **1. Morphological Analyzer** | **Fully Implemented** | `src/graph_handler.py` ([dynamic_morphological_lookup](file:///home/zean/Projects/TheOne/src/graph_handler.py#L373)), [language_rules.json](file:///home/zean/Projects/TheOne/data/language_rules.json) |
 | **2. Spreading Activation** | **Fully Implemented** | `src/graph_handler.py` ([spreading_activation](file:///home/zean/Projects/TheOne/src/graph_handler.py#L484)) |
 | **3. Inference Rules** | **Fully Implemented** | `src/graph_handler.py` ([infer_facts](file:///home/zean/Projects/TheOne/src/graph_handler.py#L585)), [inference_rules.json](file:///home/zean/Projects/TheOne/data/inference_rules.json) |
 | **4. Knowledge Update & Conflicts** | **Fully Implemented** | `src/graph_handler.py` ([add_or_update_fact](file:///home/zean/Projects/TheOne/src/graph_handler.py#L65)), `main.py` |
 | **5. LLM Prompt Ingestion** | **Design-Only / Not Needed** | Replaced by 100% local, offline Zero-LLM symbolic fact parser |
-| **6. Lexicon & Mappings** | **Partially Implemented** | [animals_language_rules.json](file:///home/zean/Projects/TheOne/data/animals_language_rules.json) (Roots, patterns, affixes, and translations) |
+| **6. Lexicon & Mappings** | **Partially Implemented** | [language_rules.json](file:///home/zean/Projects/TheOne/data/language_rules.json) (Roots, patterns, affixes, and translations) |
 | **7. Entity & Pronoun Resolution** | **Fully Implemented** | `src/entity_resolver.py` ([EntityResolver](file:///home/zean/Projects/TheOne/src/entity_resolver.py#L1)), `src/conversation_manager.py` |
 | **8. Trace Chain Translation** | **Fully Implemented** | `src/renderer/expression_renderer.py` ([translate_trace_step](file:///home/zean/Projects/TheOne/src/renderer/expression_renderer.py#L96)) |
 

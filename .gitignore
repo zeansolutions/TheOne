@@ -16,3 +16,14 @@ Thumbs.db
 
 # Private files
 /for me/
+
+# Dependencies & Build outputs
+node_modules/
+desktop-gui/node_modules/
+dist/
+desktop-gui/dist/
+
+# Logs
+api.log
+*.log
+

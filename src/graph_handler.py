@@ -1,6 +1,8 @@
 import os
 import json
+import datetime
 import networkx as nx
+from src.maintenance.db_io_handler import DbIoHandler
 
 class GraphHandler:
     def __init__(self):
@@ -9,74 +11,11 @@ class GraphHandler:
         self.facts = []
         self.personas = []
         self.active_world = "reality"
+        self.io_handler = DbIoHandler(self)
 
     def load_databases(self, ontology_path, facts_path, language_rules_path, inference_rules_path=None):
-        """Loads and parses JSON databases, populating the NetworkX graph and dynamic rules."""
-        self.ontology_path = ontology_path
-        self.facts_path = facts_path
-        self.language_rules_path = language_rules_path
-        self.inference_rules_path = inference_rules_path
-        
-        # 1. Load Language Rules
-        with open(language_rules_path, 'r', encoding='utf-8') as f:
-            self.language_rules = json.load(f)
-            
-        # 1.5 Load Inference Rules
-        self.inference_rules = []
-        if inference_rules_path is None:
-            inference_rules_path = os.path.join(os.path.dirname(ontology_path), "inference_rules.json")
-        if os.path.exists(inference_rules_path):
-            with open(inference_rules_path, 'r', encoding='utf-8') as f:
-                rules_db = json.load(f)
-                self.inference_rules = rules_db.get("rules", [])
-        else:
-            self.inference_rules = []
-            
-        # 2. Load Ontology (Concepts & Relations)
-        with open(ontology_path, 'r', encoding='utf-8') as f:
-            ontology = json.load(f)
-            # Populate concepts as nodes
-            for concept in ontology.get("concepts", []):
-                self.graph.add_node(
-                    concept["id"],
-                    labels=concept.get("labels", []),
-                    category=concept.get("category", ""),
-                    type="concept"
-                )
-            # Populate relations as directed edges
-            for rel in ontology.get("relations", []):
-                self.graph.add_edge(
-                    rel["from"],
-                    rel["to"],
-                    relation=rel["relation"],
-                    causal_purpose=rel.get("causal_purpose", None),
-                    type="relation"
-                )
-            # Store inference rules in graph attributes
-            self.graph.graph["inference_rules"] = ontology.get("inference_rules", [])
-
-        # 3. Load Facts & Personas
-        with open(facts_path, 'r', encoding='utf-8') as f:
-            facts_db = json.load(f)
-            self.facts = facts_db.get("facts", [])
-            self.personas = facts_db.get("personas", [])
-            
-            # Load facts into graph under specific worlds
-            for fact in self.facts:
-                # Add edge to represent the fact
-                self.graph.add_edge(
-                    fact["subject"],
-                    fact["object"],
-                    relation=fact["predicate"],
-                    world=fact["world"],
-                    confidence=fact.get("confidence", 1.0),
-                    type="fact",
-                    reason=fact.get("reason", None),
-                    timestamp="2026-06-02T00:00:00Z",
-                    source="database",
-                    status="active",
-                    update_history=[]
-                )
+        """Loads and parses JSON databases by delegating to DbIoHandler."""
+        return self.io_handler.load_databases(ontology_path, facts_path, language_rules_path, inference_rules_path)
 
     def add_or_update_fact(self, subj, obj, relation, world, confidence=1.0, reason=None, interactive=False, modality=None, language="ar"):
         """
@@ -642,9 +581,11 @@ class GraphHandler:
             return [current_bindings]
             
         cond = conditions[index]
-        cond_sub = cond["subject"]
-        cond_rel = cond["relation"]
-        cond_obj = cond["object"]
+        cond_sub = cond.get("subject", "")
+        cond_rel = cond.get("relation") or cond.get("predicate", "")
+        cond_obj = cond.get("object") or cond.get("to", "")
+        if not cond_sub or not cond_rel or not cond_obj:
+            return []
         
         results = []
         
@@ -743,18 +684,26 @@ class GraphHandler:
             
             # Phase B: Existing forward-chaining rules
             for rule in self.inference_rules:
-                rule_id = rule["id"]
-                conditions = rule["conditions"]
-                conclusion_template = rule["conclusion"]
+                rule_id = rule.get("id")
+                conditions = rule.get("conditions", [])
+                conclusion_template = rule.get("conclusion")
+                if not rule_id or not conditions or not conclusion_template:
+                    continue
                 
                 # Find all satisfying variable bindings
                 bindings_list = self.find_bindings(active_world, conditions)
                 
+                conc_sub = conclusion_template.get("subject", "")
+                conc_obj = conclusion_template.get("object") or conclusion_template.get("to", "")
+                conc_rel = conclusion_template.get("relation") or conclusion_template.get("predicate", "")
+                if not conc_sub or not conc_obj or not conc_rel:
+                    continue
+                
                 for binding in bindings_list:
                     # Construct conclusion
-                    sub = binding.get(conclusion_template["subject"], conclusion_template["subject"])
-                    obj = binding.get(conclusion_template["object"], conclusion_template["object"])
-                    rel = conclusion_template["relation"]
+                    sub = binding.get(conc_sub, conc_sub)
+                    obj = binding.get(conc_obj, conc_obj)
+                    rel = conc_rel
                     
                     # Verify u and v exist as nodes in the graph
                     if not (self.graph.has_node(sub) and self.graph.has_node(obj)):
@@ -809,7 +758,12 @@ class GraphHandler:
                             cond_lbl = self.graph.nodes[cond_node].get("labels", [cond_node])[0]
                             desc = f"بما أن {sub_lbl} يعيش في {env_lbl}، و {env_lbl} يشتمل على {cond_lbl} الذي يتطلب [{obj_lbl}]، فإن {sub_lbl} يتطلب [{obj_lbl}]"
                         else:
-                            desc = f"استنتاج الحقيقة: [{sub_lbl}] --({rel})--> [{obj_lbl}] بناءً على قاعدة '{rule.get('name', rule_id)}'"
+                            rule_desc_template = rule.get('description', '')
+                            if rule_desc_template:
+                                desc = rule_desc_template
+                                desc = desc.replace("?x", sub_lbl).replace("?y", obj_lbl).replace("?star", sub_lbl).replace("?person", obj_lbl)
+                            else:
+                                desc = f"استنتاج الحقيقة: [{sub_lbl}] --({rel})--> [{obj_lbl}] بناءً على قاعدة '{rule.get('name', rule_id)}'"
                             
                         # Add inferred edge
                         self.graph.add_edge(
@@ -866,71 +820,15 @@ class GraphHandler:
         # print(f"[PERF] Inference Engine took {elapsed:.2f}ms")
 
     def save_databases(self, ontology_path=None, facts_path=None):
-        """
-        Saves the in-memory graph representation back to JSON database files.
-        """
-        if ontology_path is None:
-            ontology_path = getattr(self, "ontology_path", "data/animals_ontology_small.json")
-        if facts_path is None:
-            facts_path = getattr(self, "facts_path", "data/animals_facts.json")
-
-        # 1. Prepare Ontology Structure
-        concepts = []
-        for node, data in self.graph.nodes(data=True):
-            if data.get("type") == "concept":
-                concepts.append({
-                    "id": node,
-                    "labels": data.get("labels", []),
-                    "category": data.get("category", "")
-                })
-
-        relations = []
-        for u, v, data in self.graph.edges(data=True):
-            if data.get("type") == "relation":
-                relations.append({
-                    "from": u,
-                    "to": v,
-                    "relation": data.get("relation"),
-                    "causal_purpose": data.get("causal_purpose", None)
-                })
-
-        ontology_data = {
-            "concepts": concepts,
-            "relations": relations,
-            "inference_rules": self.graph.graph.get("inference_rules", [])
-        }
-
-        # 2. Prepare Facts Structure
-        facts = []
-        for u, v, data in self.graph.edges(data=True):
-            if data.get("type") == "fact":
-                fact_entry = {
-                    "subject": u,
-                    "predicate": data.get("relation"),
-                    "object": v,
-                    "world": data.get("world", "reality"),
-                    "confidence": data.get("confidence", 1.0)
-                }
-                if data.get("reason"):
-                    fact_entry["reason"] = data["reason"]
-                if data.get("modality"):
-                    fact_entry["modality"] = data["modality"]
-                facts.append(fact_entry)
-
-        facts_data = {
-            "facts": facts,
-            "personas": self.personas
-        }
-
-        # Write to files
-        with open(ontology_path, 'w', encoding='utf-8') as f:
-            json.dump(ontology_data, f, ensure_ascii=False, indent=2)
-
-        with open(facts_path, 'w', encoding='utf-8') as f:
-            json.dump(facts_data, f, ensure_ascii=False, indent=2)
+        """Saves databases by delegating to DbIoHandler."""
+        return self.io_handler.save_databases(ontology_path, facts_path)
 
     def get_persona(self, persona_id="persona_1"):
         for p in self.personas:
             if p["id"] == persona_id:
                 return p
         return None
+
+    def import_json_data(self, data):
+        """Imports JSON data by delegating to DbIoHandler."""
+        return self.io_handler.import_json_data(data)

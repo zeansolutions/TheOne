@@ -1,0 +1,32 @@
+{
+  "relations": [
+    {
+      "id": "is_a",
+      "name": "نوع من",
+      "transitive": true,
+      "decay": 0.0,
+      "symmetric": false
+    },
+    {
+      "id": "causes",
+      "name": "يسبب",
+      "transitive": true,
+      "decay": 0.1,
+      "symmetric": false
+    },
+    {
+      "id": "resembles",
+      "name": "يماثل",
+      "transitive": true,
+      "decay": 0.3,
+      "symmetric": true
+    },
+    {
+      "id": "contains",
+      "name": "يحتوي على",
+      "transitive": true,
+      "symmetric": false,
+      "decay": 0.15
+    }
+  ]
+}

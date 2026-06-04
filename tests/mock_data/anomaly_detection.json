@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "exceptions": [
+    {
+      "entity": "feline_carnivore",
+      "property": "eats_vegetarian",
+      "typical_rule": "all(lion, eats_meat)",
+      "exception_type": "vegetarian_lion",
+      "confidence": 0.01,
+      "reason": "rare_genetic_mutation"
+    }
+  ],
+  "anomaly_patterns": [
+    {
+      "pattern": "most entities have property X",
+      "entity": "Y",
+      "property": "not X",
+      "anomaly_score": 0.95
+    }
+  ]
+}

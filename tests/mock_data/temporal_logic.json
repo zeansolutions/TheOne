@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "temporal_relations": {
+    "BEFORE": {
+      "symbol": "<",
+      "axiom": "if (A BEFORE B) and (B BEFORE C) then (A BEFORE C)",
+      "transitivity": true,
+      "decay": 0.0
+    },
+    "AFTER": {
+      "symbol": ">",
+      "axiom": "if (A AFTER B) and (B AFTER C) then (A AFTER C)",
+      "transitivity": true,
+      "decay": 0.0
+    },
+    "DURING": {
+      "symbol": "⊂",
+      "axiom": "if (A DURING B) then (A_start >= B_start) and (A_end <= B_end)",
+      "transitivity": false
+    }
+  },
+  "temporal_markers": {
+    "ar": {
+      "past": ["في الماضي", "قديما", "قديماً", "كان"],
+      "present": ["الآن", "حاليا", "حالياً", "اليوم"],
+      "future": ["سيكون", "غدا", "غداً", "مستقبلا", "مستقبلاً"]
+    },
+    "en": {
+      "past": ["past", "previously", "was"],
+      "present": ["now", "currently", "today", "is"],
+      "future": ["future", "tomorrow", "will be"]
+    }
+  },
+  "temporal_facts": [
+    {
+      "entity": "dinosaur",
+      "event": "extinction",
+      "time": "BEFORE",
+      "reference": "present",
+      "confidence": 1.0
+    },
+    {
+      "entity": "mammoth",
+      "event": "extinction",
+      "time": "BEFORE",
+      "reference": "present",
+      "confidence": 1.0
+    }
+  ]
+}

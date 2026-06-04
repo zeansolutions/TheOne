@@ -19,7 +19,8 @@
       "نادرا": "rarely",
       "نادراً": "rarely",
       "ممكن": "possibly",
-      "محتمل": "possibly"
+      "محتمل": "possibly",
+      "كل ليلة": "always"
     },
     "en": {
       "always": "always",
@@ -36,6 +37,32 @@
       "parfois": "sometimes",
       "rarement": "rarely",
       "possiblement": "possibly"
+    }
+  },
+  "logical_modalities": {
+    "necessity": {
+      "markers": ["يجب", "لازم", "ضروري", "لا بد", "must", "necessary", "needs to"],
+      "logic": "necessity(X) => always(X)",
+      "confidence": 1.0,
+      "examples": [
+        "الأسد يجب أن يأكل لحمة"
+      ]
+    },
+    "possibility": {
+      "markers": ["ممكن", "قد يكون", "قد", "من الممكن", "possible", "can", "may"],
+      "logic": "possibility(X) => sometimes(X)",
+      "confidence": 0.5,
+      "examples": [
+        "الأسد قد يأكل نبات"
+      ]
+    },
+    "impossibility": {
+      "markers": ["مستحيل", "لا يمكن", "لن", "غير ممكن", "impossible", "cannot", "never"],
+      "logic": "impossibility(X) => never(X)",
+      "confidence": 0.0,
+      "examples": [
+        "الأسد مستحيل يصير طائر"
+      ]
     }
   }
 }

@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "quantifiers": [
+    {
+      "name": "universal",
+      "markers": ["كل", "جميع", "كل واحد", "all", "every"],
+      "logic": "forall(X, predicate(X))",
+      "confidence": 1.0
+    },
+    {
+      "name": "existential",
+      "markers": ["بعض", "يوجد", "هناك", "some", "exists"],
+      "logic": "exists(X, predicate(X))",
+      "confidence": 0.5
+    },
+    {
+      "name": "majority",
+      "markers": ["معظم", "أكثرية", "أغلبية", "most"],
+      "logic": "forall(X in majority, predicate(X))",
+      "confidence": 0.75
+    }
+  ],
+  "quantifier_inferences": [
+    {
+      "rule": "if forall(X, property(X)) then exists(X, property(X))",
+      "name": "universal_to_existential"
+    }
+  ]
+}

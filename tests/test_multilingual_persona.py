@@ -10,9 +10,9 @@ def setup_multilingual_engine():
     tests_dir = os.path.dirname(os.path.abspath(__file__))
     project_dir = os.path.dirname(tests_dir)
     
-    ontology_path = os.path.join(project_dir, "data", "animals_ontology_small.json")
-    facts_path = os.path.join(project_dir, "data", "animals_facts.json")
-    language_rules_path = os.path.join(project_dir, "data", "animals_language_rules.json")
+    ontology_path = os.path.join(project_dir, "tests", "mock_data", "animals_ontology_small.json")
+    facts_path = os.path.join(project_dir, "tests", "mock_data", "animals_facts.json")
+    language_rules_path = os.path.join(project_dir, "tests", "mock_data", "animals_language_rules.json")
     
     handler.load_databases(ontology_path, facts_path, language_rules_path)
     reasoner = SimpleReasoner(handler)
@@ -131,3 +131,16 @@ def test_multilingual_teaching_and_switching(setup_multilingual_engine):
     res2 = reasoner.process_query(q2)
     output2 = engine.process_response(q2, res2)
     assert "west" in output2["response"]
+
+def test_dynamic_template_override(setup_multilingual_engine):
+    reasoner, engine = setup_multilingual_engine
+    
+    # Override classification_true template in English dynamically
+    engine.handler.language_rules["en"]["templates"]["classification_true"] = "Dynamic Test: {concept1} IS INDEED A {concept2}!"
+    
+    q = "Is the polar bear an animal?"
+    res = reasoner.process_query(q)
+    output = engine.process_response(q, res)
+    
+    # Check that our overridden template is reflected in the final persona output
+    assert "Dynamic Test: polar bear IS INDEED A animal!" in output["response"]

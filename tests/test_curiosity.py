@@ -5,9 +5,9 @@ from src.reasoner.curiosity_engine import CuriosityEngine
 def test_curiosity_mystery_score():
     handler = GraphHandler()
     handler.load_databases(
-        "data/animals_ontology_small.json",
-        "data/animals_facts.json",
-        "data/animals_language_rules.json"
+        "tests/mock_data/animals_ontology_small.json",
+        "tests/mock_data/animals_facts.json",
+        "tests/mock_data/animals_language_rules.json"
     )
     
     engine = CuriosityEngine(handler)

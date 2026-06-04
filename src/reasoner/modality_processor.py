@@ -5,7 +5,7 @@ class ModalityProcessor:
     def __init__(self, db_path=None):
         if db_path is None:
             base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            db_path = os.path.join(base_dir, "data", "modality.json")
+            db_path = os.path.join(base_dir, "data", "modalities.json")
             
         with open(db_path, "r", encoding="utf-8") as f:
             self.db = json.load(f)
@@ -19,12 +19,26 @@ class ModalityProcessor:
         if language in ["en", "fr"]:
             words = [w.lower() for w in words]
             
+        import re
         detected_name = None
         detected_def = None
         
-        for modal_name, modal_def in self.db.get("modalities", {}).items():
+        modalities_dict = self.db.get("logical_modalities") or self.db.get("modalities", {})
+        for modal_name, modal_def in modalities_dict.items():
             markers = modal_def.get("markers", [])
-            if any(marker in words or marker in text for marker in markers):
+            matched = False
+            for marker in markers:
+                if " " in marker:
+                    # multi-word phrase matching with word boundaries
+                    pattern = rf"(?:^|\s|[،,\.\?؟]){re.escape(marker)}(?:$|\s|[،,\.\?؟])"
+                    if re.search(pattern, text):
+                        matched = True
+                        break
+                else:
+                    if marker in words:
+                        matched = True
+                        break
+            if matched:
                 detected_name = modal_name
                 detected_def = modal_def
                 break

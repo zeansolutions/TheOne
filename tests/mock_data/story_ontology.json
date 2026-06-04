@@ -1,0 +1,24 @@
+{
+  "concepts": [
+    {
+      "id": "little_star",
+      "labels": [
+        "نجمة صغيرة",
+        "النجمة الصغيرة",
+        "little_star"
+      ],
+      "category": "star"
+    },
+    {
+      "id": "joy",
+      "labels": [
+        "فرح",
+        "فرحت",
+        "joy"
+      ],
+      "category": "emotion"
+    }
+  ],
+  "relations": [],
+  "inference_rules": []
+}

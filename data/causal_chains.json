@@ -4,11 +4,49 @@
     {
       "id": "hunger_predation_chain",
       "steps": [
-        {"step": 1, "event": "hunger", "agent": "feline_carnivore"},
-        {"step": 2, "event": "predation", "causal_link": "hunger causes predation"},
-        {"step": 3, "event": "death", "causal_link": "predation causes death", "patient": "gazelle"}
+        {
+          "step": 1,
+          "event": "hunger",
+          "agent": "feline_carnivore"
+        },
+        {
+          "step": 2,
+          "event": "predation",
+          "causal_link": "hunger causes predation"
+        },
+        {
+          "step": 3,
+          "event": "death",
+          "causal_link": "predation causes death",
+          "patient": "gazelle"
+        }
       ],
       "total_confidence": 0.85
+    },
+    {
+      "id": "safe_return_chain",
+      "steps": [
+        {
+          "step": 1,
+          "event": "shining_with_best_effort",
+          "agent": "little_star"
+        },
+        {
+          "step": 2,
+          "event": "illuminating_the_road_to_home",
+          "causal_link": "enables"
+        },
+        {
+          "step": 3,
+          "event": "child_following_the_light",
+          "agent": "child"
+        },
+        {
+          "step": 4,
+          "event": "reaching_home_safely",
+          "causal_link": "results_in"
+        }
+      ]
     }
   ],
   "causal_rules": [

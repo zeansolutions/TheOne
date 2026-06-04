@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "negation_rules": [
+    {
+      "rule": "not(property(X)) => has(X, opposite_property)",
+      "example": "not(eats_vegetarian) => eats_meat"
+    },
+    {
+      "rule": "not(not(X)) => X",
+      "name": "double_negation_elimination"
+    }
+  ],
+  "negation_markers": {
+    "ar": ["لا", "ليس", "لم", "لن"],
+    "en": ["not", "no", "don't", "doesn't", "never"]
+  },
+  "polarities": [
+    {
+      "positive": "eats_meat",
+      "negative": "eats_vegetarian",
+      "opposite": "eats_vegetarian"
+    },
+    {
+      "positive": "is_alive",
+      "negative": "is_dead",
+      "opposite": "is_dead"
+    }
+  ]
+}

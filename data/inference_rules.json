@@ -4,8 +4,16 @@
       "id": "transitive_is_a",
       "name": "التعدي التصنيفي",
       "conditions": [
-        {"subject": "?x", "relation": "is_a", "object": "?y"},
-        {"subject": "?y", "relation": "is_a", "object": "?z"}
+        {
+          "subject": "?x",
+          "relation": "is_a",
+          "object": "?y"
+        },
+        {
+          "subject": "?y",
+          "relation": "is_a",
+          "object": "?z"
+        }
       ],
       "conclusion": {
         "subject": "?x",
@@ -18,8 +26,16 @@
       "id": "property_inheritance",
       "name": "وراثة الخصائص تصاعدياً",
       "conditions": [
-        {"subject": "?x", "relation": "is_a", "object": "?y"},
-        {"subject": "?y", "relation": "has_property", "object": "?p"}
+        {
+          "subject": "?x",
+          "relation": "is_a",
+          "object": "?y"
+        },
+        {
+          "subject": "?y",
+          "relation": "has_property",
+          "object": "?p"
+        }
       ],
       "conclusion": {
         "subject": "?x",
@@ -32,9 +48,21 @@
       "id": "environment_requirement",
       "name": "متطلبات البيئة للكائن",
       "conditions": [
-        {"subject": "?x", "relation": "lives_in", "object": "?env"},
-        {"subject": "?env", "relation": "has_environment", "object": "?cond"},
-        {"subject": "?cond", "relation": "requires", "object": "?req"}
+        {
+          "subject": "?x",
+          "relation": "lives_in",
+          "object": "?env"
+        },
+        {
+          "subject": "?env",
+          "relation": "has_environment",
+          "object": "?cond"
+        },
+        {
+          "subject": "?cond",
+          "relation": "requires",
+          "object": "?req"
+        }
       ],
       "conclusion": {
         "subject": "?x",
@@ -42,6 +70,74 @@
         "object": "?req"
       },
       "description": "إذا كان الكائن ?x يعيش في بيئة ?env تشتمل على ظرف ?cond يتطلب ?req، إذن ?x يتطلب ?req."
+    },
+    {
+      "id": "guidance_rule",
+      "name": "قاعدة الهداية والإرشاد",
+      "conditions": [
+        {
+          "subject": "?star",
+          "relation": "emits",
+          "object": "?light"
+        },
+        {
+          "subject": "?light",
+          "relation": "illuminates",
+          "object": "?road"
+        },
+        {
+          "subject": "?road",
+          "relation": "leads_to",
+          "object": "?destination"
+        },
+        {
+          "subject": "?person",
+          "relation": "follows",
+          "object": "?light"
+        }
+      ],
+      "conclusion": {
+        "subject": "?person",
+        "relation": "located_in",
+        "object": "?destination"
+      },
+      "description": "إذا كان النجم يصدر نوراً يضيء طريقاً يؤدي إلى وجهة معينة، واتبع الشخص هذا النور، فإنه يصل إلى وجهته بأمان."
+    },
+    {
+      "id": "helping_creates_joy",
+      "name": "مساعدة الآخرين تدخل الفرح",
+      "conditions": [
+        {
+          "subject": "?x",
+          "relation": "shines_to_help",
+          "object": "?y"
+        }
+      ],
+      "conclusion": {
+        "subject": "?x",
+        "relation": "has_emotion",
+        "object": "joy"
+      },
+      "confidence": 0.9,
+      "description": "مساعدة الآخرين تدخل الفرح على قلب الفاعل."
+    },
+    {
+      "id": "understanding_value_is_wise",
+      "name": "إدراك قيمة الخير حكمة",
+      "conditions": [
+        {
+          "subject": "?x",
+          "relation": "realizes_value",
+          "object": "?value"
+        }
+      ],
+      "conclusion": {
+        "subject": "?x",
+        "relation": "is_a",
+        "object": "wise"
+      },
+      "confidence": 0.8,
+      "description": "إدراك الكائن لقيمة الخير يجعله حكيماً."
     }
   ]
 }

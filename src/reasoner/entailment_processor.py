@@ -18,8 +18,15 @@ class EntailmentProcessor:
         """
         entailed = []
         for ent in self.db.get("entailments", []):
-            premise = ent["premise"]
-            conclusion = ent["conclusion"]
+            premise = ent.get("premise")
+            conclusion = ent.get("conclusion")
+            if not premise or not conclusion:
+                continue
+            
+            if "relation" not in premise or "to" not in premise:
+                continue
+            if "relation" not in conclusion or "to" not in conclusion:
+                continue
             
             if premise["relation"] == relation_name and premise["to"] == target_concept:
                 entailed.append({

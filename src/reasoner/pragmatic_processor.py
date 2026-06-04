@@ -16,13 +16,15 @@ class PragmaticProcessor:
         e.g., "ملك الغابة" -> "feline_carnivore".
         """
         for fact in self.db.get("pragmatic_facts", []):
-            metaphor = fact["metaphor"]
+            metaphor = fact.get("metaphor")
+            if not metaphor or not isinstance(metaphor, str):
+                continue
             if metaphor in text:
                 return {
                     "metaphor": metaphor,
-                    "literal": fact["literal"],
-                    "meaning": fact["metaphorical_meaning"],
-                    "context": fact["cultural_context"]
+                    "literal": fact.get("literal", ""),
+                    "meaning": fact.get("metaphorical_meaning", ""),
+                    "context": fact.get("cultural_context", "")
                 }
         return None
         

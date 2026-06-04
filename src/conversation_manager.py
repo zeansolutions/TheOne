@@ -24,6 +24,11 @@ class ConversationManager:
     def get_last_concept(self):
         return self.last_active_concept
 
+    def get_history(self):
+        """Returns the conversation history list."""
+        return self.history
+
     def clear(self):
         self.history = []
         self.last_active_concept = None
+

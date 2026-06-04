@@ -11,9 +11,9 @@ def setup_advanced_engine():
     tests_dir = os.path.dirname(os.path.abspath(__file__))
     project_dir = os.path.dirname(tests_dir)
     
-    ontology_path = os.path.join(project_dir, "data", "animals_ontology_small.json")
-    facts_path = os.path.join(project_dir, "data", "animals_facts.json")
-    language_rules_path = os.path.join(project_dir, "data", "animals_language_rules.json")
+    ontology_path = os.path.join(project_dir, "tests", "mock_data", "animals_ontology_small.json")
+    facts_path = os.path.join(project_dir, "tests", "mock_data", "animals_facts.json")
+    language_rules_path = os.path.join(project_dir, "tests", "mock_data", "animals_language_rules.json")
     
     handler.load_databases(ontology_path, facts_path, language_rules_path)
     reasoner = SimpleReasoner(handler)

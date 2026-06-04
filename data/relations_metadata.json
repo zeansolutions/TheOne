@@ -20,6 +20,48 @@
       "transitive": true,
       "decay": 0.3,
       "symmetric": true
+    },
+    {
+      "id": "contains",
+      "name": "يحتوي على",
+      "transitive": true,
+      "symmetric": false,
+      "decay": 0.15
+    },
+    {
+      "id": "located_in",
+      "name": "موجود في",
+      "transitive": false,
+      "symmetric": false,
+      "decay": 0
+    },
+    {
+      "id": "emits",
+      "name": "يصدر",
+      "transitive": false,
+      "symmetric": false,
+      "decay": 0
+    },
+    {
+      "id": "illuminates",
+      "name": "يضيء",
+      "transitive": false,
+      "symmetric": false,
+      "decay": 0
+    },
+    {
+      "id": "leads_to",
+      "name": "يؤدي إلى",
+      "transitive": true,
+      "symmetric": false,
+      "decay": 0
+    },
+    {
+      "id": "follows",
+      "name": "يتبع",
+      "transitive": false,
+      "symmetric": false,
+      "decay": 0
     }
   ]
 }

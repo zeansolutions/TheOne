@@ -5,9 +5,9 @@ from src.simple_reasoner import SimpleReasoner
 def test_sandbox_isolation():
     handler = GraphHandler()
     handler.load_databases(
-        "data/animals_ontology_small.json",
-        "data/animals_facts.json",
-        "data/animals_language_rules.json"
+        "tests/mock_data/animals_ontology_small.json",
+        "tests/mock_data/animals_facts.json",
+        "tests/mock_data/animals_language_rules.json"
     )
     
     reasoner = SimpleReasoner(handler)

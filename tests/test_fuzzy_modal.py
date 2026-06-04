@@ -19,9 +19,9 @@ def test_fuzzy_modal_keyword_detection():
 def test_fuzzy_modal_confidence_attenuation():
     handler = GraphHandler()
     handler.load_databases(
-        "data/animals_ontology_small.json",
-        "data/animals_facts.json",
-        "data/animals_language_rules.json"
+        "tests/mock_data/animals_ontology_small.json",
+        "tests/mock_data/animals_facts.json",
+        "tests/mock_data/animals_language_rules.json"
     )
     
     world_mgr = WorldManager(handler)
