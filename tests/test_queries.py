@@ -153,5 +153,21 @@ def test_relation_path_queries(setup_engine):
     assert "أسد" in response_deep
     assert "عين" in response_deep or "نبع" in response_deep
 
+def test_query_classification_multiword(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # "polar_bear" (دب قطبي) is a "carnivore" which is an "animal" (كائن حي / حيوان)
+    # This query contains two multi-word concepts: "الدب القطبي" and "كائن حي"
+    res = reasoner.process_query("هل الدب القطبي كائن حي؟")
+    assert res["type"] == "classification"
+    assert res["result"] is True
+    assert res["concept1"] == "polar_bear"
+    assert res["concept2"] == "animal"
+    
+    response = generator.generate(res)
+    assert "دب قطبي" in response or "الدب القطبي" in response
+    assert "كائن حي" in response or "حيوان" in response
+
+
 
 

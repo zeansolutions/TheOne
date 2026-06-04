@@ -49,6 +49,30 @@ class SimpleReasoner:
         if os.path.exists(languages_path):
             self.language_engine = LanguageSelectionEngine(languages_path)
 
+    def _get_concept_index(self, c, words, language, part=None):
+        """Finds the word index of a concept in the query string/words list."""
+        # 1. Try finding a word in 'words' that resolves to 'c'
+        for w_idx, w in enumerate(words):
+            if self.handler.dynamic_morphological_lookup(w, language=language) == c:
+                return w_idx
+        # 2. Try finding if any label of c is a substring of the query
+        c_labels = []
+        if self.handler and c in self.handler.graph:
+            c_labels = self.handler.graph.nodes[c].get("labels", [])
+        c_labels = list(c_labels) + [c]
+        query_clean = part.replace("؟", "").replace("?", "").strip() if part else " ".join(words)
+        for lbl in sorted(c_labels, key=len, reverse=True):
+            lbl_clean = lbl.strip()
+            if lbl_clean in query_clean:
+                first_word = lbl_clean.split()[0]
+                if language == "ar":
+                    first_word = self.handler.canonicalize_concept(first_word, "ar")
+                for w_idx, w in enumerate(words):
+                    w_clean = self.handler.canonicalize_concept(w, language)
+                    if w_clean == first_word or first_word in w_clean or w_clean in first_word:
+                        return w_idx
+        return 999
+
     def check_is_a_relationship(self, concept_id, target_category_id):
         """Checks if concept_id is a target_category_id directly or via transitive inheritance."""
         self.handler.infer_facts(self.handler.active_world)
@@ -577,11 +601,11 @@ class SimpleReasoner:
         if comp_prop and len(mapped_concepts) >= 2:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
             try:
-                idx1 = words.index(next(w for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c1))
-                idx2 = words.index(next(w for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c2))
+                idx1 = self._get_concept_index(c1, words, language, " ".join(words))
+                idx2 = self._get_concept_index(c2, words, language, " ".join(words))
                 if idx1 > idx2:
                     c1, c2 = c2, c1
-            except StopIteration:
+            except Exception:
                 pass
                 
             comparison_val = self.comparison_processor.compare_entities(c1, c2, comp_prop)
@@ -955,8 +979,8 @@ class SimpleReasoner:
         if is_classification_query and len(mapped_concepts) >= 2:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
             try:
-                idx1 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c1]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c1 for w in words) else 0
-                idx2 = min([words.index(w) for w in words if self.handler.dynamic_morphological_lookup(w, language=language) == c2]) if any(self.handler.dynamic_morphological_lookup(w, language=language) == c2 for w in words) else 1
+                idx1 = self._get_concept_index(c1, words, language, part)
+                idx2 = self._get_concept_index(c2, words, language, part)
                 if idx1 > idx2:
                     c1, c2 = c2, c1
             except Exception:
