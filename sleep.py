@@ -16,7 +16,7 @@ def main():
     )
 
     sleep_cycle = CognitiveSleepCycle(handler)
-    stats = sleep_cycle.run_sleep_cycle()
+    stats = sleep_cycle.run_sleep_cycle(cleanup=args.cleanup)
     print("💤 Cognitive Sleep Cycle Completed successfully!")
     print(f"📊 Stats: {stats}")
 

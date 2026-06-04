@@ -5,19 +5,19 @@ class CuriosityEngine:
         self.handler = graph_handler
         self.templates = {
             "ar": {
-                "taxonomy": "ما هو '{concept}' بالضبط؟ هل هو نوع من الفئات الأخرى؟ (مثال: {concept} هو نوع من الثدييات)",
-                "property": "ما هي صفات '{concept}'؟ كيف يبدو لونه أو شكله أو ملمسه؟",
-                "action": "ما هي سلوكيات أو أفعال '{concept}'؟ ماذا يفعل أو يسبّب في العادة؟"
+                "taxonomy": "ما هو '{concept}' بالضبط؟ إلى أي فئة رئيسية ينتمي؟ (مثال: {concept} هو نوع من الأسماء أو الكيانات)",
+                "property": "ما هي خصائص أو سمات '{concept}'؟ ما الذي يميزه عن غيره؟",
+                "action": "ما هو دور أو تأثير '{concept}'؟ ما هي وظيفته أو ما الذي يترتب عليه؟"
             },
             "en": {
-                "taxonomy": "What exactly is '{concept}'? What is it a type of? (Example: {concept} is a type of Mammal)",
-                "property": "What are the properties of '{concept}'? How does it look, feel, or weigh?",
-                "action": "What are the behaviors or actions of '{concept}'? What does it usually do or cause?"
+                "taxonomy": "What exactly is '{concept}'? What category does it belong to? (Example: {concept} is a type of entity or concept)",
+                "property": "What are the characteristics or properties of '{concept}'? What defines it?",
+                "action": "What is the role or function of '{concept}'? What does it do or influence?"
             },
             "fr": {
-                "taxonomy": "Qu'est-ce que '{concept}' exactement? De quel type s'agit-il? (Exemple: {concept} est un type de Mammifère)",
-                "property": "Quelles sont les propriétés de '{concept}'? À quoi ressemble-t-il, quelle est sa texture ou sa couleur?",
-                "action": "Quels sont les comportements ou les actions de '{concept}'? Que fait-il ou cause-t-il généralement?"
+                "taxonomy": "Qu'est-ce que '{concept}' exactement? À quelle catégorie appartient-il? (Exemple: {concept} est un type d'entité)",
+                "property": "Quelles sont les propriétés de '{concept}'? Qu'est-ce qui le caractérise?",
+                "action": "Quel est le rôle ou la fonction de '{concept}'? Que fait-il ou qu'influence-t-il?"
             }
         }
 

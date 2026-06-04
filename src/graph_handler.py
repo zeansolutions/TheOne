@@ -572,14 +572,15 @@ class GraphHandler:
                         if stem in data.get("labels", []):
                             matched_concepts.append(node)
                             
-            # Check dynamic lexicon roots
-            for stem in sorted(list(candidates), key=len):
-                for root in self.language_rules.get("morphology", {}).get("roots", []):
-                    if stem in root["patterns"]:
-                        for pat in root["patterns"]:
-                            for node, data in self.graph.nodes(data=True):
-                                if data.get("type") == "concept" and pat in data.get("labels", []):
-                                    matched_concepts.append(node)
+            # Check dynamic lexicon roots (only if no direct or stem label match was found)
+            if not matched_concepts:
+                for stem in sorted(list(candidates), key=len):
+                    for root in self.language_rules.get("morphology", {}).get("roots", []):
+                        if stem in root["patterns"]:
+                            for pat in root["patterns"]:
+                                for node, data in self.graph.nodes(data=True):
+                                    if data.get("type") == "concept" and pat in data.get("labels", []):
+                                        matched_concepts.append(node)
                                     
         # Resolve ambiguity using Spreading Activation if context is available
         if matched_concepts:

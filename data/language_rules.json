@@ -1,4 +1,53 @@
 {
+  "location_query_settings": {
+    "question_particles": [
+      "أين",
+      "اين",
+      "where",
+      "où",
+      "ou"
+    ],
+    "verbs": [
+      "يعيش",
+      "عاش",
+      "يسكن",
+      "live",
+      "lives",
+      "vit",
+      "vivent",
+      "located"
+    ]
+  },
+  "resolver_settings": {
+    "subject_categories": [
+      "animal",
+      "parts_of_speech",
+      "grammar_role",
+      "inflection_property"
+    ],
+    "subject_concepts": [
+      "feline_carnivore",
+      "polar_bear"
+    ],
+    "reference_pronouns": [
+      "هو",
+      "هي",
+      "عنه",
+      "عنها",
+      "فيه",
+      "فيها",
+      "هناك"
+    ],
+    "implicit_verb_indicators": [
+      "عاش",
+      "يعيش",
+      "بياكل",
+      "يأكل",
+      "يحتاج",
+      "يتحمل",
+      "تحمل"
+    ]
+  },
   "morphology": {
     "roots": [
       {
@@ -50,6 +99,1174 @@
           "التعلم",
           "تعلم",
           "العلمي"
+        ]
+      },
+      {
+        "id": "طلب",
+        "patterns": [
+          "طالب",
+          "طلاب",
+          "مطلوب",
+          "طلب"
+        ]
+      },
+      {
+        "id": "كتب",
+        "patterns": [
+          "كتاب",
+          "يكتب",
+          "مكتبة",
+          "مكتوب"
+        ]
+      },
+      {
+        "id": "درس",
+        "patterns": [
+          "مدرسة",
+          "دروس",
+          "يدرس",
+          "دراسة"
+        ]
+      },
+      {
+        "id": "نجح",
+        "patterns": [
+          "النجاح",
+          "ناجح",
+          "ينجح",
+          "نجاحات"
+        ]
+      },
+      {
+        "id": "قرأ",
+        "patterns": [
+          "قرأ",
+          "قارئ",
+          "كتاب مقروء",
+          "قراءة"
+        ]
+      },
+      {
+        "id": "جهد",
+        "patterns": [
+          "اجتهد",
+          "يجتهد",
+          "جهد",
+          "مجتهد"
+        ]
+      },
+      {
+        "id": "طلب",
+        "patterns": [
+          "طالب",
+          "طلاب",
+          "مطلوب",
+          "طلب"
+        ]
+      },
+      {
+        "id": "كتب",
+        "patterns": [
+          "كتاب",
+          "يكتب",
+          "مكتبة",
+          "مكتوب"
+        ]
+      },
+      {
+        "id": "درس",
+        "patterns": [
+          "مدرسة",
+          "دروس",
+          "يدرس",
+          "دراسة"
+        ]
+      },
+      {
+        "id": "نجح",
+        "patterns": [
+          "النجاح",
+          "ناجح",
+          "ينجح",
+          "نجاحات"
+        ]
+      },
+      {
+        "id": "قرأ",
+        "patterns": [
+          "قرأ",
+          "قارئ",
+          "كتاب مقروء",
+          "قراءة"
+        ]
+      },
+      {
+        "id": "جهد",
+        "patterns": [
+          "اجتهد",
+          "يجتهد",
+          "جهد",
+          "مجتهد"
+        ]
+      },
+      {
+        "id": "علم",
+        "patterns": [
+          "العلمُ",
+          "علوم",
+          "عالم",
+          "معلوم"
+        ]
+      },
+      {
+        "id": "نور",
+        "patterns": [
+          "نورٌ",
+          "أنوار",
+          "منير",
+          "نّور"
+        ]
+      },
+      {
+        "id": "سمو",
+        "patterns": [
+          "السماءُ",
+          "سماوات",
+          "سامي"
+        ]
+      },
+      {
+        "id": "صفو",
+        "patterns": [
+          "صافيةٌ",
+          "صفاء",
+          "نقاء"
+        ]
+      },
+      {
+        "id": "درس",
+        "patterns": [
+          "المعلمُ",
+          "مدرسة",
+          "دروس",
+          "تعليم"
+        ]
+      },
+      {
+        "id": "خلص",
+        "patterns": [
+          "مخلصٌ",
+          "إخلاص",
+          "يخلص",
+          "خلاصة"
+        ]
+      },
+      {
+        "id": "شرب",
+        "patterns": [
+          "شربَ",
+          "يشرب",
+          "مشروب",
+          "شرب"
+        ]
+      },
+      {
+        "id": "طفل",
+        "patterns": [
+          "الطفلُ",
+          "أطفال",
+          "طفولة"
+        ]
+      },
+      {
+        "id": "حلب",
+        "patterns": [
+          "الحليبَ",
+          "محلب",
+          "يحلب"
+        ]
+      },
+      {
+        "id": "كتب",
+        "patterns": [
+          "كتبَ",
+          "الكاتبُ",
+          "رواية مكتوبة",
+          "كتابة"
+        ]
+      },
+      {
+        "id": "روي",
+        "patterns": [
+          "روايةً",
+          "راوية",
+          "يروي"
+        ]
+      },
+      {
+        "id": "حمي",
+        "patterns": [
+          "يحمي",
+          "حماية",
+          "حامي"
+        ]
+      },
+      {
+        "id": "جند",
+        "patterns": [
+          "الجنديُّ",
+          "جنود",
+          "تجنيد"
+        ]
+      },
+      {
+        "id": "وطن",
+        "patterns": [
+          "الوطنَ",
+          "أوطان",
+          "مواطن"
+        ]
+      },
+      {
+        "id": "لعب",
+        "patterns": [
+          "يلعبُ",
+          "لعب",
+          "ملعب"
+        ]
+      },
+      {
+        "id": "ولد",
+        "patterns": [
+          "الولدُ",
+          "أولاد",
+          "ولادة"
+        ]
+      },
+      {
+        "id": "حدق",
+        "patterns": [
+          "الحديقةِ",
+          "حدائق"
+        ]
+      },
+      {
+        "id": "ملل",
+        "patterns": [
+          "يملَّ",
+          "ملل",
+          "ملول"
+        ]
+      },
+      {
+        "id": "تعب",
+        "patterns": [
+          "يتعبْ",
+          "تعب",
+          "تعبان"
+        ]
+      },
+      {
+        "id": "ولد",
+        "patterns": [
+          "الولدُ",
+          "الولدَ",
+          "الولدِ",
+          "أولاد"
+        ]
+      },
+      {
+        "id": "قرأ",
+        "patterns": [
+          "يقرأُ",
+          "قراءة",
+          "قارئ"
+        ]
+      },
+      {
+        "id": "نجح",
+        "patterns": [
+          "نجحَ",
+          "نجاح",
+          "ناجح"
+        ]
+      },
+      {
+        "id": "كون",
+        "patterns": [
+          "كانَ",
+          "يكون",
+          "كونا",
+          "الجوُّ"
+        ]
+      },
+      {
+        "id": "صبح",
+        "patterns": [
+          "أصبحَ",
+          "يصبح",
+          "صباح"
+        ]
+      },
+      {
+        "id": "ليس",
+        "patterns": [
+          "ليسَ"
+        ]
+      },
+      {
+        "id": "برد",
+        "patterns": [
+          "بارداً",
+          "برد",
+          "برودة"
+        ]
+      },
+      {
+        "id": "جهد",
+        "patterns": [
+          "مجتهداً",
+          "اجتهاد",
+          "جهد"
+        ]
+      },
+      {
+        "id": "قبل",
+        "patterns": [
+          "مقبولاً",
+          "قبول",
+          "يقبل"
+        ]
+      },
+      {
+        "id": "علم",
+        "patterns": [
+          "العلمَ",
+          "مفيدٌ",
+          "تعليمي",
+          "معلم"
+        ]
+      },
+      {
+        "id": "سلم",
+        "patterns": [
+          "السلامَ",
+          "سلامة",
+          "سليم"
+        ]
+      },
+      {
+        "id": "نصر",
+        "patterns": [
+          "النصرَ",
+          "ينصر",
+          "منصور"
+        ]
+      },
+      {
+        "id": "دوم",
+        "patterns": [
+          "دائمٌ",
+          "دوام",
+          "يدوم"
+        ]
+      },
+      {
+        "id": "قرب",
+        "patterns": [
+          "قريبٌ",
+          "قرب",
+          "تقريب"
+        ]
+      },
+      {
+        "id": "هطل",
+        "patterns": [
+          "يهطلُ",
+          "هطلاً",
+          "هطول"
+        ]
+      },
+      {
+        "id": "أتي",
+        "patterns": [
+          "يأتيَ",
+          "إتيان",
+          "آت"
+        ]
+      },
+      {
+        "id": "درس",
+        "patterns": [
+          "يدرسُ",
+          "دراسة",
+          "درس",
+          "الطالبُ"
+        ]
+      },
+      {
+        "id": "مطر",
+        "patterns": [
+          "المطرُ",
+          "مطراً",
+          "أمطار"
+        ]
+      },
+      {
+        "id": "فرج",
+        "patterns": [
+          "الفرجُ",
+          "فرجاً",
+          "انفراج"
+        ]
+      },
+      {
+        "id": "ظنن",
+        "patterns": [
+          "ظنَّ",
+          "يظن",
+          "ظناً"
+        ]
+      },
+      {
+        "id": "جعل",
+        "patterns": [
+          "جعلَ",
+          "يجعل",
+          "جعلاً"
+        ]
+      },
+      {
+        "id": "علم",
+        "patterns": [
+          "علمتُ",
+          "يعلم",
+          "علم"
+        ]
+      },
+      {
+        "id": "خشب",
+        "patterns": [
+          "الخشبَ",
+          "خشبي"
+        ]
+      },
+      {
+        "id": "صوب",
+        "patterns": [
+          "منصوب",
+          "النصب",
+          "منجياً"
+        ]
+      },
+      {
+        "id": "له",
+        "patterns": [
+          "إلهَ"
+        ]
+      },
+      {
+        "id": "طلب",
+        "patterns": [
+          "طالبَ"
+        ]
+      },
+      {
+        "id": "سرر",
+        "patterns": [
+          "سرورَ"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "أكلَ",
+          "أُكِلَ",
+          "أكلاً"
+        ]
+      },
+      {
+        "id": "قرأ",
+        "patterns": [
+          "يقرأُ",
+          "يُقرأُ",
+          "قراءة"
+        ]
+      },
+      {
+        "id": "ذأب",
+        "patterns": [
+          "الذئبُ"
+        ]
+      },
+      {
+        "id": "خرف",
+        "patterns": [
+          "الخروفَ",
+          "الخروفُ"
+        ]
+      },
+      {
+        "id": "كتب",
+        "patterns": [
+          "الكتابَ",
+          "الكتابُ"
+        ]
+      },
+      {
+        "id": "حرم",
+        "patterns": [
+          "احترمُ",
+          "احتراماً"
+        ]
+      },
+      {
+        "id": "ذكر",
+        "patterns": [
+          "أذاكرُ",
+          "مذاكرة"
+        ]
+      },
+      {
+        "id": "رغب",
+        "patterns": [
+          "رغبةً"
+        ]
+      },
+      {
+        "id": "سير",
+        "patterns": [
+          "يسيرُ",
+          "سيراً"
+        ]
+      },
+      {
+        "id": "فوق",
+        "patterns": [
+          "فوقَ"
+        ]
+      },
+      {
+        "id": "ليل",
+        "patterns": [
+          "ليلاً"
+        ]
+      },
+      {
+        "id": "أبو",
+        "patterns": [
+          "أبوكَ",
+          "أباكَ",
+          "أبيكَ"
+        ]
+      },
+      {
+        "id": "أخو",
+        "patterns": [
+          "أخوكَ",
+          "أخاكَ",
+          "أخيكَ"
+        ]
+      },
+      {
+        "id": "حمو",
+        "patterns": [
+          "حموكَ",
+          "حماكَ",
+          "حميكَ"
+        ]
+      },
+      {
+        "id": "فوه",
+        "patterns": [
+          "فوكَ",
+          "فاكَ",
+          "فيكَ"
+        ]
+      },
+      {
+        "id": "ذوو",
+        "patterns": [
+          "ذو",
+          "ذا",
+          "ذي"
+        ]
+      },
+      {
+        "id": "جهد",
+        "patterns": [
+          "يجتهدون"
+        ]
+      },
+      {
+        "id": "كسل",
+        "patterns": [
+          "يتكاسلوا"
+        ]
+      },
+      {
+        "id": "همل",
+        "patterns": [
+          "يهملوا"
+        ]
+      },
+      {
+        "id": "ذكر",
+        "patterns": [
+          "يذاكرُ"
+        ]
+      },
+      {
+        "id": "نجح",
+        "patterns": [
+          "نجاح",
+          "ينجحَ"
+        ]
+      },
+      {
+        "id": "قصر",
+        "patterns": [
+          "تقصير",
+          "يقصرْ"
+        ]
+      },
+      {
+        "id": "نعت",
+        "patterns": [
+          "النعت",
+          "منعوت"
+        ]
+      },
+      {
+        "id": "فود",
+        "patterns": [
+          "مفيداً"
+        ]
+      },
+      {
+        "id": "جمل",
+        "patterns": [
+          "الجميلةَ"
+        ]
+      },
+      {
+        "id": "سفر",
+        "patterns": [
+          "سافرَ"
+        ]
+      },
+      {
+        "id": "خلد",
+        "patterns": [
+          "خالدٌ"
+        ]
+      },
+      {
+        "id": "سعد",
+        "patterns": [
+          "سعيدٌ"
+        ]
+      },
+      {
+        "id": "طرق",
+        "patterns": [
+          "طارقٌ"
+        ]
+      },
+      {
+        "id": "شهد",
+        "patterns": [
+          "الشاهدُ",
+          "شهدتُ"
+        ]
+      },
+      {
+        "id": "برأ",
+        "patterns": [
+          "بريءٌ",
+          "البراءة"
+        ]
+      },
+      {
+        "id": "عین",
+        "patterns": [
+          "عينُهُ",
+          "أعينهم"
+        ]
+      },
+      {
+        "id": "حضر",
+        "patterns": [
+          "حضرَ"
+        ]
+      },
+      {
+        "id": "مدن",
+        "patterns": [
+          "المدينةُ"
+        ]
+      },
+      {
+        "id": "قلع",
+        "patterns": [
+          "القلعةُ"
+        ]
+      },
+      {
+        "id": "سقف",
+        "patterns": [
+          "سقفُها"
+        ]
+      },
+      {
+        "id": "بهو",
+        "patterns": [
+          "البهوُ"
+        ]
+      },
+      {
+        "id": "زرع",
+        "patterns": [
+          "يزرعْ"
+        ]
+      },
+      {
+        "id": "حصد",
+        "patterns": [
+          "يحصدْ"
+        ]
+      },
+      {
+        "id": "جهد",
+        "patterns": [
+          "تجتهدْ"
+        ]
+      },
+      {
+        "id": "نجح",
+        "patterns": [
+          "تنجحْ"
+        ]
+      },
+      {
+        "id": "خلص",
+        "patterns": [
+          "أخلصتَ"
+        ]
+      },
+      {
+        "id": "سعد",
+        "patterns": [
+          "لسعدتَ"
+        ]
+      },
+      {
+        "id": "قبل",
+        "patterns": [
+          "أقبلَ"
+        ]
+      },
+      {
+        "id": "بسم",
+        "patterns": [
+          "مبتسماً"
+        ]
+      },
+      {
+        "id": "خرج",
+        "patterns": [
+          "خرجَ"
+        ]
+      },
+      {
+        "id": "سرر",
+        "patterns": [
+          "مسرورون"
+        ]
+      },
+      {
+        "id": "عود",
+        "patterns": [
+          "عاد"
+        ]
+      },
+      {
+        "id": "فيض",
+        "patterns": [
+          "يفيضُ"
+        ]
+      },
+      {
+        "id": "زرع",
+        "patterns": [
+          "زرعتُ"
+        ]
+      },
+      {
+        "id": "قمح",
+        "patterns": [
+          "قمحاً"
+        ]
+      },
+      {
+        "id": "شري",
+        "patterns": [
+          "اشتريتُ"
+        ]
+      },
+      {
+        "id": "تفح",
+        "patterns": [
+          "تفاحاً"
+        ]
+      },
+      {
+        "id": "نشط",
+        "patterns": [
+          "نشاطاً"
+        ]
+      },
+      {
+        "id": "صبب",
+        "patterns": [
+          "تصببَ"
+        ]
+      },
+      {
+        "id": "عرق",
+        "patterns": [
+          "عرقاً"
+        ]
+      },
+      {
+        "id": "حضر",
+        "patterns": [
+          "حضرَ"
+        ]
+      },
+      {
+        "id": "طالب",
+        "patterns": [
+          "الطلابُ"
+        ]
+      },
+      {
+        "id": "نجح",
+        "patterns": [
+          "نجحَ"
+        ]
+      },
+      {
+        "id": "كسل",
+        "patterns": [
+          "الكسولِ"
+        ]
+      },
+      {
+        "id": "ثمر",
+        "patterns": [
+          "لم يثمرْ"
+        ]
+      },
+      {
+        "id": "نخل",
+        "patterns": [
+          "النخلةِ"
+        ]
+      },
+      {
+        "id": "حمد",
+        "patterns": [
+          "أحمدُ"
+        ]
+      },
+      {
+        "id": "غفل",
+        "patterns": [
+          "غافلاً"
+        ]
+      },
+      {
+        "id": "أهل",
+        "patterns": [
+          "أهلَ"
+        ]
+      },
+      {
+        "id": "مدن",
+        "patterns": [
+          "المدينةِ"
+        ]
+      },
+      {
+        "id": "كتب",
+        "patterns": [
+          "الكتابَ",
+          "مكتبةِ"
+        ]
+      },
+      {
+        "id": "طول",
+        "patterns": [
+          "الطاولةِ"
+        ]
+      },
+      {
+        "id": "درس",
+        "patterns": [
+          "المدرسةِ"
+        ]
+      },
+      {
+        "id": "قلم",
+        "patterns": [
+          "قلمُ"
+        ]
+      },
+      {
+        "id": "علم",
+        "patterns": [
+          "المعلمِ"
+        ]
+      },
+      {
+        "id": "سجد",
+        "patterns": [
+          "مساجدَ"
+        ]
+      },
+      {
+        "id": "صحر",
+        "patterns": [
+          "صحراءَ"
+        ]
+      },
+      {
+        "id": "برهم",
+        "patterns": [
+          "إبراهيمَ"
+        ]
+      },
+      {
+        "id": "فتح",
+        "patterns": [
+          "فَتَحَ",
+          "انْفَتَحَ",
+          "اسْتَفْتَحَ"
+        ]
+      },
+      {
+        "id": "دخرج",
+        "patterns": [
+          "دَحْرَجَ"
+        ]
+      },
+      {
+        "id": "شكر",
+        "patterns": [
+          "شَكَرَ",
+          "يَشْكُرُ",
+          "شاكرٌ"
+        ]
+      },
+      {
+        "id": "فضل",
+        "patterns": [
+          "فَضْلَ",
+          "أَفْضَال"
+        ]
+      },
+      {
+        "id": "فهم",
+        "patterns": [
+          "فَهِمَ",
+          "يُفْهَمُ",
+          "مفهومٌ"
+        ]
+      },
+      {
+        "id": "شرح",
+        "patterns": [
+          "شَرَحَ",
+          "شَرْحُهُ"
+        ]
+      },
+      {
+        "id": "شبه",
+        "patterns": [
+          "تَشْبِيهٌ",
+          "يُشْبِهُ",
+          "كَأَنَّ"
+        ]
+      },
+      {
+        "id": "عير",
+        "patterns": [
+          "اِسْتِعَارَةٌ",
+          "مُسْتَعَارٌ"
+        ]
+      },
+      {
+        "id": "صبح",
+        "patterns": [
+          "الصَّبَاحِ",
+          "صَبَّحَ"
+        ]
+      },
+      {
+        "id": "علم",
+        "patterns": [
+          "العلمُ",
+          "عالمٌ",
+          "معلوم"
+        ]
+      },
+      {
+        "id": "جهل",
+        "patterns": [
+          "الجهلُ",
+          "جاهلٌ",
+          "مجهول"
+        ]
+      },
+      {
+        "id": "طوق",
+        "patterns": [
+          "تقومُ",
+          "الساعةُ",
+          "ساعة"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
         ]
       }
     ],
@@ -149,6 +1366,358 @@
       {
         "form": "بـ",
         "type": "preposition"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "على",
+        "type": "preposition"
+      },
+      {
+        "form": "من",
+        "type": "preposition"
+      },
+      {
+        "form": "إلى",
+        "type": "preposition"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "على",
+        "type": "preposition"
+      },
+      {
+        "form": "من",
+        "type": "preposition"
+      },
+      {
+        "form": "إلى",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "لن",
+        "type": "subordinating_conjunction"
+      },
+      {
+        "form": "لم",
+        "type": "jussive_particle"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "على",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "إنَّ",
+        "type": "accusative_particle"
+      },
+      {
+        "form": "ليتَ",
+        "type": "accusative_particle"
+      },
+      {
+        "form": "لعلَّ",
+        "type": "accusative_particle"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "أن",
+        "type": "subordinating_conjunction"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "لا",
+        "type": "negation_particle"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "على",
+        "type": "preposition"
+      },
+      {
+        "form": "ون",
+        "type": "suffix_indicative_plural"
+      },
+      {
+        "form": "وا",
+        "type": "suffix_subjunctive_jussive_plural"
+      },
+      {
+        "form": "ان",
+        "type": "suffix_indicative_dual"
+      },
+      {
+        "form": "ين",
+        "type": "suffix_indicative_feminine_singular"
+      },
+      {
+        "form": "لن",
+        "type": "accusative_particle"
+      },
+      {
+        "form": "لم",
+        "type": "jussive_particle"
+      },
+      {
+        "form": "لن",
+        "type": "particles"
+      },
+      {
+        "form": "لم",
+        "type": "particles"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ف",
+        "type": "conjunction"
+      },
+      {
+        "form": "ثم",
+        "type": "conjunction"
+      },
+      {
+        "form": "أو",
+        "type": "conjunction"
+      },
+      {
+        "form": "نعم",
+        "type": "affirmation_particle"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ها",
+        "type": "attached_pronoun"
+      },
+      {
+        "form": "إنْ",
+        "type": "conditional_particle"
+      },
+      {
+        "form": "منْ",
+        "type": "conditional_noun"
+      },
+      {
+        "form": "لوْ",
+        "type": "conditional_particle"
+      },
+      {
+        "form": "و",
+        "type": "hal_waw"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "إلا",
+        "type": "exception_particle"
+      },
+      {
+        "form": "غير",
+        "type": "exception_noun"
+      },
+      {
+        "form": "سوى",
+        "type": "exception_noun"
+      },
+      {
+        "form": "لم",
+        "type": "negation_particle"
+      },
+      {
+        "form": "يا",
+        "type": "vocative_particle"
+      },
+      {
+        "form": "أيا",
+        "type": "vocative_particle"
+      },
+      {
+        "form": "هيا",
+        "type": "vocative_particle"
+      },
+      {
+        "form": "أي",
+        "type": "vocative_particle"
+      },
+      {
+        "form": "على",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "في",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "من",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "إلى",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "بـ",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "لـ",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "في",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "مع",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "بـ",
+        "type": "preposition_particle"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "هذا",
+        "type": "demonstrative_pronoun"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "ك",
+        "type": "preposition_comparison"
+      },
+      {
+        "form": "كأن",
+        "type": "conjunction_comparison"
+      },
+      {
+        "form": "لا",
+        "type": "negation_particle"
+      },
+      {
+        "form": "و",
+        "type": "conjunction"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      }
+    ],
+    "derivation_patterns": [
+      {
+        "verb_type": "past_active",
+        "morphological_form": "فَعَلَ",
+        "example": "أكلَ"
+      },
+      {
+        "verb_type": "past_passive",
+        "morphological_form": "فُعِلَ",
+        "target_pattern": "past_passive_pattern",
+        "example": "أُكِلَ"
+      },
+      {
+        "verb_type": "present_active",
+        "morphological_form": "يَفْعَلُ",
+        "example": "يقرأُ"
+      },
+      {
+        "verb_type": "present_passive",
+        "morphological_form": "يُفْعَلُ",
+        "target_pattern": "present_passive_pattern",
+        "example": "يُقرأُ"
       }
     ]
   },
@@ -163,9 +1732,594 @@
         "id": "declarative",
         "pattern": "noun + verb + object",
         "description": "جملة خبرية توضح حقائق علمية أو تاريخية"
+      },
+      {
+        "id": "nominal_sentence",
+        "pattern": "noun + noun/verb",
+        "description": "الجملة الاسمية التي تبدأ باسم"
+      },
+      {
+        "id": "verbal_sentence",
+        "pattern": "verb + noun",
+        "description": "الجملة الفعلية التي تبدأ بفعل"
+      },
+      {
+        "id": "nominal_sentence",
+        "pattern": "noun + noun/verb",
+        "description": "الجملة الاسمية التي تبدأ باسم"
+      },
+      {
+        "id": "verbal_sentence",
+        "pattern": "verb + noun",
+        "description": "الجملة الفعلية التي تبدأ بفعل"
+      },
+      {
+        "id": "nominal_sentence",
+        "pattern": "mubtada + khabar",
+        "description": "الجملة الاسمية المكونة من ركنين أساسيين هما المبتدأ والخبر"
+      },
+      {
+        "id": "verbal_sentence",
+        "pattern": "verb + agent + patient",
+        "description": "الجملة الفعلية التامة المكونة من فعل وفاعل ومفعول به متعدٍ"
+      },
+      {
+        "id": "mixed_declarative",
+        "pattern": "verb + noun + preposition + noun",
+        "description": "جملة فعلية ممتدة تشمل أفعالاً مضارعة وأسماء وحروف جر"
+      },
+      {
+        "id": "declarative",
+        "pattern": "verb + noun",
+        "description": "جملة خبرية توضح العلاقة التناظرية بين المبني والمعرب"
+      },
+      {
+        "id": "copular_sentence",
+        "pattern": "kan_sister + kan_subject + kan_predicate",
+        "description": "جملة فعلية منسوخة بالأفعال الناقصة"
+      },
+      {
+        "id": "modified_nominal_sentence",
+        "pattern": "accusative_particle + inna_subject + inna_predicate",
+        "description": "جملة اسمية منسوخة ومعدلة بواسطة أحد الحروف المشبهة بالأفعال"
+      },
+      {
+        "id": "kada_sentence_style",
+        "pattern": "nasikh_verb + kada_subject + present_tense_verb",
+        "description": "صيغة جملة كاد وأخواتها المكونة من فعل ناسخ، واسم مرفوع، وجملة فعلية مضارعية"
+      },
+      {
+        "id": "ditransitive_nasikh_sentence",
+        "pattern": "nasikh_verb + agent + first_object + second_object",
+        "description": "بنية الجملة المتعدية لمفعولين أصلهما المبتدأ والخبر بعد دخول ظن وأخواتها"
+      },
+      {
+        "id": "categorical_negation_sentence",
+        "pattern": "la_la_nafia_liljins + la_subject + la_predicate",
+        "description": "بنية جملة لا النافية للجنس العاملة عمل إن نافية للصفة عن الجنس كلياً"
+      },
+      {
+        "id": "active_verbal_sentence",
+        "pattern": "active_verb + agent_subject + direct_object",
+        "description": "بنية الجملة الفعلية المبنية للمعلوم المكونة من فعل وفاعل ومفعول به"
+      },
+      {
+        "id": "passive_verbal_sentence",
+        "pattern": "passive_verb + passive_subject",
+        "description": "بنية الجملة الفعلية المبنية للمجهول المكونة من فعل مبني للمجهول ونائب فاعل مرفوع"
+      },
+      {
+        "id": "detailed_transitive_sentence",
+        "pattern": "verb + subject + direct_object + absolute_cognate_object + purpose_object + adverbial_object_of_time_space",
+        "description": "الجملة الفعلية المتكاملة مع مفاعيل التفاصيل والتأكيد"
+      },
+      {
+        "id": "five_nouns_applied_sentence",
+        "pattern": "verb + the_five_nouns_bound",
+        "description": "جملة يظهر فيها حكم الأسماء الخمسة بالحروف الفرعية حسب موقعها"
+      },
+      {
+        "id": "five_verbs_sentence",
+        "pattern": "subject + verb_with_suffix",
+        "description": "جملة فعلية أو اسمية تشتمل على فعل مضارع من الأفعال الخمسة"
+      },
+      {
+        "id": "present_governed_sentence",
+        "pattern": "particle + present_tense_verb + subject",
+        "description": "جملة فعلية توضح تأثر أواخر الفعل المضارع بالعوامل الداخلة عليه"
+      },
+      {
+        "id": "adjective_sentence",
+        "pattern": "verb + subject + object + adjective",
+        "description": "تركيب جملة تشتمل على نعت ومنعوت لبيان الصفة"
+      },
+      {
+        "id": "conjunction_sentence",
+        "pattern": "verb + subject_1 + particle + subject_2",
+        "description": "جملة عطف توضح الترتيب والتبعية الإعرابية بين الاسمين"
+      },
+      {
+        "id": "emphatic_sentence",
+        "pattern": "mouakkad + emphasis_particle_or_word",
+        "description": "تركيب جملة التوكيد لإزالة الشك والاحتمال من ذهن السامع"
+      },
+      {
+        "id": "appositive_sentence",
+        "pattern": "verb + mubdal_minhu + appositive",
+        "description": "تركيب جملة البدل والمبدل منه لتوضيح مقصود الحكم بلا واسطة"
+      },
+      {
+        "id": "conditional_sentence",
+        "pattern": "conditional_tool + condition_verb + answer_verb",
+        "description": "جملة أسلوب الشرط التركيبية لربط الجواب بالشرط جزمًا أو تعليقًا"
+      },
+      {
+        "id": "hal_sentence_structure",
+        "pattern": "verb + صاحب_الحال + الحال",
+        "description": "تركيب جملة الحال لبيان الهيئات الطارئة وقت وقوع الفعل"
+      },
+      {
+        "id": "tamyiz_sentence",
+        "pattern": "sentence_or_measured_word + tamyiz_noun",
+        "description": "تركيب جملة التمييز لإزالة الإبهام والغموض عن الذوات أو النسب"
+      },
+      {
+        "id": "exception_sentence",
+        "pattern": "المستثنى_منه + أداة_الاستثناء + المستثنى",
+        "description": "تركيب أسلوب الاستثناء لإخراج عنصر متمرد من حكم المجموعة العامة"
+      },
+      {
+        "id": "vocative_sentence",
+        "pattern": "vocative_particle + vocative_noun + response_sentence",
+        "description": "تركيب أسلوب النداء لتنبيه المخاطب وطلب إقباله"
+      },
+      {
+        "id": "prepositional_phrase_sentence",
+        "pattern": "verb + object + preposition + genitive_noun",
+        "description": "تركيب جملة فعلية تشتمل على جار ومجرور لتحديد الوجهات والأماكن"
+      },
+      {
+        "id": "annexation_sentence",
+        "pattern": "noun_mudhaf + noun_mudhaf_ilaihi",
+        "description": "تركيب يوضح إضافة الاسم الأول للاسم الثاني لبيان الملكية والخصوصية"
+      },
+      {
+        "id": "diptote_genitive_sentence",
+        "pattern": "verb + preposition + diptote_noun",
+        "description": "جملة يقع فيها الممنوع من الصرف مجروراً بالفتحة الظاهرة لغياب أل والإضافة"
+      },
+      {
+        "id": "morphological_analysis_statement",
+        "pattern": "verb + weight_pattern",
+        "description": "جملة توضح المقابلة الصرفية بين اللفظ والميزان"
+      },
+      {
+        "id": "derivative_governance_sentence",
+        "pattern": "subject + active_participle + object",
+        "description": "جملة اسمية يظهر فيها عمل اسم الفاعل في المفعول به كأنه فعله الأصلي تماماً"
+      },
+      {
+        "id": "passive_derivative_sentence",
+        "pattern": "subject + passive_participle + substitute_subject",
+        "description": "جملة اسمية يعمل فيها اسم المفعول عمل الفعل المبني للمجهول فيرفع نائب فاعل"
+      },
+      {
+        "id": "rhetorical_simile_sentence",
+        "pattern": "noun + comparison_tool + noun",
+        "description": "تركيب جملة يربط بين المشبه والمشبه به بأداة واضحة تنقل الدلالة البلاغية"
+      },
+      {
+        "id": "rhetorical_parallelism_sentence",
+        "pattern": "sentence_1 + conjunction + sentence_2_reversed_meanings",
+        "description": "تركيب إنشائي أو خبري يقابل فيه جملة بجملة أخرى تعاكسها تماماً في الترتيب والمعنى"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
       }
     ],
     "question_particles": [
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
       "ما",
       "من",
       "هل",
@@ -241,7 +2395,241 @@
       "deepfakes": "deepfakes",
       "privacy": "data_privacy",
       "augmented intelligence": "augmented_intelligence",
-      "quantum computing": "quantum_computing"
+      "quantum computing": "quantum_computing",
+      "student": "student",
+      "book": "educational_book",
+      "school": "school_entity",
+      "success": "success_result",
+      "read": "read",
+      "write": "write",
+      "strive": "strive",
+      "in": "in_particle",
+      "on": "on_particle",
+      "from": "from_particle",
+      "to": "to_particle",
+      "noun": "noun",
+      "verb": "action_verb",
+      "particle": "particle",
+      "subject": "subject_baseline",
+      "predicate": "predicate_baseline",
+      "knowledge": "knowledge_concept",
+      "clear": "clear",
+      "teacher": "teacher_agent",
+      "sincere": "sincere",
+      "nominative": "nominative_case",
+      "dammah": "dammah",
+      "object": "patient_mafool",
+      "drank": "drink_action",
+      "milk": "milk",
+      "wrote": "write_action",
+      "writer": "writer",
+      "novel": "novel",
+      "protects": "protect_action",
+      "soldier": "soldier",
+      "homeland": "homeland",
+      "accusative": "nasb_grammatical_case",
+      "fathah": "fathah",
+      "genitive": "genitive_case",
+      "jussive": "jussive_case",
+      "kasrah": "kasrah",
+      "sukun": "sukun",
+      "declinable": "declinable",
+      "indeclinable": "indeclinable",
+      "boy": "alwaladu_noun",
+      "reads": "yaqrao_verb",
+      "this": "hatha_demonstrative",
+      "he": "huwa_pronoun",
+      "succeeded": "najaha_verb",
+      "nominal_sentence": "nominal_sentence",
+      "copular_verbs": "kan_and_sisters",
+      "was": "kan_verb",
+      "became": "asbaha_verb",
+      "is_not": "laysa_verb",
+      "noun_of_kan": "kan_subject",
+      "predicate_of_kan": "kan_predicate",
+      "accusative_particles": "inna_and_sisters",
+      "indeed": "inna_particle",
+      "if_only": "layta_particle",
+      "perhaps": "laalla_particle",
+      "noun_of_inna": "inna_subject",
+      "predicate_of_inna": "inna_predicate",
+      "verbs_of_proximity_hope_and_inception": "kada_and_sisters",
+      "proximity_verbs": "proximity_verbs",
+      "hope_verbs": "hope_verbs",
+      "inception_verbs": "inception_verbs",
+      "almost": "kada_verb",
+      "perhaps_hopeful": "asa_verb",
+      "started": "bada_verb",
+      "verbal_sentence": "verbal_sentence",
+      "present_continuous_verb": "present_tense_verb",
+      "noun_of_kada": "kada_subject",
+      "predicate_of_kada": "kada_predicate",
+      "in_accusative_place": "accusative_place",
+      "ditransitive_verbs_of_heart_and_transformation": "zhanna_and_sisters",
+      "verbs_of_heart": "heart_verbs",
+      "verbs_of_transformation": "transformation_verbs",
+      "thought": "zhanna_verb",
+      "made_transformed": "jaala_verb",
+      "knew": "alama_verb",
+      "first_object": "first_object",
+      "second_object": "second_object",
+      "categorical_negation_la": "la_la_nafia_liljins",
+      "inna_and_its_sisters": "inna_and_sisters",
+      "subject_of_la": "la_subject",
+      "predicate_of_la": "la_predicate",
+      "absolute_negation": "absolute_negation",
+      "indefinite": "indefinite_noun",
+      "singular": "singular_subject",
+      "annexed_mudhaf": "mudhaf_subject",
+      "built_in_place": "built_on_inflection",
+      "active_voice_verb": "active_verb",
+      "passive_voice_verb": "passive_verb",
+      "agent_subject": "agent_subject",
+      "direct_object": "direct_object",
+      "pro_subject_passive": "passive_subject",
+      "absolute_cognate_object": "absolute_cognate_object",
+      "object_of_purpose": "purpose_object",
+      "adverbial_object": "adverbial_object_of_time_space",
+      "emphasis": "action_emphasis",
+      "causality": "action_cause",
+      "time_dimension": "action_time",
+      "space_dimension": "action_space",
+      "the_five_nouns": "the_five_nouns",
+      "father_noun": "abu",
+      "brother_noun": "akhu",
+      "father_in_law_noun": "hamu",
+      "mouth_noun": "fu",
+      "possessor_noun": "dhu",
+      "nominative_waw": "nominative_waw",
+      "accusative_alif": "accusative_alif",
+      "genitive_yaa": "genitive_yaa",
+      "singular_constraint": "singular_condition",
+      "annexed_constraint": "annexed_condition",
+      "the_five_verbs": "the_five_verbs",
+      "nominative_retaining_noon": "present_marfoo",
+      "accusative_omitting_noon": "present_mansoob",
+      "jussive_omitting_noon": "present_majzoom",
+      "plural_waw": "waw_al_jamaah",
+      "dual_alif": "alif_al_ithnayn",
+      "feminine_yaa": "yaa_al_mukhatabah",
+      "present_tense_verb": "present_tense_verb",
+      "nominative_with_dammah": "nominative_case_dammah",
+      "accusative_with_fathah": "accusative_case_fathah",
+      "jussive_with_sukoon": "jussive_case_sukoon",
+      "lan_particle": "lan_particle",
+      "lam_particle": "lam_particle",
+      "manoot": "manoot",
+      "true_naat": "true_naat",
+      "causal_naat": "causal_naat",
+      "case_matching": "grammatical_case_matching",
+      "definiteness_matching": "definiteness_matching",
+      "khaled": "khaled",
+      "saeed": "saeed",
+      "tareq": "tareq",
+      "fa_particle": "fa_conjunction",
+      "thumma_particle": "thumma_conjunction",
+      "aw_particle": "aw_conjunction",
+      "literal_emphasis": "emphasis_literal",
+      "moral_emphasis": "emphasis_moral",
+      "witness": "witness",
+      "innocence": "innocence",
+      "judge": "judge",
+      "substitution_identity": "appositive_identity",
+      "substitution_part": "appositive_part_of_whole",
+      "substitution_inclusion": "appositive_inclusion",
+      "ancient_city": "ancient_city",
+      "castle": "city_castle",
+      "hall": "city_hall",
+      "man_tool": "conditional_noun_man",
+      "in_tool": "conditional_particle_in",
+      "law_tool": "conditional_particle_law",
+      "planting": "planting_action",
+      "harvest": "harvest_result",
+      "striving": "striving_action",
+      "jasm": "jasm_grammatical_rule",
+      "singular_adverbial_state": "singular_appositive_hal",
+      "clause_adverbial_state": "sentence_hal",
+      "eid": "eid_festival",
+      "children": "children_agents",
+      "father": "father_agent",
+      "accusative_case": "nasb_grammatical_case",
+      "explicit_specification": "tamyiz_malfooz",
+      "implicit_specification": "tamyiz_malhooz",
+      "gardener": "old_gardener",
+      "son": "gardener_son",
+      "feddan": "feddan_measure",
+      "wheat": "wheat_crop",
+      "kilogram": "kilogram_weight",
+      "apple": "apple_fruit",
+      "sweat": "sweat_substance",
+      "students": "all_students",
+      "ali": "ali_student",
+      "everyone": "everyone_agents",
+      "lazy_one": "lazy_person",
+      "trees": "all_trees",
+      "palm_tree": "palm_tree",
+      "except_particle": "ella_particle",
+      "except_noun_ghair": "ghair_siwa_tools",
+      "except_noun_siwa": "ghair_siwa_tools",
+      "ahmed": "ahmed_person",
+      "heedless": "heedless_passerby",
+      "citizens": "town_citizens",
+      "proper_noun": "alam_mufrad_class",
+      "indefinite_unintended": "nakirah_ghair_maqsudah",
+      "annexed_vocative": "mudhaf_vocative_class",
+      "ya": "vocative_particle",
+      "table": "wooden_table",
+      "school_library": "school_library",
+      "teacher_pen": "teacher_pen",
+      "ziad": "student_ziad",
+      "diptote": "diptote",
+      "masajid": "masajid_word",
+      "sahra": "sahra_word",
+      "ibrahim": "ibrahim_word",
+      "fatha_sub": "fatha_substitution",
+      "kasra_rest": "kasra_restoration",
+      "by_al": "definite_by_al",
+      "annexed": "annexed_context",
+      "morphological_scale": "morphological_scale",
+      "bare_verb": "bare_verb",
+      "augmented_verb": "augmented_verb",
+      "root_letters": "root_letters",
+      "augmentation_letters": "augmentation_letters",
+      "fataha": "fataha_verb",
+      "infataha": "infataha_verb",
+      "istafataha": "istataha_verb",
+      "dahraja": "dahraja_verb",
+      "derivative_agent": "derivative_agent",
+      "active_participle": "active_participle",
+      "passive_participle": "passive_participle",
+      "original_verb": "original_verb",
+      "subject_raising": "subject_raising",
+      "object_dependency": "object_dependency",
+      "substitute_subject_raising": "substitute_subject_raising",
+      "shakir": "shakir_word",
+      "mafhum": "mafhum_word",
+      "fadla": "fadla_word",
+      "sharhuhu": "sharhuhu_word",
+      "morning_sun": "morning_sun",
+      "dewdrops": "dewdrops",
+      "breeze": "breeze",
+      "flowers": "flowers",
+      "rhetorical_simile": "rhetorical_simile",
+      "rhetorical_metaphor": "rhetorical_metaphor",
+      "morning_beauty": "morning_beauty",
+      "ignorance": "ignorance_concept",
+      "honorable_house": "honorable_house",
+      "basement_house": "basement_house",
+      "judgment_day_hour": "time_hour_1",
+      "sixty_minutes_hour": "time_hour_2",
+      "antithesis": "rhetorical_antithesis",
+      "parallelism": "rhetorical_paralellism",
+      "pun": "rhetorical_pun",
+      "rhyme_prose": "rhetorical_rhyme",
+      "lion": "lion",
+      "gazelle": "gazelle",
+      "savanna": "savanna",
+      "savanna woodlands": "savanna"
     },
     "relations": {
       "located in": "located_in",
@@ -267,9 +2655,460 @@
       "threatens": "threatens",
       "enables": "enables",
       "risks": "poses_risk_to",
-      "empowers": "will_empower"
+      "empowers": "will_empower",
+      "is_a": "is_a",
+      "component_of": "component_of",
+      "acts_as": "acts_as",
+      "requires": "requires",
+      "constitutes": "constitutes",
+      "has_case": "has_case",
+      "has_sign": "has_sign",
+      "belongs_to": "belongs_to",
+      "performs_role": "performs_role",
+      "maps_to_case": "maps_to_case",
+      "has_case_capability": "has_case_capability",
+      "prohibited_case": "prohibited_case",
+      "classified_under": "classified_under",
+      "has_behavior": "has_behavior",
+      "governs_and_modifies": "governs_and_modifies",
+      "transforms_subject_to": "transforms_subject_to",
+      "transforms_predicate_to": "transforms_predicate_to",
+      "has_assigned_case": "has_assigned_case",
+      "must_be_composed_of": "must_be_composed_of",
+      "must_start_with": "must_start_with",
+      "acts_like": "acts_like",
+      "executes": "executes",
+      "governs_subject": "governs_subject",
+      "governs_predicate": "governs_predicate",
+      "requires_role": "requires_role",
+      "promoted_to": "promoted_to",
+      "emphasizes_action": "emphasizes_action",
+      "explains_cause_of": "explains_cause_of",
+      "specifies_time_of": "specifies_time_of",
+      "specifies_space_of": "specifies_space_of",
+      "satisfies": "satisfies",
+      "requires_attachment_of": "requires_attachment_of",
+      "governed_by": "governed_by",
+      "governs_and_changes": "governs_and_changes",
+      "preceded_by": "preceded_by",
+      "has_property": "has_property",
+      "matches_in": "matches_in",
+      "conjoined_to": "conjoined_to",
+      "shares_case_with": "shares_case_with",
+      "confirms_state": "confirms_state",
+      "follows_in_case": "follows_in_case",
+      "identity_of": "identity_of",
+      "part_of": "part_of",
+      "inheres_in": "inheres_in",
+      "necessitates": "necessitates",
+      "governs_grammatically": "governs_grammatically",
+      "characterizes_temporarily": "characterizes_temporarily",
+      "governs_case": "governs_case",
+      "specifies_quantity_of": "specifies_quantity_of",
+      "specifies_ratio_of": "specifies_ratio_of",
+      "achieved_status": "achieved_status",
+      "belongs_to_class": "belongs_to_class",
+      "governs_grammatical_ruling": "governs_grammatical_ruling",
+      "governs_ruling": "governs_ruling",
+      "has_pattern": "has_pattern",
+      "derived_from": "derived_from",
+      "contains_element": "contains_element",
+      "subclass_of": "subclass_of",
+      "governs_action": "governs_action",
+      "exhibits_feature": "exhibits_feature",
+      "expresses_rhetoric": "expresses_rhetoric",
+      "antonym_of": "antonym_of",
+      "synonym_of": "synonym_of",
+      "manifests_device": "manifests_device",
+      "eats": "eats",
+      "is in": "located_in"
     },
     "question_particles": [
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
       "what",
       "who",
       "where",
@@ -544,7 +3383,265 @@
       "التزييف العميق": "deepfakes",
       "الخصوصية وأمن البيانات": "data_privacy",
       "تعزيز القدرات البشرية": "augmented_intelligence",
-      "الحوسبة الكمومية": "quantum_computing"
+      "الحوسبة الكمومية": "quantum_computing",
+      "طالب": "student",
+      "الطالب": "student",
+      "كتاب": "book",
+      "الكتاب": "educational_book",
+      "مدرسة": "school",
+      "المدرسة": "school_entity",
+      "النجاح": "success_result",
+      "نجاح": "success",
+      "قرأ": "read",
+      "يكتب": "write",
+      "اجتهد": "strive",
+      "في": "in_particle",
+      "على": "on_particle",
+      "من": "conditional_noun_man",
+      "إلى": "to_particle",
+      "الاسم": "noun",
+      "الفعل": "verb",
+      "الحرف": "particle",
+      "المبتدأ": "subject_mubtada",
+      "الخبر": "predicate_khabar",
+      "العلم": "knowledge_concept",
+      "صافية": "clear",
+      "المعلم": "teacher_agent",
+      "مخلص": "sincere",
+      "الرفع": "nominative_case",
+      "يرفع": "nominative_case",
+      "مرفوع": "nominative_case",
+      "مرفوعاً": "nominative_case",
+      "الضمة": "dammah",
+      "الفاعل": "agent_faail",
+      "المفعول به": "patient_mafool",
+      "شرب": "drink_action",
+      "الطفل": "child",
+      "الحليب": "milk",
+      "كتب": "write_action",
+      "الكاتب": "writer",
+      "رواية": "novel",
+      "يحمي": "protect_action",
+      "الجندي": "soldier",
+      "الوطن": "homeland",
+      "النصب": "accusative_case",
+      "ينصب": "accusative_case",
+      "منصوباً": "accusative_case",
+      "الفتحة": "fathah",
+      "الجر": "genitive_case",
+      "يجر": "genitive_case",
+      "مجرور": "genitive_case",
+      "مجروراً": "genitive_case",
+      "الجزم": "jussive_case",
+      "يجزم": "jussive_case",
+      "مجزوم": "jussive_case",
+      "مجزوماً": "jussive_case",
+      "الكسرة": "kasrah",
+      "السكون": "sukun",
+      "يلعب": "yalabu_verb",
+      "الولد": "alwaladu_noun",
+      "الحديقة": "alhadikati_noun",
+      "يمل": "yamalla_verb",
+      "يتعب": "yatab_verb",
+      "المعرب": "declinable",
+      "المبني": "indeclinable",
+      "يتغير آخره": "changeable_ending",
+      "تغير آخره": "changeable_ending",
+      "تغير حركته": "changeable_ending",
+      "يلزم حركة واحدة": "fixed_ending",
+      "حركة واحدة": "fixed_ending",
+      "ثبات آخره": "fixed_ending",
+      "يقرأ": "yaqrao_verb",
+      "هذا": "hatha_demonstrative",
+      "هو": "huwa_pronoun",
+      "نجح": "najaha_verb",
+      "الجملة الاسمية": "nominal_sentence",
+      "كان وأخواتها": "kan_and_sisters",
+      "كان": "kan_verb",
+      "أصبح": "asbaha_verb",
+      "ليس": "laysa_verb",
+      "اسم كان": "kan_subject",
+      "خبر كان": "kan_predicate",
+      "إن وأخواتها": "inna_and_sisters",
+      "إن": "conditional_particle_in",
+      "ليت": "layta_particle",
+      "لعل": "laalla_particle",
+      "اسم إن": "inna_subject",
+      "خبر إن": "inna_predicate",
+      "كاد وأخواتها": "kada_and_sisters",
+      "أفعال المقاربة": "proximity_verbs",
+      "أفعال الرجاء": "hope_verbs",
+      "أفعال الشروع": "inception_verbs",
+      "كاد": "kada_verb",
+      "عسى": "asa_verb",
+      "بدأ": "bada_verb",
+      "جملة فعلية": "verbal_sentence_predicate",
+      "فعل مضارع": "present_tense_verb",
+      "اسم كاد": "kada_subject",
+      "خبر كاد": "kada_predicate",
+      "في محل نصب": "accusative_place",
+      "ظن وأخواتها": "zhanna_and_sisters",
+      "أفعال القلوب": "heart_verbs",
+      "أفعال التحويل": "transformation_verbs",
+      "ظن": "zhanna_verb",
+      "جعل": "jaala_verb",
+      "علمت": "alama_verb",
+      "المفعول به الأول": "first_object",
+      "المفعول به الثاني": "second_object",
+      "لا النافية للجنس": "la_la_nafia_liljins",
+      "اسم لا": "la_subject",
+      "خبر لا": "la_predicate",
+      "نفي الجنس": "absolute_negation",
+      "نكرة": "indefinite_noun",
+      "مفرد": "singular_subject",
+      "مضاف": "mudhaf_subject",
+      "مبني": "indeclinable",
+      "منصوب": "accusative_case",
+      "الجملة الفعلية": "verbal_sentence",
+      "مبني للمعلوم": "active_verb",
+      "مبني للمجهول": "passive_verb",
+      "نائب الفاعل": "passive_subject",
+      "المفعول المطلق": "absolute_cognate_object",
+      "المفعول لأجله": "purpose_object",
+      "المفعول فيه": "adverbial_object_of_time_space",
+      "التوكيد": "action_emphasis",
+      "السببية": "action_cause",
+      "الزمان": "action_time",
+      "المكان": "action_space",
+      "الأسماء الخمسة": "the_five_nouns",
+      "أبو": "abu",
+      "أخو": "akhu",
+      "حمو": "hamu",
+      "فو": "fu",
+      "ذو": "dhu",
+      "الرفع بالواو": "nominative_waw",
+      "النصب بالألف": "accusative_alif",
+      "الجر بالياء": "genitive_yaa",
+      "شرط الإفراد": "singular_condition",
+      "شرط الإضافة": "annexed_condition",
+      "الأفعال الخمسة": "the_five_verbs",
+      "الرفع بثبوت النون": "present_marfoo",
+      "النصب بحذف النون": "present_mansoob",
+      "الجزم بحذف النون": "present_majzoom",
+      "واو الجماعة": "waw_al_jamaah",
+      "ألف الاثنين": "alif_al_ithnayn",
+      "ياء المخاطبة": "yaa_al_mukhatabah",
+      "الفعل المضارع": "present_tense_verb",
+      "الرفع بالضمة الظاهرة": "nominative_case_dammah",
+      "النصب بالفتحة الظاهرة": "accusative_case_fathah",
+      "الجزم بالسكون الظاهر": "jussive_case_sukoon",
+      "لن": "lan_particle",
+      "لم": "lam_particle",
+      "المنعوت": "manoot",
+      "النعت الحقيقي": "true_naat",
+      "النعت السببي": "causal_naat",
+      "التطابق الإعرابي": "grammatical_case_matching",
+      "التطابق في التعريف والتنكير": "definiteness_matching",
+      "خالد": "khaled",
+      "سعيد": "saeed",
+      "طارق": "tareq",
+      "الفاء": "fa_conjunction",
+      "ثم": "thumma_conjunction",
+      "أو": "aw_conjunction",
+      "التوكيد اللفظي": "emphasis_literal",
+      "التوكيد المعنوي": "emphasis_moral",
+      "الشاهد": "witness",
+      "البراءة": "innocence",
+      "القاضي": "judge",
+      "البدل المطابق": "appositive_identity",
+      "بدل البعض من الكل": "appositive_part_of_whole",
+      "بدل الاشتمال": "appositive_inclusion",
+      "المدينة الأثرية": "ancient_city",
+      "القلعة": "city_castle",
+      "البهو": "city_hall",
+      "لو": "conditional_particle_law",
+      "الزرع": "planting_action",
+      "الحصاد": "harvest_result",
+      "الاجتهاد": "striving_action",
+      "الحال المفردة": "singular_appositive_hal",
+      "الحال الجملة": "sentence_hal",
+      "العيد": "eid_festival",
+      "الأطفال": "children_agents",
+      "الأب": "father_agent",
+      "التمييز الملفوظ": "tamyiz_malfooz",
+      "التمييز الملحوظ": "tamyiz_malhooz",
+      "البستاني": "old_gardener",
+      "الابن": "gardener_son",
+      "فداناً": "feddan_measure",
+      "قمحاً": "wheat_crop",
+      "كيلوغراماً": "kilogram_weight",
+      "تفاحاً": "apple_fruit",
+      "عرقاً": "sweat_substance",
+      "الطلاب": "all_students",
+      "علي": "ali_student",
+      "الجميع": "everyone_agents",
+      "الكسول": "lazy_person",
+      "الأشجار": "all_trees",
+      "النخلة": "palm_tree",
+      "إلا": "ella_particle",
+      "غير": "ghair_siwa_tools",
+      "سوى": "ghair_siwa_tools",
+      "أحمد": "ahmed_person",
+      "غافلاً": "heedless_passerby",
+      "أهل المدينة": "town_citizens",
+      "العلم المفرد": "alam_mufrad_class",
+      "النكرة غير المقصودة": "nakirah_ghair_maqsudah",
+      "المنادى المضاف": "mudhaf_vocative_class",
+      "يا": "vocative_particle",
+      "الطاولة": "wooden_table",
+      "مكتبة المدرسة": "school_library",
+      "قلم المعلم": "teacher_pen",
+      "زياد": "student_ziad",
+      "الممنوع من الصرف": "diptote",
+      "مساجد": "masajid_word",
+      "صحراء": "sahra_word",
+      "إبراهيم": "ibrahim_word",
+      "الجر بالفتحة": "fatha_substitution",
+      "الجر بالكسرة": "kasra_restoration",
+      "التعريف بأل": "definite_by_al",
+      "الإضافة": "annexed_context",
+      "الميزان الصرفي": "morphological_scale",
+      "الفعل المجرد": "bare_verb",
+      "الفعل المزيد": "augmented_verb",
+      "الأحرف الأصلية": "root_letters",
+      "حروف الزيادة": "augmentation_letters",
+      "فتح": "fataha_verb",
+      "انفتح": "infataha_verb",
+      "استفتح": "istataha_verb",
+      "دحرج": "dahraja_verb",
+      "المشتق العامل": "derivative_agent",
+      "اسم الفاعل": "active_participle",
+      "اسم المفعول": "passive_participle",
+      "الفعل الأصلي": "original_verb",
+      "رفع الفاعل": "subject_raising",
+      "نصب المفعول به": "object_dependency",
+      "رفع نائب الفاعل": "substitute_subject_raising",
+      "شاكر": "shakir_word",
+      "مفهوم": "mafhum_word",
+      "فضل": "fadla_word",
+      "شرحه": "sharhuhu_word",
+      "شمس الصباح": "morning_sun",
+      "قطرات الندى": "dewdrops",
+      "النسيم": "breeze",
+      "الأزهار": "flowers",
+      "التشبيه": "rhetorical_simile",
+      "الاستعارة": "rhetorical_metaphor",
+      "جمال الطبيعة": "morning_beauty",
+      "الجهل": "ignorance_concept",
+      "بيت العز": "honorable_house",
+      "بيت الذل": "basement_house",
+      "الساعة الأولى": "time_hour_1",
+      "ساعة زمنية": "time_hour_2",
+      "الطباق": "rhetorical_antithesis",
+      "المقابلة": "rhetorical_paralellism",
+      "الجناس": "rhetorical_pun",
+      "السجع": "rhetorical_rhyme",
+      "الأسد": "lion",
+      "أسد": "lion",
+      "الغزالة": "gazelle",
+      "غزالة": "gazelle",
+      "غابات السافانا": "savanna",
+      "السافانا": "savanna"
     },
     "relations": {
       "موجود في": "located_in",
@@ -570,9 +3667,465 @@
       "يهدد": "threatens",
       "يمكن من صناعة": "enables",
       "يشكل خطراً على": "poses_risk_to",
-      "سوف يمنح طاقة خارقة لـ": "will_empower"
+      "سوف يمنح طاقة خارقة لـ": "will_empower",
+      "هو نوع من": "is_a",
+      "جزء من": "part_of",
+      "يؤدي دور": "acts_as",
+      "يتطلب لتمام المعنى": "requires",
+      "ركن في": "constitutes",
+      "حكمه": "has_case",
+      "علامته": "has_sign",
+      "يقوم بدور": "performs_role",
+      "نوع من": "is_a",
+      "تمثل حالة": "maps_to_case",
+      "يقبل حالة": "has_case_capability",
+      "محظور عليه": "prohibited_case",
+      "يصنف تحت": "classified_under",
+      "سلوكه": "has_behavior",
+      "يدخل على ويغير": "governs_and_modifies",
+      "يحول المبتدأ إلى": "transforms_subject_to",
+      "يحول الخبر إلى": "transforms_predicate_to",
+      "حكمه الإعرابي": "has_assigned_case",
+      "يشترط أن يتكون من": "must_be_composed_of",
+      "يشترط أن يبدأ بـ": "must_start_with",
+      "تعمل عمل": "acts_like",
+      "تطبق منطق": "executes",
+      "اسمها": "governs_subject",
+      "خبرها": "governs_predicate",
+      "يتطلب وجود ركن": "requires_role",
+      "يترقى إلى": "promoted_to",
+      "يؤكد الحدث": "emphasizes_action",
+      "يبين سبب حدوث": "explains_cause_of",
+      "يحدد زمان حدوث": "specifies_time_of",
+      "يحدد مكان حدوث": "specifies_space_of",
+      "يستوفي الشرط": "satisfies",
+      "حكمه الإعرابي الفرعي": "has_assigned_case",
+      "يشترط اتصاله بـ": "requires_attachment_of",
+      "يقع تحت تأثير أداة": "governed_by",
+      "علامته الإعرابية": "has_assigned_case",
+      "يؤثر تركيبياً على": "governs_and_changes",
+      "مسبوق بـ": "preceded_by",
+      "يصف المنعوت بـ": "has_property",
+      "يطابق في": "matches_in",
+      "معطوف على": "conjoined_to",
+      "يتبع في العلامة الإعرابية": "shares_case_with",
+      "يؤكد حالة": "confirms_state",
+      "يتبع في الحكم الإعرابي": "follows_in_case",
+      "هو نفسه / مطابق لـ": "identity_of",
+      "جزء مادي من كُلّ": "part_of",
+      "يشتمل عليه معنوياً": "inheres_in",
+      "يستلزم حتماً ولزاماً": "necessitates",
+      "يجزم إعرابياً": "governs_grammatically",
+      "يصف هيئة مؤقتة لـ": "characterizes_temporarily",
+      "يتطلب إعرابياً حكم": "governs_case",
+      "يميز مقدار المبهم في": "specifies_quantity_of",
+      "يميز النسبة المحولة في": "specifies_ratio_of",
+      "حقق حالة أو حكم": "achieved_status",
+      "ينتمي إلى النوع النحوي": "belongs_to_class",
+      "يخضع لحكم إعرابي هو": "governs_grammatical_ruling",
+      "ملك لـ": "belongs_to",
+      "يقتضي حكم الإعراب": "governs_case",
+      "ينتج عنه حكم": "governs_ruling",
+      "يتوافق مع وزن": "has_pattern",
+      "مشتق من جذر": "derived_from",
+      "يحتوي على عنصر": "contains_element",
+      "فرع من فئة": "subclass_of",
+      "يحدث عملاً نحوياً": "governs_action",
+      "يعمل عمل": "acts_like",
+      "يبرز ملمحاً من": "exhibits_feature",
+      "يعبر بلاغياً بـ": "expresses_rhetoric",
+      "علاقة تضاد لغوي": "antonym_of",
+      "علاقة ترادف دلالي": "synonym_of",
+      "يبرز المحسن البديعي": "manifests_device",
+      "يأكل": "eats",
+      "في": "located_in"
     },
     "question_particles": [
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
       "ما",
       "من",
       "هل",

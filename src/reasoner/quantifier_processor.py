@@ -15,12 +15,19 @@ class QuantifierProcessor:
         Detects if there is a quantifier in the text (Arabic/English) and returns its properties.
         """
         words = text.strip().split()
-        words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "") for w in words]
+        words = [w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").lower() for w in words]
         
         for q in self.db.get("quantifiers", []):
             markers = q.get("markers", [])
-            if any(marker in words or marker in text for marker in markers):
-                return q
+            for marker in markers:
+                m_words = marker.strip().lower().split()
+                if not m_words:
+                    continue
+                # Check if the list of marker tokens is a subsegment of the list of word tokens
+                n = len(m_words)
+                for i in range(len(words) - n + 1):
+                    if words[i:i+n] == m_words:
+                        return q
         return None
         
     def evaluate_quantifiers(self, statement_quantifier, query_quantifier):

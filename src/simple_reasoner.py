@@ -432,22 +432,41 @@ class SimpleReasoner:
                 
                 mapped_concepts = []
                 
-                # Phrase matching
+                # Phrase matching (both raw and prefix-stripped)
                 for ngram_size in range(min(4, len(words)), 1, -1):
                     for i in range(len(words) - ngram_size + 1):
-                        phrase = " ".join(words[i:i + ngram_size])
-                        if not phrase:
-                            continue
-                        ar_lexicon = self.handler.language_rules.get(language, {}).get("lexicon", {})
-                        if phrase in ar_lexicon:
-                            concept = ar_lexicon[phrase]
-                            if concept not in mapped_concepts:
-                                mapped_concepts.append(concept)
-                            continue
-                        for node, ndata in self.handler.graph.nodes(data=True):
-                            if ndata.get("type") == "concept" and phrase in ndata.get("labels", []):
-                                if node not in mapped_concepts:
-                                    mapped_concepts.append(node)
+                        raw_phrase = " ".join(words[i:i + ngram_size])
+                        
+                        # Generate prefix-stripped version of the subphrase
+                        cleaned_subwords = []
+                        for w in words[i:i + ngram_size]:
+                            cw = w
+                            if language == "ar":
+                                for pref in ["ال", "ل", "ب", "ف", "و"]:
+                                    if cw.startswith(pref) and len(cw) > len(pref):
+                                        cw = cw[len(pref):]
+                                        break
+                            cleaned_subwords.append(cw)
+                        cleaned_phrase = " ".join(cleaned_subwords)
+                        
+                        # Match either raw or cleaned phrase
+                        for phrase in [raw_phrase, cleaned_phrase]:
+                            if not phrase:
+                                continue
+                            ar_lexicon = self.handler.language_rules.get(language, {}).get("lexicon", {})
+                            if phrase in ar_lexicon:
+                                concept = ar_lexicon[phrase]
+                                if concept not in mapped_concepts:
+                                    mapped_concepts.append(concept)
+                                break
+                            matched_label = False
+                            for node, ndata in self.handler.graph.nodes(data=True):
+                                if ndata.get("type") == "concept" and phrase in ndata.get("labels", []):
+                                    if node not in mapped_concepts:
+                                        mapped_concepts.append(node)
+                                    matched_label = True
+                            if matched_label:
+                                break
                 
                 # Single word fallback
                 for word in words:
@@ -882,26 +901,55 @@ class SimpleReasoner:
         return None
 
     def _handle_location(self, mapped_concepts, words, world, prag_trace):
-        if ("أين" in words or "اين" in words or "يعيش" in words or "عاش" in words or "where" in words or "où" in words or "ou" in words or "vit" in words or "lives" in words) and len(mapped_concepts) >= 1:
+        loc_settings = self.handler.language_rules.get("location_query_settings", {})
+        loc_particles = loc_settings.get("question_particles", ["أين", "اين", "where", "où", "ou"])
+        loc_verbs = loc_settings.get("verbs", ["يعيش", "عاش", "يسكن", "live", "lives", "vit", "vivent", "located"])
+        
+        is_location_query = any(w in words for w in loc_particles + loc_verbs)
+        
+        if is_location_query and len(mapped_concepts) >= 1:
             concept = mapped_concepts[0]
             props = self.handler.get_properties(concept, world=world)
             location = None
+            relation_used = "lives_in"
+            
             for p in props:
-                if p["relation"] == "lives_in":
-                    location = p["property"]
+                rel = p.get("relation")
+                prop_node = p.get("property")
+                prop_data = self.handler.graph.nodes.get(prop_node, {}) if self.handler.graph.has_node(prop_node) else {}
+                if rel in ["lives_in", "located_in"] or prop_data.get("category") == "location":
+                    location = prop_node
+                    relation_used = rel
                     break
                     
             if location:
                 loc_label = self.handler.graph.nodes[location].get("labels", [location])[0] if location in self.handler.graph else location
-                conflicts = self.conflict_resolver.resolve_conflict(concept, "lives_in")
+                conflicts = self.conflict_resolver.resolve_conflict(concept, relation_used)
                 conflict_trace = [c["description"] for c in conflicts]
+                
+                # Dynamic translation of relation verb in trace
+                rel_label = relation_used
+                for lang in ["ar", "en", "fr"]:
+                    lang_rels = self.handler.language_rules.get(lang, {}).get("relations", {})
+                    for k, v in lang_rels.items():
+                        if v == relation_used:
+                            rel_label = k
+                            break
+                    if rel_label != relation_used:
+                        break
+                
+                if "ar" in self.handler.language_rules and any(v == relation_used for v in self.handler.language_rules.get("ar", {}).get("relations", {}).values()):
+                    trace_msg = f"← وجدنا أن {concept} {rel_label} {loc_label}"
+                else:
+                    trace_msg = f"← وجدنا أن {concept} {relation_used} {location}"
+                
                 return {
                     "type": "location",
                     "result": True,
                     "concept": concept,
                     "location": location,
                     "location_label": loc_label,
-                    "trace": prag_trace + [f"البحث عن موطن {concept} في العالم '{world}'", f"← وجدنا أن {concept} يعيش في {location}"] + conflict_trace,
+                    "trace": prag_trace + [f"البحث عن موطن {concept} في العالم '{world}'", trace_msg] + conflict_trace,
                     "confidence": 1.0
                 }
         return None
@@ -1048,12 +1096,99 @@ class SimpleReasoner:
                 }
             else:
                 res = self.check_is_a_relationship(c1, c2)
+                if res["result"]:
+                    return {
+                        "type": "classification",
+                        "result": True,
+                        "concept1": c1,
+                        "concept2": c2,
+                        "trace": prag_trace + res["trace"],
+                        "confidence": 1.0
+                    }
+                
+                # Check for other relationships in the active world between c1 (or ancestors) and c2 (or ancestors)
+                # Find ancestors of c1
+                ancestors1 = {c1}
+                to_explore = [c1]
+                while to_explore:
+                    curr = to_explore.pop(0)
+                    if self.handler.graph.has_node(curr):
+                        for _, to_node, edata in self.handler.graph.out_edges(curr, data=True):
+                            if edata.get("relation") == "is_a":
+                                if to_node not in ancestors1:
+                                    ancestors1.add(to_node)
+                                    to_explore.append(to_node)
+                                    
+                # Find ancestors of c2
+                ancestors2 = {c2}
+                to_explore = [c2]
+                while to_explore:
+                    curr = to_explore.pop(0)
+                    if self.handler.graph.has_node(curr):
+                        for _, to_node, edata in self.handler.graph.out_edges(curr, data=True):
+                            if edata.get("relation") == "is_a":
+                                if to_node not in ancestors2:
+                                    ancestors2.add(to_node)
+                                    to_explore.append(to_node)
+                                    
+                # Check active/inferred edges
+                world = self.handler.active_world
+                found_relation = None
+                edge_data = None
+                u_source = None
+                v_target = None
+                
+                for u in ancestors1:
+                    if self.handler.graph.has_node(u):
+                        for _, v_node, data in self.handler.graph.out_edges(u, data=True):
+                            if v_node in ancestors2:
+                                edge_world = data.get("world", "reality")
+                                edge_status = data.get("status", "active")
+                                if edge_world == world and edge_status == "active":
+                                    found_relation = data.get("relation")
+                                    edge_data = data
+                                    u_source = u
+                                    v_target = v_node
+                                    break
+                        if found_relation:
+                            break
+                            
+                if found_relation:
+                    # If the relation is "prohibited_case" or "prohibited_relation", the logical conclusion is False
+                    is_prohibited = found_relation in ["prohibited_case", "prohibited_relation"]
+                    result_val = not is_prohibited
+                    
+                    c1_lbl = self.handler.graph.nodes[c1].get("labels", [c1])[0] if c1 in self.handler.graph else c1
+                    c2_lbl = self.handler.graph.nodes[c2].get("labels", [c2])[0] if c2 in self.handler.graph else c2
+                    u_lbl = self.handler.graph.nodes[u_source].get("labels", [u_source])[0] if u_source in self.handler.graph else u_source
+                    v_lbl = self.handler.graph.nodes[v_target].get("labels", [v_target])[0] if v_target in self.handler.graph else v_target
+                    
+                    rel_meta = self.handler.graph.graph.get("relations_metadata", {})
+                    rel_display = rel_meta.get(found_relation, {}).get("name", found_relation) if isinstance(rel_meta, dict) else found_relation
+                    
+                    if is_prohibited:
+                        conclusion = f"العلاقة محظورة: [{u_lbl}] --({rel_display})--> [{v_lbl}]"
+                    else:
+                        conclusion = f"تم العثور على علاقة منطقية: [{u_lbl}] --({rel_display})--> [{v_lbl}]"
+                        
+                    return {
+                        "type": "classification",
+                        "result": result_val,
+                        "concept1": c1,
+                        "concept2": c2,
+                        "trace": prag_trace + [
+                            f"استعلام علاقة تصنيفية بين '{c1_lbl}' و '{c2_lbl}'",
+                            conclusion
+                        ],
+                        "confidence": edge_data.get("confidence", 1.0)
+                    }
+                    
                 return {
                     "type": "classification",
-                    "result": res["result"],
+                    "result": False,
                     "concept1": c1,
                     "concept2": c2,
-                    "trace": prag_trace + res["trace"],
+                    "trace": prag_trace + res["trace"] + ["لا يوجد علاقة تصنيفية أو حكم منطقي يربط بين المفهومين في قاعدة المعرفة"],
                     "confidence": 1.0
                 }
         return None

@@ -128,7 +128,7 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                     particles_count = len(morph.get("particles", []))
                     
                     for key, val in lang_rules.items():
-                        if key == "morphology" or not isinstance(val, dict):
+                        if key in ["morphology", "grammar"] or not isinstance(val, dict):
                             continue
                         lexicon_count = len(val.get("lexicon", {}))
                         grammar_block = val.get("grammar", {})
@@ -138,6 +138,15 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                                 grammar_rules_count += len(g_val)
                             elif isinstance(g_val, dict):
                                 grammar_rules_count += len(g_val)
+                        
+                        if key == "ar":
+                            top_grammar = lang_rules.get("grammar", {})
+                            for g_key, g_val in top_grammar.items():
+                                if isinstance(g_val, list):
+                                    grammar_rules_count += len(g_val)
+                                elif isinstance(g_val, dict):
+                                    grammar_rules_count += len(g_val)
+                                    
                         language_stats[key] = {
                             "lexicon_count": lexicon_count,
                             "grammar_rules_count": grammar_rules_count
@@ -374,7 +383,7 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                 cleanup = bool(body.get("cleanup", True))
                 
                 sleep_cycle = CognitiveSleepCycle(handler)
-                stats = sleep_cycle.run_sleep_cycle()
+                stats = sleep_cycle.run_sleep_cycle(cleanup=cleanup)
                 
                 handler.save_databases(ontology_path, facts_path)
                 

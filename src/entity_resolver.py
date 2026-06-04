@@ -8,13 +8,22 @@ class EntityResolver:
         Resolves implicit/pronominal references in Arabic (like 'عاش', 'بياكل', 'هناك', suffix 'ـه')
         to the last active concept in conversation history if no entity concept is in the current query.
         """
-        # Check if current_concepts already contains a specific animal/entity
+        # Load resolver settings dynamically from language rules configuration
+        resolver_settings = {}
+        if self.graph_handler and hasattr(self.graph_handler, "language_rules") and self.graph_handler.language_rules:
+            resolver_settings = self.graph_handler.language_rules.get("resolver_settings", {})
+        
+        subject_categories = resolver_settings.get("subject_categories", ["animal"])
+        subject_concepts = resolver_settings.get("subject_concepts", ["feline_carnivore", "polar_bear"])
+        ref_pronouns = resolver_settings.get("reference_pronouns", ["هو", "هي", "عنه", "عنها", "فيه", "فيها", "هناك"])
+        implicit_verb_indicators = resolver_settings.get("implicit_verb_indicators", ["عاش", "يعيش", "بياكل", "يأكل", "يحتاج", "يتحمل", "تحمل"])
+
+        # Check if current_concepts already contains a specific animal/entity or grammar concept
         has_subject = False
         for c in current_concepts:
             if self.graph_handler.graph.has_node(c):
                 cat = self.graph_handler.graph.nodes[c].get("category", "")
-                # If we have an animal or polar bear or feline carnivore, it's our subject
-                if cat == "animal" or c in ["feline_carnivore", "polar_bear"]:
+                if cat in subject_categories or c in subject_concepts:
                     has_subject = True
                     break
 
@@ -27,9 +36,13 @@ class EntityResolver:
         
         has_ref = False
         
-        # 1. Pronouns
-        ref_pronouns = ["هو", "هي", "عنه", "عنها", "فيه", "فيها", "هناك"]
-        if any(p in words for p in ref_pronouns):
+        # 1. Pronouns (ignoring question copula matches like "ما هي" or "من هو")
+        is_question_copula = False
+        for idx, w in enumerate(words):
+            if w in ["هو", "هي"] and idx > 0 and words[idx - 1] in ["ما", "من", "ماذا"]:
+                is_question_copula = True
+                
+        if any(p in words for p in ref_pronouns) and not is_question_copula:
             has_ref = True
             
         # 2. Suffixes (word ending with ه/ها/هم)
@@ -39,10 +52,9 @@ class EntityResolver:
                 break
                 
         # 3. Verb indicators starting query
-        verbs = ["عاش", "يعيش", "بياكل", "يأكل", "يحتاج", "يتحمل", "تحمل"]
         for w in words:
             # Check prefix particles or direct verb
-            for v in verbs:
+            for v in implicit_verb_indicators:
                 if w == v or w == f"ي{v}" or w.endswith(v):
                     has_ref = True
                     break

@@ -38,7 +38,7 @@ class CognitiveSleepCycle:
     def __init__(self, graph_handler):
         self.handler = graph_handler
 
-    def run_sleep_cycle(self) -> Dict[str, Any]:
+    def run_sleep_cycle(self, cleanup: bool = True) -> Dict[str, Any]:
         """
         Runs the full Cognitive Sleep Cycle.
         Returns statistics of the run.
@@ -61,7 +61,10 @@ class CognitiveSleepCycle:
         stats["edges_strengthened"] = self.strengthen_transitive_paths()
 
         # Stage 4: Cognitive Hygiene (Isolated nodes cleanup)
-        stats["noise_nodes_cleaned"] = self.flag_and_clean_isolated_nodes()
+        if cleanup:
+            stats["noise_nodes_cleaned"] = self.flag_and_clean_isolated_nodes()
+        else:
+            stats["noise_nodes_cleaned"] = 0
 
         # Stage 5: Save Databases to file
         self.handler.save_databases()
