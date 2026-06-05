@@ -1,5 +1,51 @@
 {
-  "concepts": [],
-  "relations": [],
+  "concepts": [
+    {
+      "id": "lion",
+      "labels": [
+        "الأسد",
+        "أسد"
+      ],
+      "category": "animal"
+    },
+    {
+      "id": "savanna",
+      "labels": [
+        "غابات السافانا",
+        "السافانا",
+        "سافانا"
+      ],
+      "category": "location"
+    },
+    {
+      "id": "gazelle",
+      "labels": [
+        "الغزالة",
+        "غزالة",
+        "غزال"
+      ],
+      "category": "animal"
+    }
+  ],
+  "relations": [
+    {
+      "from": "lion",
+      "to": "gazelle",
+      "relation": "eats",
+      "causal_purpose": null
+    },
+    {
+      "from": "lion",
+      "to": "savanna",
+      "relation": "located_in",
+      "causal_purpose": null
+    },
+    {
+      "from": "gazelle",
+      "to": "savanna",
+      "relation": "located_in",
+      "causal_purpose": null
+    }
+  ],
   "inference_rules": []
 }
