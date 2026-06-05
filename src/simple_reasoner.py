@@ -485,6 +485,27 @@ class SimpleReasoner:
                 
         return last_result
 
+    def _is_wh_query(self, words):
+        wh_words = {
+            "why", "where", "how", "who", "what", "when", "which", "whose", "whom",
+            "pourquoi", "où", "comment", "qui", "quand", "quel", "quelle", "quels", "quelles", "que", "quoi",
+            "لماذا", "ليه", "أين", "كيف", "من", "ماذا", "ما", "متى", "أي"
+        }
+        return any(w.lower().strip("?,.!") in wh_words for w in words)
+
+    def _is_classification_word_query(self, words, language):
+        if language == "ar" and "هل" in words:
+            return True
+        if language == "fr" and "est-ce" in words:
+            return True
+        if self._is_wh_query(words):
+            return False
+        if language == "en" and any(w in words for w in ["does", "is", "did", "can", "has", "are"]):
+            return True
+        elif language == "fr" and any(w in words for w in ["est-ce", "est", "a-t-il", "peut-il", "a", "ont"]):
+            return True
+        return False
+
     def _route_logical_reasoning(self, mapped_concepts, words, language, world, part, prag_trace):
         """Routes logic parsing to distinct sub-handlers for high modularity."""
         # 1. Anomaly & Exception Detection (Level 10)
@@ -538,6 +559,16 @@ class SimpleReasoner:
         # 13. Causal Why
         res = self._handle_causal_why(mapped_concepts, words, world, part, prag_trace)
         if res: return res
+        
+        # Bypass classification/describe/knowledge fallback for causal questions
+        is_why = any(w.lower().strip("?,.!") in ["لماذا", "ليه", "بسبب", "علل", "why", "because", "pourquoi", "cause"] for w in words)
+        if is_why:
+            return {
+                "type": "unknown",
+                "result": False,
+                "trace": prag_trace + ["لم نجد مسار استدلالي منطقي أو تصنيفي واضح يربط بين الكلمات المدخلة في قاعدة المعرفة المتاحة"],
+                "confidence": 0.0
+            }
         
         # 14. Classification
         res = self._handle_classification(mapped_concepts, words, language, part, prag_trace)
@@ -802,13 +833,7 @@ class SimpleReasoner:
             conflicts = self.conflict_resolver.resolve_conflict("c_sun", "rises_from")
             conflict_trace = [c["description"] for c in conflicts]
             
-            is_classification_query = False
-            if language == "ar" and "هل" in words:
-                is_classification_query = True
-            elif language == "en" and any(w in words for w in ["does", "is", "did", "can", "has", "are"]):
-                is_classification_query = True
-            elif language == "fr" and any(w in words for w in ["est-ce", "est", "a-t-il", "peut-il", "a", "ont"]):
-                is_classification_query = True
+            is_classification_query = self._is_classification_word_query(words, language)
                 
             if is_classification_query:
                 dir_concept = None
@@ -1016,13 +1041,7 @@ class SimpleReasoner:
         return None
 
     def _handle_classification(self, mapped_concepts, words, language, part, prag_trace):
-        is_classification_query = False
-        if language == "ar" and "هل" in words:
-            is_classification_query = True
-        elif language == "en" and any(w in words for w in ["does", "is", "did", "can", "has", "are"]):
-            is_classification_query = True
-        elif language == "fr" and any(w in words for w in ["est-ce", "est", "a-t-il", "peut-il", "a", "ont"]):
-            is_classification_query = True
+        is_classification_query = self._is_classification_word_query(words, language)
             
         if is_classification_query and len(mapped_concepts) >= 2:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]

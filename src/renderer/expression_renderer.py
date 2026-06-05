@@ -110,6 +110,70 @@ class MultilingualExpressionRenderer:
             return ""
         return random.choice(expressions_list)
 
+    def translate_concept_word(self, word, language):
+        if not word:
+            return word
+        # Try to find concept_id in Arabic lexicon
+        ar_rules = self.handler.language_rules.get("ar", {})
+        ar_lexicon = ar_rules.get("lexicon", {})
+        
+        # Clean word from prefixes for lookup
+        lookup_word = word
+        for pref in ["ال", "ل", "ب", "ف", "و"]:
+            if lookup_word.startswith(pref) and len(lookup_word) > len(pref):
+                stripped = lookup_word[len(pref):]
+                if stripped in ar_lexicon:
+                    lookup_word = stripped
+                    break
+                    
+        concept_id = ar_lexicon.get(lookup_word)
+        if not concept_id:
+            # Check other lexicons or direct graph nodes
+            for node, ndata in self.handler.graph.nodes(data=True):
+                if word in ndata.get("labels", []) or node == word:
+                    concept_id = node
+                    break
+        
+        if concept_id:
+            return self.get_concept_label(concept_id, language)
+        return word
+
+    def translate_rule_description_text(self, text, language):
+        if not text:
+            return text
+            
+        rule_desc_map = {
+            "ar": {
+                "إذا كان ?x هو تصنيف فرعي من ?y، و ?y هو تصنيف فرعي من ?z، إذن ?x هو تصنيف فرعي من ?z.": "إذا كان ?x هو تصنيف فرعي من ?y، و ?y هو تصنيف فرعي من ?z، إذن ?x هو تصنيف فرعي من ?z.",
+                "يرث الكائن ?x الخاصية ?p من فئته الأعلى ?y.": "يرث الكائن ?x الخاصية ?p من فئته الأعلى ?y.",
+                "إذا كان الكائن ?x يعيش في بيئة ?env تشتمل على ظرف ?cond يتطلب ?req، إذن ?x يتطلب ?req.": "إذا كان الكائن ?x يعيش في بيئة ?env تشتمل على ظرف ?cond يتطلب ?req، إذن ?x يتطلب ?req.",
+                "إذا كان النجم يصدر نوراً يضيء طريقاً يؤدي إلى وجهة معينة، واتبع الشخص هذا النور، فإنه يصل إلى وجهته بأمان.": "إذا كان النجم يصدر نوراً يضيء طريقاً يؤدي إلى وجهة معينة، واتبع الشخص هذا النور، فإنه يصل إلى وجهته بأمان.",
+                "مساعدة الآخرين تدخل الفرح على قلب الفاعل.": "مساعدة الآخرين تدخل الفرح على قلب الفاعل.",
+                "إدراك الكائن لقيمة الخير يجعله حكيماً.": "إدراك الكائن لقيمة الخير يجعله حكيماً."
+            },
+            "en": {
+                "إذا كان ?x هو تصنيف فرعي من ?y، و ?y هو تصنيف فرعي من ?z، إذن ?x هو تصنيف فرعي من ?z.": "If ?x is a subcategory of ?y, and ?y is a subcategory of ?z, then ?x is a subcategory of ?z.",
+                "يرث الكائن ?x الخاصية ?p من فئته الأعلى ?y.": "The object ?x inherits property ?p from its superclass ?y.",
+                "إذا كان الكائن ?x يعيش في بيئة ?env تشتمل على ظرف ?cond يتطلب ?req، إذن ?x يتطلب ?req.": "If object ?x lives in environment ?env which has condition ?cond requiring ?req, then ?x requires ?req.",
+                "إذا كان النجم يصدر نوراً يضيء طريقاً يؤدي إلى وجهة معينة، واتبع الشخص هذا النور، فإنه يصل إلى وجهته بأمان.": "If a star emits light that illuminates a road leading to a destination, and a person follows this light, they safely reach their destination.",
+                "مساعدة الآخرين تدخل الفرح على قلب الفاعل.": "Helping others brings joy to the helper's heart.",
+                "إدراك الكائن لقيمة الخير يجعله حكيماً.": "Realizing the value of goodness makes an entity wise."
+            },
+            "fr": {
+                "إذا كان ?x هو تصنيف فرعي من ?y، و ?y هو تصنيف فرعي من ?z، إذن ?x هو تصنيف فرعي من ?z.": "Si ?x est une sous-catégorie de ?y, et ?y est une sous-catégorie de ?z, alors ?x est une sous-catégorie de ?z.",
+                "يرث الكائن ?x الخاصية ?p من فئته الأعلى ?y.": "L'objet ?x hérite de la propriété ?p de sa superclasse ?y.",
+                "إذا كان الكائن ?x يعيش في بيئة ?env تشتمل على ظرف ?cond يتطلب ?req، إذن ?x يتطلب ?req.": "Si l'objet ?x vit dans l'environnement ?env qui a la condition ?cond nécessitant ?req, alors ?x a besoin de ?req.",
+                "إذا كان النجم يصدر نوراً يضيء طريقاً يؤدي إلى وجهة معينة، واتبع الشخص هذا النور، فإنه يصل إلى وجهته بأمان.": "Si une étoile émet de la lumière qui éclaire un chemin menant à une destination, et qu'une personne suit cette lumière, elle atteint sa destination en toute sécurité.",
+                "مساعدة الآخرين تدخل الفرح على قلب الفاعل.": "Aider les autres apporte de la joie au cœur de l'aidant.",
+                "إدراك الكائن لقيمة الخير يجعله حكيماً.": "Réaliser la valeur du bien rend une entité sage."
+            }
+        }
+        cleaned_text = text.strip()
+        trans = rule_desc_map.get(language, {}).get(cleaned_text)
+        if trans:
+            return trans
+        return text
+
     def translate_trace_step(self, step, language):
         """
         Translates a single trace step from Arabic to English or French, replacing concept IDs as well.
@@ -117,8 +181,6 @@ class MultilingualExpressionRenderer:
         if language == "ar":
             return step
             
-        # 1. Translate concept IDs or Arabic labels embedded in trace to the target language
-        # We can extract words and replace if they are concepts
         words = re.findall(r"\w+", step)
         translated_step = step
         for w in words:
@@ -126,7 +188,6 @@ class MultilingualExpressionRenderer:
                 translated_lbl = self.get_concept_label(w, language)
                 translated_step = re.sub(r"\b" + w + r"\b", translated_lbl, translated_step)
                 
-        # 2. Check for matching Arabic patterns and map to target language
         # 1) Classification is_a
         m = re.search(r"(.+?) هو تصنيف فرعي من (.+?) \(علاقة is_a\)", translated_step)
         if m:
@@ -338,6 +399,392 @@ class MultilingualExpressionRenderer:
                 return "Could not find a clear taxonomic or logical reasoning path matching input words in the knowledge base"
             elif language == "fr":
                 return "Aucun chemin de raisonnement taxonomique ou logique clair trouvé dans la base de connaissances pour ces mots"
+
+        # --- ADDITIONAL MULTILINGUAL TRANSLATIONS ---
+        # A1) Checking type compatibility
+        m = re.search(r"التحقق من تطابق النوع لـ '(.+?)' و '(.+?)'", translated_step)
+        if m:
+            c1 = self.translate_concept_word(m.group(1), language)
+            c2 = self.translate_concept_word(m.group(2), language)
+            if language == "en":
+                return f"Checking type compatibility for '{c1}' and '{c2}'"
+            elif language == "fr":
+                return f"Vérification de la compatibilité des types pour '{c1}' et '{c2}'"
+
+        # A2) Both belong to same category
+        m = re.search(r"كلا المفهومين ينتميان لنفس الفئة العامة \[(.+?)\]", translated_step)
+        if m:
+            cat = self.translate_concept_word(m.group(1), language)
+            if language == "en":
+                return f"Both concepts belong to the same general category [{cat}]"
+            elif language == "fr":
+                return f"Les deux concepts appartiennent à la même catégorie générale [{cat}]"
+
+        # A3) Both share direct subcategory
+        m = re.search(r"كلا المفهومين يشتركان في التصنيف الفرعي المباشر \[(.+?)\]", translated_step)
+        if m:
+            parent = self.translate_concept_word(m.group(1), language)
+            if language == "en":
+                return f"Both concepts share the direct subcategory [{parent}]"
+            elif language == "fr":
+                return f"Les deux concepts partagent la sous-catégorie directe [{parent}]"
+
+        # A4) No common ancestor
+        if "لا يوجد فئة عامة مشتركة أو سلف تصنيفي مباشر يربط بين المفهومين" in translated_step:
+            if language == "en":
+                return "No common general category or direct taxonomic ancestor connects the two concepts"
+            elif language == "fr":
+                return "Aucune catégorie générale commune ou ancêtre taxonomique direct ne relie les deux concepts"
+
+        # A5) Taxonomic relation query
+        m = re.search(r"استعلام علاقة تصنيفية بين '(.+?)' و '(.+?)'", translated_step)
+        if m:
+            c1 = self.translate_concept_word(m.group(1), language)
+            c2 = self.translate_concept_word(m.group(2), language)
+            if language == "en":
+                return f"Taxonomic relation query between '{c1}' and '{c2}'"
+            elif language == "fr":
+                return f"Requête de relation taxonomique entre '{c1}' et '{c2}'"
+
+        # A6) Relation is prohibited
+        m = re.search(r"العلاقة محظورة: \[(.+?)\] --\((.+?)\)--> \[(.+?)\]", translated_step)
+        if m:
+            u = self.translate_concept_word(m.group(1), language)
+            rel = m.group(2)
+            v = self.translate_concept_word(m.group(3), language)
+            rel_trans = self.translate_concept_word(rel, language)
+            if language == "en":
+                return f"Relation is prohibited: [{u}] --({rel_trans})--> [{v}]"
+            elif language == "fr":
+                return f"Relation interdite: [{u}] --({rel_trans})--> [{v}]"
+
+        # A7) Logical relation found
+        m = re.search(r"تم العثور على علاقة منطقية: \[(.+?)\] --\((.+?)\)--> \[(.+?)\]", translated_step)
+        if m:
+            u = self.translate_concept_word(m.group(1), language)
+            rel = m.group(2)
+            v = self.translate_concept_word(m.group(3), language)
+            rel_trans = self.translate_concept_word(rel, language)
+            if language == "en":
+                return f"Logical relation found: [{u}] --({rel_trans})--> [{v}]"
+            elif language == "fr":
+                return f"Relation logique trouvée: [{u}] --({rel_trans})--> [{v}]"
+
+        # A8) No relation/rule connects
+        if "لا يوجد علاقة تصنيفية أو حكم منطقي يربط بين المفهومين في قاعدة المعرفة" in translated_step:
+            if language == "en":
+                return "No taxonomic relation or logical rule connects the two concepts in the knowledge base"
+            elif language == "fr":
+                return "Aucune relation taxonomique ou règle logique ne relie les deux concepts dans la base de connaissances"
+
+        # A9) Parse causal query
+        m = re.search(r"Parse: تحليل الاستعلام السببي '(.+?)'", translated_step)
+        if m:
+            part = m.group(1)
+            if language == "en":
+                return f"Parse: Causal query analysis '{part}'"
+            elif language == "fr":
+                return f"Parse: Analyse de la requête causale '{part}'"
+
+        # A10) Extract variables
+        m = re.search(r"Extract: subject=(.+?) \((.+?)\), relation=(.+?), target=(.+?) \((.+?)\)", translated_step)
+        if m:
+            sub_lbl = self.translate_concept_word(m.group(1), language)
+            sub = m.group(2)
+            rel = m.group(3)
+            obj_lbl = self.translate_concept_word(m.group(4), language)
+            obj = m.group(5)
+            rel_trans = self.translate_concept_word(rel, language)
+            if language == "en":
+                return f"Extract: subject={sub_lbl} ({sub}), relation={rel_trans}, target={obj_lbl} ({obj})"
+            elif language == "fr":
+                return f"Extract: sujet={sub_lbl} ({sub}), relation={rel_trans}, cible={obj_lbl} ({obj})"
+
+        # A11) Search direct facts
+        if "Search Direct Facts: لم يتم العثور عليها كحقيقة مباشرة" in translated_step:
+            if language == "en":
+                return "Search Direct Facts: Not found as a direct fact"
+            elif language == "fr":
+                return "Search Direct Facts: Non trouvé comme un fait direct"
+
+        # A12) Apply rules
+        m = re.search(r"Apply Rules: تم تطبيق قاعدة الاستدلال '(.+?)'", translated_step)
+        if m:
+            rule_id = m.group(1)
+            if language == "en":
+                return f"Apply Rules: Inference rule '{rule_id}' applied"
+            elif language == "fr":
+                return f"Apply Rules: Règle d'inférence '{rule_id}' appliquée"
+
+        # A13) Condition matched
+        if "Condition: مطابقة شروط القاعدة بنجاح" in translated_step:
+            if language == "en":
+                return "Condition: Rule conditions matched successfully"
+            elif language == "fr":
+                return "Condition: Conditions de la règle validées avec succès"
+
+        # A14) Conclusion
+        m = re.search(r"Conclusion: استنتاج \[(.+?)\] --\((.+?)\)--> \[(.+?)\] \(ثقة: (.+?)\)", translated_step)
+        if m:
+            sub = self.translate_concept_word(m.group(1), language)
+            rel = m.group(2)
+            obj = self.translate_concept_word(m.group(3), language)
+            conf = m.group(4)
+            rel_trans = self.translate_concept_word(rel, language)
+            if language == "en":
+                return f"Conclusion: Inferring [{sub}] --({rel_trans})--> [{obj}] (confidence: {conf})"
+            elif language == "fr":
+                return f"Conclusion: Déduction [{sub}] --({rel_trans})--> [{obj}] (confiance: {conf})"
+
+        # A15) Result: "Result: rule_desc"
+        m = re.search(r"Result: (.+)", translated_step)
+        if m:
+            desc = m.group(1)
+            desc_trans = self.translate_rule_description_text(desc, language)
+            return f"Result: {desc_trans}"
+
+        # A16) Relation path query
+        m = re.search(r"استعلام علاقات (.+?) بين '(.+?)' و '(.+?)'", translated_step)
+        if m:
+            mode = m.group(1)
+            c1 = self.translate_concept_word(m.group(2), language)
+            c2 = self.translate_concept_word(m.group(3), language)
+            mode_trans = "deep" if mode == "عميق" else "specific"
+            if language == "fr":
+                mode_trans = "profond" if mode == "عميق" else "spécifique"
+            if language == "en":
+                return f"Relation path query ({mode_trans}) between '{c1}' and '{c2}'"
+            elif language == "fr":
+                return f"Requête de chemin de relation ({mode_trans}) entre '{c1}' et '{c2}'"
+
+        # A17) Path found
+        m = re.search(r"تم العثور على مسار يربط بين المفهومين يتكون من (\d+) عقدة", translated_step)
+        if m:
+            n = m.group(1)
+            if language == "en":
+                return f"Found a path connecting the two concepts consisting of {n} nodes"
+            elif language == "fr":
+                return f"Trouvé un chemin reliant les deux concepts composé de {n} nœuds"
+
+        # A18) No path found
+        if "لم يتم العثور على روابط متصلة" in translated_step:
+            if language == "en":
+                return "No connecting links found"
+            elif language == "fr":
+                return "Aucun lien de connexion trouvé"
+
+        # A19) Describe query
+        m = re.search(r"استعلام وصفي عن المفهوم '(.+?)' \((.+?)\)", translated_step)
+        if m:
+            lbl = self.translate_concept_word(m.group(1), language)
+            concept = m.group(2)
+            if language == "en":
+                return f"Descriptive query for concept '{lbl}' ({concept})"
+            elif language == "fr":
+                return f"Requête descriptive pour le concept '{lbl}' ({concept})"
+
+        # A20) Relations found
+        m = re.search(r"تم العثور على (\d+) علاقة مرتبطة", translated_step)
+        if m:
+            n = m.group(1)
+            if language == "en":
+                return f"Found {n} related relations"
+            elif language == "fr":
+                return f"Trouvé {n} relations associées"
+
+        # A21) General knowledge query
+        m = re.search(r"استعلام عام عن المعرفة المتوفرة حول '(.+?)'", translated_step)
+        if m:
+            lbl = self.translate_concept_word(m.group(1), language)
+            if language == "en":
+                return f"General query about available knowledge for '{lbl}'"
+            elif language == "fr":
+                return f"Requête générale sur les connaissances disponibles pour '{lbl}'"
+
+        # A22) Outgoing/incoming counts
+        m = re.search(r"← علاقات صادرة: (\d+), علاقات واردة: (\d+)", translated_step)
+        if m:
+            out_c = m.group(1)
+            in_c = m.group(2)
+            if language == "en":
+                return f"<- Outgoing relations: {out_c}, Incoming relations: {in_c}"
+            elif language == "fr":
+                return f"<- Relations sortantes: {out_c}, Relations entrantes: {in_c}"
+
+        # A23) Sandbox entrance
+        m = re.search(r"\[SANDBOX\] دخول عالم الافتراض للسيناريو: '(.+?)'", translated_step)
+        if m:
+            premise = m.group(1)
+            if language == "en":
+                return f"[SANDBOX] Entering hypothetical world for scenario: '{premise}'"
+            elif language == "fr":
+                return f"[SANDBOX] Entrée dans le monde hypothétique pour le scénario: '{premise}'"
+
+        # A24) Sandbox clone graph
+        if "[SANDBOX] استنساخ الرسم البياني المعرفي بأكمله بشكل آمن" in translated_step:
+            if language == "en":
+                return "[SANDBOX] Safely cloning the entire knowledge graph"
+            elif language == "fr":
+                return "[SANDBOX] Clonage sécurisé de l'ensemble du graphe de connaissances"
+
+        # A25) Sandbox add fact
+        m = re.search(r"\[SANDBOX\] إضافة حقيقة افتراضية مؤقتة: (.+)", translated_step)
+        if m:
+            msg = m.group(1)
+            if language == "en":
+                return f"[SANDBOX] Adding temporary hypothetical fact: {msg}"
+            elif language == "fr":
+                return f"[SANDBOX] Ajout d'un fait hypothétique temporaire: {msg}"
+
+        # A26) Sandbox cannot teach
+        m = re.search(r"\[SANDBOX\] لم نتمكن من تلقين الفرضية الافتراضية بشكل كامل: (.+)", translated_step)
+        if m:
+            premise = m.group(1)
+            if language == "en":
+                return f"[SANDBOX] Could not fully teach hypothetical premise: {premise}"
+            elif language == "fr":
+                return f"[SANDBOX] Impossible d'enseigner pleinement la prémisse hypothétique: {premise}"
+
+        # A27) Sandbox run analogical reasoning
+        if "[SANDBOX] تشغيل الاستدلال الاستنتاجي التناظري..." in translated_step:
+            if language == "en":
+                return "[SANDBOX] Running analogical deductive reasoning..."
+            elif language == "fr":
+                return "[SANDBOX] Exécution du raisonnement déductif analogique..."
+
+        # A28) Sandbox exit
+        if "[SANDBOX] الخروج من عالم الافتراض واستعادة الرسم البياني الأصلي بأمان" in translated_step:
+            if language == "en":
+                return "[SANDBOX] Exiting hypothetical world and safely restoring original graph"
+            elif language == "fr":
+                return "[SANDBOX] Sortie du monde hypothétique et restauration sécurisée du graphe original"
+
+        # A29) Conflict trace
+        m = re.search(r"تعارض في العوالم للمفهوم \[(.+?)\]: في عالم '(.+?)' هو \[(.+?)\],? بينما في عالم '(.+?)' هو \[(.+?)\]", translated_step)
+        if m:
+            concept = self.translate_concept_word(m.group(1), language)
+            w1 = m.group(2)
+            val1 = self.translate_concept_word(m.group(3), language)
+            w2 = m.group(4)
+            val2 = self.translate_concept_word(m.group(5), language)
+            if language == "en":
+                return f"World conflict for concept [{concept}]: in world '{w1}' it is [{val1}], while in world '{w2}' it is [{val2}]"
+            elif language == "fr":
+                return f"Conflit de mondes pour le concept [{concept}]: dans le monde '{w1}' il est [{val1}], alors que dans le monde '{w2}' il est [{val2}]"
+
+        # A30) Modality
+        m = re.search(r"الاستدلال الموجه بالجهة \(Modality\): الحالة المكتشفة هي '(.+?)' وثقتها (.+)", translated_step)
+        if m:
+            mod = m.group(1)
+            conf = m.group(2)
+            if language == "en":
+                return f"Modality reasoning: detected mode is '{mod}' with confidence {conf}"
+            elif language == "fr":
+                return f"Raisonnement de modalité: le mode détecté est '{mod}' avec une confiance de {conf}"
+
+        # A31) Quantifiers
+        m = re.search(r"الاستدلال بسور القضية \(Quantifiers\): السور المكتشف هو '(.+?)'", translated_step)
+        if m:
+            quant = m.group(1)
+            if language == "en":
+                return f"Quantifier reasoning: detected quantifier is '{quant}'"
+            elif language == "fr":
+                return f"Raisonnement de quantificateurs: le quantificateur détecté est '{quant}'"
+
+        # A32) Negation
+        if "الاستدلال بالنفي والتقابل (Negation): تم تطبيق قاعدة نفي النفي وعكس القطبية" in translated_step:
+            if language == "en":
+                return "Negation reasoning: applied double negation and polarity inversion rules"
+            elif language == "fr":
+                return "Raisonnement de négation: application de la double négation et de l'inversion de polarité"
+
+        # A33) Semantic Roles
+        m = re.search(r"تحليل الأدوار الدلالية \(Semantic Roles\): استخلاص أدوار الفعل '(.+?)'", translated_step)
+        if m:
+            pred = m.group(1)
+            if language == "en":
+                return f"Semantic roles analysis: extracting roles for predicate '{pred}'"
+            elif language == "fr":
+                return f"Analyse des rôles sémantiques: extraction des rôles pour le prédicat '{pred}'"
+
+        # A34) Causal Chain start
+        m = re.search(r"الاستدلال السببي متعدد الخطوات \(Causal Chain\): بدءاً من (.+)", translated_step)
+        if m:
+            concept = self.translate_concept_word(m.group(1), language)
+            if language == "en":
+                return f"Multi-step causal reasoning (Causal Chain): starting from {concept}"
+            elif language == "fr":
+                return f"Raisonnement causal multi-étapes (Causal Chain): à partir de {concept}"
+
+        # A35) Causal Chain step
+        m = re.search(r"الخطوة (\d+): الحدث (.+)", translated_step)
+        if m:
+            step_num = m.group(1)
+            event = self.translate_concept_word(m.group(2), language)
+            if language == "en":
+                return f"Step {step_num}: Event {event}"
+            elif language == "fr":
+                return f"Étape {step_num}: Événement {event}"
+
+        # A36) Temporal check order
+        m = re.search(r"الاستدلال الزمني: التحقق من الترتيب الزمني للحدث (.+)", translated_step)
+        if m:
+            event = self.translate_concept_word(m.group(1), language)
+            if language == "en":
+                return f"Temporal reasoning: verifying temporal order for event {event}"
+            elif language == "fr":
+                return f"Raisonnement temporel: vérification de l'ordre temporel pour l'événement {event}"
+
+        # A37) Temporal logic fact
+        m = re.search(r"الحدث (.+?) يقع (.+?) present بالتعدي الزمني", translated_step)
+        if m:
+            event = self.translate_concept_word(m.group(1), language)
+            rel = m.group(2)
+            rel_trans = "before" if rel == "قبل" else "not before"
+            if language == "fr":
+                rel_trans = "avant" if rel == "قبل" else "pas avant"
+            if language == "en":
+                return f"Event {event} occurs {rel_trans} present by temporal transitivity"
+            elif language == "fr":
+                return f"L'événement {event} se produit {rel_trans} present par transitivité temporelle"
+
+        # A38) Check property
+        m = re.search(r"فحص الخاصية (.+?) للـ (.+)", translated_step)
+        if m:
+            prop = self.translate_concept_word(m.group(1), language)
+            entity = self.translate_concept_word(m.group(2), language)
+            if language == "en":
+                return f"Checking property {prop} for {entity}"
+            elif language == "fr":
+                return f"Vérification de la propriété {prop} pour {entity}"
+
+        # A39) Compare on scale
+        m = re.search(r"مقارنة الكائنات على مقياس (.+)", translated_step)
+        if m:
+            prop = m.group(1)
+            prop_trans = self.translate_concept_word(prop, language)
+            if language == "en":
+                return f"Comparing entities on {prop_trans} scale"
+            elif language == "fr":
+                return f"Comparaison des entités sur l'échelle de {prop_trans}"
+
+        # A40) Anomaly check exceptions
+        m = re.search(r"كشف الشذوذ: البحث عن استثناءات للـ (.+)", translated_step)
+        if m:
+            entity = self.translate_concept_word(m.group(1), language)
+            if language == "en":
+                return f"Anomaly detection: searching exceptions for {entity}"
+            elif language == "fr":
+                return f"Détection d'anomalies: recherche d'exceptions pour {entity}"
+
+        # A41) Anomaly exception found
+        m = re.search(r"العثور على استثناء: (.+)", translated_step)
+        if m:
+            exc = m.group(1)
+            if language == "en":
+                return f"Exception found: {exc}"
+            elif language == "fr":
+                return f"Exception trouvée: {exc}"
                 
         return translated_step
 
@@ -668,7 +1115,7 @@ class MultilingualExpressionRenderer:
         # 15.5. Causal Reasoning
         elif type_ == "causal_reasoning":
             reason = res.get("reason", "")
-            return reason
+            return self.translate_rule_description_text(reason, language)
 
         # 16. Unknown fail-safe
         else:

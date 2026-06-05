@@ -169,5 +169,38 @@ def test_query_classification_multiword(setup_engine):
     assert "كائن حي" in response or "حيوان" in response
 
 
+def test_wh_query_exclusion(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # "why did Alistair find the golden key?" should not resolve as classification.
+    # It contains "did" but starts with "why", so it is a Wh-query.
+    # Because there is no causal rule, it must fall back to "unknown".
+    res = reasoner.process_query("why did Alistair find the golden key?", language="en")
+    assert res["type"] == "unknown"
+    
+    # "where does the polar bear live?" is a Wh-query.
+    res2 = reasoner.process_query("where does the polar bear live?", language="en")
+    assert res2["type"] == "location"
+    assert res2["location"] == "arctic"
+
+
+def test_trace_translations(setup_engine):
+    reasoner, generator = setup_engine
+    from src.manager.multilingual_persona_engine import MultilingualPersonaEngine
+    engine = MultilingualPersonaEngine(reasoner.handler)
+    renderer = engine.expression_renderer
+    
+    # 1. English trace translation verification for classification query
+    res_en = reasoner.process_query("Is the dinosaur fur?", language="en")
+    # Trace step translating "لا يوجد علاقة تصنيفية..." to English
+    translated = [renderer.translate_trace_step(step, "en") for step in res_en.get("trace", [])]
+    assert any("No taxonomic relation or logical rule connects the two concepts" in step for step in translated)
+
+    # 2. French trace translation verification for classification query
+    res_fr = reasoner.process_query("Est-ce que le dinosaure est de la fourrure?", language="fr")
+    translated_fr = [renderer.translate_trace_step(step, "fr") for step in res_fr.get("trace", [])]
+    assert any("Aucune relation taxonomique ou règle logique ne relie les deux concepts" in step for step in translated_fr)
+
+
 
 

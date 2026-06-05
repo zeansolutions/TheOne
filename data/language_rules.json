@@ -1268,6 +1268,297 @@
         "patterns": [
           "السافانا"
         ]
+      },
+      {
+        "id": "alistair",
+        "patterns": [
+          "Alistair"
+        ]
+      },
+      {
+        "id": "clock",
+        "patterns": [
+          "clock",
+          "clocks"
+        ]
+      },
+      {
+        "id": "key",
+        "patterns": [
+          "key",
+          "keys"
+        ]
+      },
+      {
+        "id": "shop",
+        "patterns": [
+          "shop",
+          "shops"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
       }
     ],
     "particles": [
@@ -1694,6 +1985,90 @@
       {
         "form": "في",
         "type": "preposition"
+      },
+      {
+        "form": "for",
+        "type": "preposition"
+      },
+      {
+        "form": "in",
+        "type": "preposition"
+      },
+      {
+        "form": "before",
+        "type": "preposition"
+      },
+      {
+        "form": "the",
+        "type": "definite_article"
+      },
+      {
+        "form": "a",
+        "type": "indefinite_article"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
       }
     ],
     "derivation_patterns": [
@@ -1912,6 +2287,51 @@
         "id": "rhetorical_parallelism_sentence",
         "pattern": "sentence_1 + conjunction + sentence_2_reversed_meanings",
         "description": "تركيب إنشائي أو خبري يقابل فيه جملة بجملة أخرى تعاكسها تماماً في الترتيب والمعنى"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative",
+        "pattern": "noun + verb + object",
+        "description": "Standard declarative statement"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
       },
       {
         "id": "declarative_verbal",
@@ -2254,6 +2674,105 @@
       "كم",
       "أي",
       "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
       "ما",
       "من",
       "هل",
@@ -2629,7 +3148,20 @@
       "lion": "lion",
       "gazelle": "gazelle",
       "savanna": "savanna",
-      "savanna woodlands": "savanna"
+      "savanna woodlands": "savanna",
+      "Alistair": "alistair",
+      "clock": "grand_grandfather_clock",
+      "clocks": "antique_clock",
+      "key": "golden_key",
+      "shop": "london_shop",
+      "tea": "black_tea",
+      "workbench": "wooden_workbench",
+      "watch": "pocket_watch_17th_century",
+      "keyhole": "keyhole",
+      "friend": "old_friend",
+      "university": "university",
+      "mechanisms": "ancient_mechanisms",
+      "time": "time"
     },
     "relations": {
       "located in": "located_in",
@@ -2721,9 +3253,111 @@
       "synonym_of": "synonym_of",
       "manifests_device": "manifests_device",
       "eats": "eats",
-      "is in": "located_in"
+      "is in": "located_in",
+      "repairs": "occupation",
+      "brews": "consumes",
+      "has": "has_part"
     },
     "question_particles": [
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
       "what",
       "who",
       "where",
@@ -3741,6 +4375,94 @@
       "في": "located_in"
     },
     "question_particles": [
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
       "ما",
       "من",
       "هل",

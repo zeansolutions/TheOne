@@ -277,6 +277,14 @@ Your output JSON must have this exact structure (include only the keys that are 
       ]
     }
   },
+  "syntactic_patterns": [
+    {
+      "id": "pattern_unique_id",
+      "pattern": ["كلمة1", "?X", "كلمة2", "?Y"],
+      "intent": "target_intent",
+      "mapping": {"subject": "?X", "object": "?Y"}
+    }
+  ],
   "temporal_relations": {
     "BEFORE": {"symbol": "<", "transitivity": true},
     "AFTER": {"symbol": ">", "transitivity": true}
@@ -594,6 +602,14 @@ Your output JSON must have this exact structure (include only the keys that are 
       ]
     }
   },
+  "syntactic_patterns": [
+    {
+      "id": "predation_pattern_01",
+      "pattern": ["?X", "يفترس", "?Y"],
+      "intent": "teaching_statement",
+      "mapping": {"subject": "?X", "relation": "eats", "object": "?Y"}
+    }
+  ],
   "exceptions": [
     {
       "entity": "lion",

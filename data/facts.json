@@ -1,5 +1,43 @@
 {
-  "facts": [],
+  "facts": [
+    {
+      "subject": "alistair",
+      "predicate": "occupation",
+      "object": "repairing",
+      "world": "reality",
+      "confidence": 1.0,
+      "reason": "For forty years, Alistair had been repairing antique clocks"
+    },
+    {
+      "subject": "golden_key",
+      "predicate": "belongs_to",
+      "object": "grand_grandfather_clock",
+      "world": "reality",
+      "confidence": 0.9,
+      "reason": "Alistair realized it must belong to the grand grandfather clock"
+    },
+    {
+      "subject": "lion",
+      "predicate": "eats",
+      "object": "gazelle",
+      "world": "عالم الحيوان",
+      "confidence": 1.0
+    },
+    {
+      "subject": "lion",
+      "predicate": "located_in",
+      "object": "savanna",
+      "world": "عالم الحيوان",
+      "confidence": 1.0
+    },
+    {
+      "subject": "gazelle",
+      "predicate": "located_in",
+      "object": "savanna",
+      "world": "عالم الحيوان",
+      "confidence": 1.0
+    }
+  ],
   "personas": [
     {
       "id": "old_star_persona",
