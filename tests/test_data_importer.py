@@ -22,8 +22,8 @@ def test_on_demand_enrichment():
     
     # Check that it either successfully populated or logged offline mode
     assert len(trace) > 0
-    # The first message should describe connecting
-    assert any("Connecting to ConceptNet" in t for t in trace)
+    # The first message should describe connecting or querying offline
+    assert any("Connecting to ConceptNet" in t or "Querying offline ConceptNet" in t for t in trace)
 
 def test_data_validation_and_deduplication():
     gh = GraphHandler()

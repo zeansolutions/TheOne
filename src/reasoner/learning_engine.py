@@ -13,30 +13,26 @@ class InteractiveBootstrapper:
         if not self.handler or not self.handler.graph:
             return []
 
+        norm_text = self.handler.normalize_text(text.lower())
+
         # Gather all concepts and their labels
         concept_matches = []
         for node, data in self.handler.graph.nodes(data=True):
             if data.get("type") == "concept":
                 labels = data.get("labels", [])
                 for lbl in labels:
-                    # Case insensitive and robust string search
-                    # We can use regex to find word boundaries or simple substring search
-                    # Let's find all occurrences of the label in the text
-                    # We use re.finditer but escape the label
                     try:
-                        pattern = r'\b' + re.escape(lbl) + r'\b'
-                        # For Arabic, word boundaries are sometimes tricky, so let's check both with and without word boundary
-                        # or simple string index matching
+                        norm_lbl = self.handler.normalize_text(lbl.lower())
                         start = 0
                         while True:
-                            idx = text.lower().find(lbl.lower(), start)
+                            idx = norm_text.find(norm_lbl, start)
                             if idx == -1:
                                 break
                             concept_matches.append({
                                 "concept_id": node,
                                 "label": lbl,
                                 "start": idx,
-                                "end": idx + len(lbl)
+                                "end": idx + len(norm_lbl)
                             })
                             start = idx + 1
                     except Exception:
@@ -66,11 +62,18 @@ class InteractiveBootstrapper:
         if len(concepts) < 1:
             return None
             
-        # Tokenize text
-        words = text.strip().split()
-        # Clean punctuation
-        words_clean = [w.replace("؟", "").replace("?", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "") for w in words]
-        words_clean = [w for w in words_clean if w]
+        # Tokenize text using the same prefix-splitting logic as PatternMatcher
+        cleaned = text.strip()
+        for punc in ["؟", "?", "!", "،", ",", ".", ";", "؛"]:
+            cleaned = cleaned.replace(punc, " ")
+        raw_words = cleaned.split()
+        words_clean = []
+        for w in raw_words:
+            if w.startswith("وال") and len(w) > 3:
+                words_clean.append("و")
+                words_clean.append(w[1:])
+            else:
+                words_clean.append(w)
 
         if len(concepts) >= 2:
             # We take the first two detected concepts to form a relation pattern

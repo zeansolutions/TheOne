@@ -63,6 +63,29 @@
     ]
   },
   "morphology": {
+    "ar_normalization": {
+      "أ": "ا",
+      "إ": "ا",
+      "آ": "ا",
+      "ة": "ه",
+      "ى": "ي"
+    },
+    "fr_normalization": {
+      "é": "e",
+      "è": "e",
+      "ê": "e",
+      "ë": "e",
+      "à": "a",
+      "â": "a",
+      "ù": "u",
+      "û": "u",
+      "î": "i",
+      "ï": "i",
+      "ô": "o",
+      "œ": "oe",
+      "ç": "c"
+    },
+    "en_normalization": {},
     "roots": [
       {
         "id": "نجم",
@@ -1606,6 +1629,270 @@
         "patterns": [
           "السافانا"
         ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
       }
     ],
     "particles": [
@@ -2124,6 +2411,70 @@
       {
         "form": "في",
         "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
       }
     ],
     "derivation_patterns": [
@@ -2367,6 +2718,46 @@
         "id": "declarative",
         "pattern": "noun + verb + object",
         "description": "Standard declarative statement"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
       },
       {
         "id": "declarative_verbal",
@@ -2931,6 +3322,94 @@
       "متى",
       "كم",
       "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
       "هي"
     ]
   },
@@ -3330,6 +3809,94 @@
       "has": "has_part"
     },
     "question_particles": [
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
       "what",
       "who",
       "where",
@@ -4962,6 +5529,94 @@
       "متى",
       "كم",
       "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
       "هي"
     ],
     "question_classification": {
@@ -5365,6 +6020,156 @@
       "mapping": {
         "concept": "?X",
         "relation": "?ACTION"
+      }
+    },
+    {
+      "id": "query_describe_ar_01",
+      "pattern": [
+        "ما",
+        "هي",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_ar_02",
+      "pattern": [
+        "ما",
+        "هو",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_ar_03",
+      "pattern": [
+        "ماذا",
+        "تعرف",
+        "عن",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_ar_04",
+      "pattern": [
+        "ماذا",
+        "تعرفين",
+        "عن",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_ar_05",
+      "pattern": [
+        "من",
+        "هو",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_ar_06",
+      "pattern": [
+        "من",
+        "هي",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_en_01",
+      "pattern": [
+        "what",
+        "is",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_en_02",
+      "pattern": [
+        "who",
+        "is",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_en_03",
+      "pattern": [
+        "what",
+        "do",
+        "you",
+        "know",
+        "about",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_en_04",
+      "pattern": [
+        "tell",
+        "me",
+        "about",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_fr_01",
+      "pattern": [
+        "qu'est-ce",
+        "que",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
+      }
+    },
+    {
+      "id": "query_describe_fr_02",
+      "pattern": [
+        "parle-moi",
+        "de",
+        "?X"
+      ],
+      "intent": "describe",
+      "mapping": {
+        "concept": "?X"
       }
     }
   ],

@@ -3,31 +3,70 @@
     {
       "id": "lion",
       "labels": [
-        "الأسد",
-        "أسد"
+        "أسد",
+        "الأسد"
       ],
       "category": "animal"
     },
     {
+      "id": "animal",
+      "labels": [
+        "animal"
+      ],
+      "category": "category"
+    },
+    {
+      "id": "category",
+      "labels": [
+        "category"
+      ],
+      "category": "category"
+    },
+    {
       "id": "savanna",
       "labels": [
-        "غابات السافانا",
         "السافانا",
-        "سافانا"
+        "سافانا",
+        "غابات السافانا"
       ],
       "category": "location"
     },
     {
+      "id": "location",
+      "labels": [
+        "location"
+      ],
+      "category": "category"
+    },
+    {
       "id": "gazelle",
       "labels": [
-        "الغزالة",
         "غزالة",
-        "غزال"
+        "غزال",
+        "الغزالة"
       ],
       "category": "animal"
     }
   ],
   "relations": [
+    {
+      "from": "lion",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "lion",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "lion",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
     {
       "from": "lion",
       "to": "gazelle",
@@ -38,6 +77,72 @@
       "from": "lion",
       "to": "savanna",
       "relation": "located_in",
+      "causal_purpose": null
+    },
+    {
+      "from": "animal",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "animal",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "category",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "savanna",
+      "to": "location",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "savanna",
+      "to": "location",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "savanna",
+      "to": "location",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "location",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "location",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "gazelle",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "gazelle",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "gazelle",
+      "to": "animal",
+      "relation": "is_a",
       "causal_purpose": null
     },
     {

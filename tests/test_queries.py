@@ -202,5 +202,52 @@ def test_trace_translations(setup_engine):
     assert any("Aucune relation taxonomique ou règle logique ne relie les deux concepts" in step for step in translated_fr)
 
 
+def test_explicit_query_mode(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # 1. Direct query normally fails for indirect relationship
+    res_indirect = reasoner.process_query("ما علاقة الأسد بعين الماء؟")
+    assert res_indirect["type"] == "relation_path"
+    assert res_indirect["is_deep"] is False
+    assert res_indirect["path_found"] is False
+    
+    # 2. Passing is_deep=True explicitly overrides it to find the path
+    res_explicit_deep = reasoner.process_query("ما علاقة الأسد بعين الماء؟", is_deep=True)
+    assert res_explicit_deep["type"] == "relation_path"
+    assert res_explicit_deep["is_deep"] is True
+    assert res_explicit_deep["path_found"] is True
+    
+    # 3. Query with deep keyword normally succeeds for indirect relationship
+    res_deep_keyword = reasoner.process_query("ما العلاقة العميقة بين الأسد وعين الماء؟")
+    assert res_deep_keyword["type"] == "relation_path"
+    assert res_deep_keyword["is_deep"] is True
+    assert res_deep_keyword["path_found"] is True
+    
+    # 4. Passing is_deep=False explicitly overrides the deep keyword to restrict the search
+    res_explicit_restricted = reasoner.process_query("ما العلاقة العميقة بين الأسد وعين الماء؟", is_deep=False)
+    assert res_explicit_restricted["type"] == "relation_path"
+    assert res_explicit_restricted["is_deep"] is False
+    assert res_explicit_restricted["path_found"] is False
+
+
+def test_arabic_spelling_normalization(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # 1. Query using "الاسد" (with bare alif 'ا' instead of 'أ') and "السافانا"
+    # This should resolve to 'feline_carnivore' and 'savanna' and successfully find the direct relationship path.
+    res = reasoner.process_query("ما العلاقة بين الاسد والسافانا؟")
+    assert res["type"] == "relation_path"
+    assert res["concept1"] == "feline_carnivore"
+    assert res["concept2"] == "savanna"
+    assert res["path_found"] is True
+    
+    response = generator.generate(res)
+    assert "أسد" in response
+    assert "سافانا" in response or "السافانا" in response
+
+
+
+
+
 
 

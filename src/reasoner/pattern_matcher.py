@@ -53,7 +53,15 @@ class GenericPatternMatcher:
         cleaned = text.strip()
         for punc in ["؟", "?", "!", "،", ",", ".", ";", "؛"]:
             cleaned = cleaned.replace(punc, " ")
-        return [w for w in cleaned.split() if w]
+        raw_words = cleaned.split()
+        tokens = []
+        for w in raw_words:
+            if w.startswith("وال") and len(w) > 3:
+                tokens.append("و")
+                tokens.append(w[1:])
+            else:
+                tokens.append(w)
+        return tokens
 
     def levenshtein_distance(self, s1: str, s2: str) -> int:
         if len(s1) < len(s2):

@@ -44,6 +44,7 @@ export default function App() {
   const [chatMessages, setChatMessages] = useState([]);
   const [isThinking, setIsThinking] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState('auto');
+  const [queryMode, setQueryMode] = useState('restricted'); // 'restricted' or 'deep'
   const [reasoningTrace, setReasoningTrace] = useState('');
   const [perfTrace, setPerfTrace] = useState(null);
 
@@ -278,7 +279,8 @@ export default function App() {
         body: JSON.stringify({ 
           query: queryText, 
           lang: lang,
-          persona: selectedPersona === 'auto' ? null : selectedPersona
+          persona: selectedPersona === 'auto' ? null : selectedPersona,
+          is_deep: queryMode === 'deep'
         })
       });
       const data = await res.json();
@@ -287,7 +289,10 @@ export default function App() {
           sender: 'system', 
           text: data.response, 
           persona: data.persona,
-          lang: data.language 
+          lang: data.language,
+          is_clarification: data.is_clarification,
+          proposal: data.proposal,
+          status: data.is_clarification ? 'pending' : null
         }]);
         setReasoningTrace(data.formatted_trace);
         setPerfTrace({
@@ -305,6 +310,37 @@ export default function App() {
     } finally {
       setIsThinking(false);
     }
+  };
+
+  const handleConfirmProposal = async (proposal, messageIndex) => {
+    try {
+      const res = await fetch('http://localhost:8000/api/clarify/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposal })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setChatMessages(prev => prev.map((msg, idx) => 
+          idx === messageIndex ? { ...msg, status: 'accepted', text: data.message } : msg
+        ));
+        logMessage('Learned new semantic relation pattern', 'success');
+        fetchStatus();
+        fetchGraph();
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save pattern.');
+    }
+  };
+
+  const handleCancelProposal = (messageIndex) => {
+    setChatMessages(prev => prev.map((msg, idx) => 
+      idx === messageIndex ? { ...msg, status: 'rejected', text: lang === 'ar' ? '❌ تم إلغاء عملية التعلم.' : '❌ Learning canceled.' } : msg
+    ));
+    logMessage('Learning canceled by user', 'system');
   };
 
   const handleAddNewWorld = () => {
@@ -790,6 +826,10 @@ export default function App() {
                 personas={status.personas}
                 handleAsk={handleAsk}
                 messagesEndRef={messagesEndRef}
+                queryMode={queryMode}
+                setQueryMode={setQueryMode}
+                handleConfirmProposal={handleConfirmProposal}
+                handleCancelProposal={handleCancelProposal}
               />
             </div>
           ) : (

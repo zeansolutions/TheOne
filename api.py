@@ -259,6 +259,7 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                 query = body.get("query", "").strip()
                 lang_pref = body.get("lang", active_lang)
                 persona_pref = body.get("persona") # Forced persona ID
+                is_deep = body.get("is_deep") # None, True or False
                 
                 if query:
                     # 1. Detect language
@@ -267,7 +268,7 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                     
                     # 2. Run logical reasoning
                     start_time = time.perf_counter()
-                    res = reasoner.process_query(query, interactive=True, language=selected_lang)
+                    res = reasoner.process_query(query, interactive=False, language=selected_lang, is_deep=is_deep)
                     elapsed_ms = (time.perf_counter() - start_time) * 1000.0
                     
                     # 3. Multilingual Persona response generation
@@ -288,7 +289,9 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                         "elapsed_ms": elapsed_ms,
                         "trace": res.get("trace", []),
                         "formatted_trace": formatted_trace,
-                        "success": True
+                        "success": True,
+                        "is_clarification": res.get("type") == "clarification_needed",
+                        "proposal": res.get("proposal")
                     }
                 else:
                     response_data = {"error": "Empty query"}
@@ -400,6 +403,24 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                     "success": True,
                     "active_language": active_lang
                 }
+                
+            elif path == "/api/clarify/confirm":
+                proposal = body.get("proposal")
+                if proposal:
+                    success = reasoner.learning_engine.save_new_pattern(proposal)
+                    if success:
+                        reasoner.pattern_matcher.load_patterns()
+                        response_data = {
+                            "success": True,
+                            "message": "✅ تم تعلم النمط الدلالي الجديد وحفظه بنجاح!" if active_lang == "ar" else "✅ New semantic pattern learned and saved successfully!"
+                        }
+                    else:
+                        response_data = {
+                            "success": False,
+                            "error": "Failed to save pattern rules."
+                        }
+                else:
+                    response_data = {"error": "Missing proposal data"}
                 
             elif path == "/api/set_world":
                 world = body.get("world", "reality")

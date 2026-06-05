@@ -14,7 +14,11 @@ export default function ChatInterface({
   setSelectedPersona,
   personas = [],
   handleAsk,
-  messagesEndRef
+  messagesEndRef,
+  queryMode,
+  setQueryMode,
+  handleConfirmProposal,
+  handleCancelProposal
 }) {
   return (
     <div className="d-flex flex-column flex-grow h-full">
@@ -38,6 +42,24 @@ export default function ChatInterface({
               </div>
             )}
             <p className="text-sm font-medium">{msg.text}</p>
+            {msg.sender === 'system' && msg.is_clarification && msg.status === 'pending' && (
+              <div className="d-flex gap-2 mt-3" style={{ direction: lang === 'ar' ? 'rtl' : 'ltr' }}>
+                <button 
+                  onClick={() => handleConfirmProposal(msg.proposal, index)}
+                  className="cyber-btn text-xs py-1 px-3"
+                  style={{ minWidth: '70px', padding: '6px 12px' }}
+                >
+                  {lang === 'ar' ? 'نعم' : 'Yes'}
+                </button>
+                <button 
+                  onClick={() => handleCancelProposal(index)}
+                  className="cyber-btn-secondary text-xs"
+                  style={{ minWidth: '70px', padding: '6px 12px' }}
+                >
+                  {lang === 'ar' ? 'لا' : 'No'}
+                </button>
+              </div>
+            )}
           </div>
         ))}
         {isThinking && (
@@ -66,6 +88,8 @@ export default function ChatInterface({
         setSelectedPersona={setSelectedPersona}
         personas={personas}
         t={t}
+        queryMode={queryMode}
+        setQueryMode={setQueryMode}
       />
 
       {/* Input box */}

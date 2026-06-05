@@ -1117,6 +1117,31 @@ class MultilingualExpressionRenderer:
             reason = res.get("reason", "")
             return self.translate_rule_description_text(reason, language)
 
+        # 15.6. Clarification Needed
+        elif type_ == "clarification_needed":
+            return res.get("suggested_question", "")
+
+        # 15.7. Relation Path
+        elif type_ == "relation_path":
+            c1_lbl = res.get("concept1_label", "")
+            c2_lbl = res.get("concept2_label", "")
+            is_deep = res.get("is_deep", False)
+            path_steps = res.get("path_steps", [])
+            
+            if res.get("path_found") and path_steps:
+                sep = self.get_template("relation_path_steps_separator", language, self.get_fallback_template("relation_path_steps_separator", language))
+                steps_str = sep.join(path_steps)
+                if is_deep:
+                    key = "relation_path_deep"
+                else:
+                    key = "relation_path_direct"
+                template = self.get_template(key, language, self.get_fallback_template(key, language))
+                return template.format(concept1=c1_lbl, concept2=c2_lbl, steps_str=steps_str)
+            else:
+                key = "relation_path_none"
+                template = self.get_template(key, language, self.get_fallback_template(key, language))
+                return template
+
         # 16. Unknown fail-safe
         else:
             template = self.get_template("unknown", language, self.get_fallback_template("unknown", language))
@@ -1159,7 +1184,7 @@ class MultilingualExpressionRenderer:
         answer = self.generate_logical_answer(logical_response, language)
         
         # 4. Format tracing details
-        if variant.get("use_reasoning_chain") or logical_response.get("type") in ["classification", "hypothetical", "location", "comparison", "causal_reasoning"]:
+        if variant.get("use_reasoning_chain") or logical_response.get("type") in ["classification", "hypothetical", "location", "comparison", "causal_reasoning", "relation_path"]:
             details = self.format_trace(logical_response.get("trace", []), language)
         else:
             details = ""
@@ -1182,6 +1207,9 @@ class MultilingualExpressionRenderer:
                     full_response = f"{p_ref.capitalize()}, {answer}"
             else:
                 full_response = answer
+        elif resp_type == "clarification_needed":
+            # Just return the raw suggested question so the UI shows it clean
+            full_response = answer
         elif resp_type == "unknown":
             # For unknown, use uncertainty intro
             if language == "ar":

@@ -47,6 +47,17 @@ class DbIoHandler:
                     category=concept.get("category", ""),
                     type="concept"
                 )
+                category = concept.get("category", "")
+                if category:
+                    if not self.gh.graph.has_node(category):
+                        self.gh.graph.add_node(category, labels=[category], category="category", type="concept")
+                    # Add is_a relationship to category node
+                    self.gh.graph.add_edge(
+                        concept["id"],
+                        category,
+                        relation="is_a",
+                        type="relation"
+                    )
             # Populate relations as directed edges
             for rel in ontology.get("relations", []):
                 self.gh.graph.add_edge(
@@ -179,6 +190,24 @@ class DbIoHandler:
                         self.gh.graph.nodes[c_id]["labels"] = list(existing_labels)
                         if category:
                             self.gh.graph.nodes[c_id]["category"] = category
+                    
+                    if category:
+                        if not self.gh.graph.has_node(category):
+                            self.gh.graph.add_node(category, labels=[category], category="category", type="concept")
+                        # Add is_a relation to the category node if it doesn't already exist
+                        exists = False
+                        if self.gh.graph.has_edge(c_id, category):
+                            for key, edata in self.gh.graph[c_id][category].items():
+                                if edata.get("type") == "relation" and edata.get("relation") == "is_a":
+                                    exists = True
+                                    break
+                        if not exists:
+                            self.gh.graph.add_edge(
+                                c_id,
+                                category,
+                                relation="is_a",
+                                type="relation"
+                            )
 
         # 2. Check for ontology / relations
         if "relations" in data and isinstance(data["relations"], list):

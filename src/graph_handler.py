@@ -47,6 +47,28 @@ class GraphHandler:
                 
         return word
 
+    def normalize_text(self, text, language=None):
+        """
+        Normalizes text based on dynamic rules loaded from language_rules.json.
+        If language is not specified, detects it based on character content.
+        """
+        if not text:
+            return ""
+        if not language:
+            # Simple heuristic: detect Arabic by character range
+            if any('\u0600' <= char <= '\u06FF' for char in text):
+                language = "ar"
+            # Detect French by accent character presence
+            elif any(char in "éèêëàâùûîïôœçÉÈÊËÀÂÙÛÎÏÔŒÇ" for char in text):
+                language = "fr"
+            else:
+                language = "en"
+
+        norm_rules = self.language_rules.get("morphology", {}).get(f"{language}_normalization", {})
+        for src, dest in norm_rules.items():
+            text = text.replace(src, dest)
+        return text
+
     def load_databases(self, ontology_path, facts_path, language_rules_path, inference_rules_path=None):
         """Loads and parses JSON databases by delegating to DbIoHandler."""
         return self.io_handler.load_databases(ontology_path, facts_path, language_rules_path, inference_rules_path)
@@ -527,10 +549,11 @@ class GraphHandler:
                     matched_concepts.append(node)
         else:
             # --- Arabic Morphological Lookup ---
-            # Direct lookup in concept labels
+            # Direct lookup in concept labels (normalized)
+            norm_word = self.normalize_text(word, "ar")
             for node, data in self.graph.nodes(data=True):
                 if data.get("type") == "concept":
-                    if word in data.get("labels", []):
+                    if any(norm_word == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
                         matched_concepts.append(node)
                         
             # Apply affix rules dynamically loaded from language_rules
@@ -568,21 +591,23 @@ class GraphHandler:
                                 changed = True
                 candidates.update(new_candidates)
                 
-            # Check if any candidate is a concept label
+            # Check if any candidate is a concept label (normalized)
             for stem in sorted(list(candidates), key=len):
+                norm_stem = self.normalize_text(stem, "ar")
                 for node, data in self.graph.nodes(data=True):
                     if data.get("type") == "concept":
-                        if stem in data.get("labels", []):
+                        if any(norm_stem == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
                             matched_concepts.append(node)
                             
-            # Check dynamic lexicon roots (only if no direct or stem label match was found)
+            # Check dynamic lexicon roots (only if no direct or stem label match was found, normalized)
             if not matched_concepts:
                 for stem in sorted(list(candidates), key=len):
+                    norm_stem = self.normalize_text(stem, "ar")
                     for root in self.language_rules.get("morphology", {}).get("roots", []):
-                        if stem in root["patterns"]:
+                        if any(norm_stem == self.normalize_text(pat, "ar") for pat in root["patterns"]):
                             for pat in root["patterns"]:
                                 for node, data in self.graph.nodes(data=True):
-                                    if data.get("type") == "concept" and pat in data.get("labels", []):
+                                    if data.get("type") == "concept" and any(self.normalize_text(pat, "ar") == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
                                         matched_concepts.append(node)
                                     
         # Resolve ambiguity using Spreading Activation if context is available

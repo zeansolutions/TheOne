@@ -31,9 +31,10 @@ class EntityExtractor:
         concept = self.handler.dynamic_morphological_lookup(val_clean, language=language, context_concepts=context_concepts)
         if concept:
             return concept
+        norm_val = self.handler.normalize_text(val_clean, language)
         for node, data in self.handler.graph.nodes(data=True):
             if data.get("type") == "concept":
-                if val_clean in data.get("labels", []) or val_clean.lower() == node.lower():
+                if any(norm_val == self.handler.normalize_text(lbl, language) for lbl in data.get("labels", [])) or norm_val == self.handler.normalize_text(node, language):
                     return node
         return None
 

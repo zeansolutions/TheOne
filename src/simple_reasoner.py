@@ -303,7 +303,7 @@ class SimpleReasoner:
         return True, premise, question
 
     @profile_function
-    def process_query(self, query, interactive=False, language=None):
+    def process_query(self, query, interactive=False, language=None, is_deep=None):
         """
         Wrapper that detects conditional thought experiments (sandbox)
         and executes query inside the sandbox or directly.
@@ -338,7 +338,7 @@ class SimpleReasoner:
                     sandbox_trace.append(f"[SANDBOX] لم نتمكن من تلقين الفرضية الافتراضية بشكل كامل: {premise}")
                 
                 # Now run the reasoner pipeline on the original query
-                res = self._process_query_internal(query, interactive, language)
+                res = self._process_query_internal(query, interactive, language, is_deep=is_deep)
                 
                 # Add sandbox trace to the result
                 res["trace"] = sandbox_trace + [f"[SANDBOX] تشغيل الاستدلال الاستنتاجي التناظري..."] + res.get("trace", []) + [
@@ -350,9 +350,9 @@ class SimpleReasoner:
             finally:
                 sandbox.exit_sandbox()
         else:
-            return self._process_query_internal(query, interactive, language)
+            return self._process_query_internal(query, interactive, language, is_deep=is_deep)
 
-    def _process_query_internal(self, query, interactive=False, language=None):
+    def _process_query_internal(self, query, interactive=False, language=None, is_deep=None):
         """
         Pipeline: Parsing -> Dynamic Morphological Lookup -> Logical Reasoning.
         Supports 5 dynamic queries, multi-world state, dynamic fact teaching, and dialog context.
@@ -443,13 +443,7 @@ class SimpleReasoner:
                 matched_by_pattern = False
                 match_res = self.pattern_matcher.match(part)
                 
-                # If no pattern matches and it's a question, try learning
-                if not match_res and is_question:
-                    # Try simulation or check if interactive
-                    proposal = self.learning_engine.ask_for_clarification(part, interactive=interactive)
-                    if proposal:
-                        self.pattern_matcher.load_patterns()
-                        match_res = self.pattern_matcher.match(part)
+
                 
                 if match_res:
                     logger.info(f"Pattern matched successfully! Intent: {match_res.intent}, entities: {match_res.extracted_entities}")
@@ -517,7 +511,34 @@ class SimpleReasoner:
                 self.conversation_manager.record_turn(part, mapped_concepts)
                 
                 # ROUTING WITH REFACTORED SUB-HANDLERS
-                res = self._route_logical_reasoning(mapped_concepts, words, language, world, part, prag_trace, match_res)
+                res = self._route_logical_reasoning(mapped_concepts, words, language, world, part, prag_trace, match_res, is_deep=is_deep)
+                
+                # Check for interactive/clarification fallback if result is unknown, it was a question, and no pattern matched
+                if res.get("type") == "unknown" and is_question and not match_res:
+                    proposal = self.learning_engine.propose_pattern(part)
+                    if proposal:
+                        if interactive:
+                            print(f"\n💡 {proposal['suggested_question']}")
+                            ans = input("هل هذا صحيح؟ (نعم/لا): ").strip()
+                            if ans in ["نعم", "yes", "y", "صح", "بالظبط", "بالضبط"]:
+                                success = self.learning_engine.save_new_pattern(proposal)
+                                if success:
+                                    print("✅ تم تعلم النمط الدلالي الجديد وحفظه بنجاح!")
+                                    self.pattern_matcher.load_patterns()
+                                    new_match_res = self.pattern_matcher.match(part)
+                                    if new_match_res:
+                                        res = self._route_logical_reasoning(mapped_concepts, words, language, world, part, prag_trace, new_match_res, is_deep=is_deep)
+                            else:
+                                print("❌ تم إلغاء عملية التعلم.")
+                        else:
+                            res = {
+                                "type": "clarification_needed",
+                                "result": False,
+                                "suggested_question": proposal["suggested_question"],
+                                "proposal": proposal,
+                                "trace": prag_trace + [f"اكتشاف نمط دلالي جديد بحاجة لتوضيح: '{proposal['suggested_question']}'"],
+                                "confidence": 0.5
+                            }
                 last_result = res
                 
         return self.response_builder.build_answer(last_result, language=language)
@@ -543,7 +564,7 @@ class SimpleReasoner:
             return True
         return False
 
-    def _route_logical_reasoning(self, mapped_concepts, words, language, world, part, prag_trace, match_res=None):
+    def _route_logical_reasoning(self, mapped_concepts, words, language, world, part, prag_trace, match_res=None, is_deep=None):
         """Routes logic parsing to distinct sub-handlers for high modularity."""
         # 1. Anomaly & Exception Detection (Level 10)
         res = self._handle_anomaly(mapped_concepts, words, prag_trace)
@@ -589,10 +610,16 @@ class SimpleReasoner:
                 res = self._handle_comparison_diff(mapped_concepts, words, world, prag_trace, match_res)
                 if res: return res
             elif intent == "relation_path":
-                res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res)
+                res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res, is_deep=is_deep)
                 if res: return res
             elif intent == "celestial":
                 res = self._handle_celestial(mapped_concepts, words, language, world, prag_trace, match_res)
+                if res: return res
+            elif intent == "describe":
+                res = self._handle_describe(mapped_concepts, words, world, prag_trace, match_res=match_res)
+                if res: return res
+            elif intent == "knowledge":
+                res = self._handle_knowledge_fallback(mapped_concepts, world, prag_trace)
                 if res: return res
         
         # 8. Semantic Roles (Level 1)
@@ -634,7 +661,7 @@ class SimpleReasoner:
         if res: return res
         
         # 15. Relation Path / Connection Search
-        res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res)
+        res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res, is_deep=is_deep)
         if res: return res
         
         # 16. Generic "What is X?"

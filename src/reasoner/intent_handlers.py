@@ -685,14 +685,15 @@ class IntentHandlers:
                 }
         return None
 
-    def handle_relation_path(self, mapped_concepts, part, world, prag_trace, words, match_res=None):
+    def handle_relation_path(self, mapped_concepts, part, world, prag_trace, words, match_res=None, is_deep=None):
         is_relation_query = (match_res and match_res.intent == "relation_path") or (any(w in words for w in ["علاقة", "الروابط", "رابط", "يربط", "علاقه", "العلاقة", "العلاقه", "relation", "relationship", "connect", "connection", "link", "between", "entre"]) and len(mapped_concepts) >= 2)
         if is_relation_query:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
             c1_lbl = self.handler.graph.nodes[c1].get("labels", [c1])[0] if c1 in self.handler.graph else c1
             c2_lbl = self.handler.graph.nodes[c2].get("labels", [c2])[0] if c2 in self.handler.graph else c2
             
-            is_deep = (match_res and getattr(match_res, "is_deep", False)) or any(keyword in part.lower() for keyword in ["عميق", "مسار", "سلسلة", "تتبع", "مفصل", "تفصيل", "deep", "detailed", "path", "traverse", "unrestricted", "chain"])
+            if is_deep is None:
+                is_deep = (match_res and getattr(match_res, "is_deep", False)) or any(keyword in part.lower() for keyword in ["عميق", "مسار", "سلسلة", "تتبع", "مفصل", "تفصيل", "deep", "detailed", "path", "traverse", "unrestricted", "chain"])
             
             active_undirected = nx.Graph()
             for node in self.handler.graph.nodes():
@@ -786,8 +787,8 @@ class IntentHandlers:
                 }
         return None
 
-    def handle_describe(self, mapped_concepts, words, world, prag_trace):
-        is_describe_query = any(w in words for w in ["ما", "ماذا", "what", "من", "who", "هي", "هو"]) and len(mapped_concepts) >= 1
+    def handle_describe(self, mapped_concepts, words, world, prag_trace, match_res=None):
+        is_describe_query = ((match_res and match_res.intent == "describe") or any(w in words for w in ["ما", "ماذا", "what", "من", "who", "هي", "هو"])) and len(mapped_concepts) >= 1
         if is_describe_query:
             concept = mapped_concepts[0]
             all_relations = []

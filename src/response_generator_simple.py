@@ -379,6 +379,11 @@ class ResponseGeneratorSimple:
             body = sep.join(parts)
             return prefix + body + "."
             
+        # 17.5. Clarification Needed
+        elif type_ == "clarification_needed":
+            ans = res.get("suggested_question", "")
+            return prefix + ans
+
         # 18. Honest Fail-safe
         else:
             template = self.get_template("unknown", language, self.get_fallback_template("unknown", language))
