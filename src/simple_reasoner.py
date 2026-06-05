@@ -1,11 +1,14 @@
 import os
 import json
+import re
 import networkx as nx
 from src.world_manager import WorldManager
 from src.conflict_resolver import ConflictResolver
 from src.conversation_manager import ConversationManager
 from src.entity_resolver import EntityResolver
 from src.manager.language_selection_engine import LanguageSelectionEngine
+from src.reasoner.pattern_matcher import GenericPatternMatcher
+from src.reasoner.learning_engine import InteractiveBootstrapper
 
 # Import 10 Advanced Cognitive Reasoning Processors
 from src.reasoner.semantic_processor import SemanticProcessor
@@ -48,6 +51,41 @@ class SimpleReasoner:
         self.language_engine = None
         if os.path.exists(languages_path):
             self.language_engine = LanguageSelectionEngine(languages_path)
+            
+        # Instantiate Pattern Matcher and Learning Engine
+        rules_path = getattr(self.handler, "language_rules_path", "data/language_rules.json")
+        self.pattern_matcher = GenericPatternMatcher(rules_path)
+        self.learning_engine = InteractiveBootstrapper(self.handler, rules_path)
+
+    def _resolve_extracted_entity(self, val, language, context_concepts):
+        if not val:
+            return None
+        val_clean = val.replace("؟", "").replace("?", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").strip()
+        if language == "ar":
+            # Strip prefixes from each word of a multiword entity
+            words = val_clean.split()
+            cleaned_words = []
+            for w in words:
+                cw = w
+                for pref in ["ال", "وبال", "بال", "وال", "لل", "ب", "و", "ل", "ف"]:
+                    if cw.startswith(pref) and len(cw) > len(pref):
+                        cw = cw[len(pref):]
+                        break
+                cleaned_words.append(cw)
+            val_clean = " ".join(cleaned_words)
+        concept = self.handler.dynamic_morphological_lookup(val_clean, language=language, context_concepts=context_concepts)
+        if concept:
+            return concept
+        for node, data in self.handler.graph.nodes(data=True):
+            if data.get("type") == "concept":
+                if val_clean in data.get("labels", []) or val_clean.lower() == node.lower():
+                    return node
+        return None
+
+    def _resolve_concept(self, val, language, context_concepts):
+        concept = self._resolve_extracted_entity(val, language, context_concepts)
+        resolved = self.entity_resolver.resolve(val, [concept] if concept else [])
+        return resolved[0] if resolved else concept
 
     def _get_concept_index(self, c, words, language, part=None):
         """Finds the word index of a concept in the query string/words list."""
@@ -431,56 +469,83 @@ class SimpleReasoner:
                 context_concepts = list(set(context_concepts))
                 
                 mapped_concepts = []
+                matched_by_pattern = False
+                match_res = self.pattern_matcher.match(part)
                 
-                # Phrase matching (both raw and prefix-stripped)
-                for ngram_size in range(min(4, len(words)), 1, -1):
-                    for i in range(len(words) - ngram_size + 1):
-                        raw_phrase = " ".join(words[i:i + ngram_size])
-                        
-                        # Generate prefix-stripped version of the subphrase
-                        cleaned_subwords = []
-                        for w in words[i:i + ngram_size]:
-                            cw = w
-                            if language == "ar":
-                                for pref in ["ال", "ل", "ب", "ف", "و"]:
-                                    if cw.startswith(pref) and len(cw) > len(pref):
-                                        cw = cw[len(pref):]
-                                        break
-                            cleaned_subwords.append(cw)
-                        cleaned_phrase = " ".join(cleaned_subwords)
-                        
-                        # Match either raw or cleaned phrase
-                        for phrase in [raw_phrase, cleaned_phrase]:
-                            if not phrase:
-                                continue
-                            ar_lexicon = self.handler.language_rules.get(language, {}).get("lexicon", {})
-                            if phrase in ar_lexicon:
-                                concept = ar_lexicon[phrase]
-                                if concept not in mapped_concepts:
-                                    mapped_concepts.append(concept)
-                                break
-                            matched_label = False
-                            for node, ndata in self.handler.graph.nodes(data=True):
-                                if ndata.get("type") == "concept" and phrase in ndata.get("labels", []):
-                                    if node not in mapped_concepts:
-                                        mapped_concepts.append(node)
-                                    matched_label = True
-                            if matched_label:
-                                break
+                # If no pattern matches and it's a question, try learning
+                if not match_res and is_question:
+                    # Try simulation or check if interactive
+                    proposal = self.learning_engine.ask_for_clarification(part, interactive=interactive)
+                    if proposal:
+                        self.pattern_matcher.load_patterns()
+                        match_res = self.pattern_matcher.match(part)
                 
-                # Single word fallback
-                for word in words:
-                    if not word:
-                        continue
-                    concept = self.handler.dynamic_morphological_lookup(word, language=language, context_concepts=context_concepts)
-                    if concept and concept not in mapped_concepts:
-                        mapped_concepts.append(concept)
+                if match_res:
+                    extracted_concepts = []
+                    expected_roles = [role for role in ["concept1", "concept2", "concept", "entity", "environment", "object"]
+                                     if role in match_res.extracted_entities]
+                    for role in expected_roles:
+                        val = match_res.extracted_entities.get(role)
+                        if val:
+                            c = self._resolve_concept(val, language, context_concepts)
+                            if c and c not in extracted_concepts:
+                                extracted_concepts.append(c)
+                    if len(extracted_concepts) >= len(expected_roles) and len(extracted_concepts) > 0:
+                        mapped_concepts = extracted_concepts
+                        matched_by_pattern = True
+                    else:
+                        match_res = None
+
+                if not matched_by_pattern:
+                    # Phrase matching (both raw and prefix-stripped)
+                    for ngram_size in range(min(4, len(words)), 1, -1):
+                        for i in range(len(words) - ngram_size + 1):
+                            raw_phrase = " ".join(words[i:i + ngram_size])
+                            
+                            # Generate prefix-stripped version of the subphrase
+                            cleaned_subwords = []
+                            for w in words[i:i + ngram_size]:
+                                cw = w
+                                if language == "ar":
+                                    for pref in ["ال", "ل", "ب", "ف", "و"]:
+                                        if cw.startswith(pref) and len(cw) > len(pref):
+                                            cw = cw[len(pref):]
+                                            break
+                                cleaned_subwords.append(cw)
+                            cleaned_phrase = " ".join(cleaned_subwords)
+                            
+                            # Match either raw or cleaned phrase
+                            for phrase in [raw_phrase, cleaned_phrase]:
+                                if not phrase:
+                                    continue
+                                ar_lexicon = self.handler.language_rules.get(language, {}).get("lexicon", {})
+                                if phrase in ar_lexicon:
+                                    concept = ar_lexicon[phrase]
+                                    if concept not in mapped_concepts:
+                                        mapped_concepts.append(concept)
+                                    break
+                                matched_label = False
+                                for node, ndata in self.handler.graph.nodes(data=True):
+                                    if ndata.get("type") == "concept" and phrase in ndata.get("labels", []):
+                                        if node not in mapped_concepts:
+                                            mapped_concepts.append(node)
+                                        matched_label = True
+                                if matched_label:
+                                    break
+                    
+                    # Single word fallback
+                    for word in words:
+                        if not word:
+                            continue
+                        concept = self.handler.dynamic_morphological_lookup(word, language=language, context_concepts=context_concepts)
+                        if concept and concept not in mapped_concepts:
+                            mapped_concepts.append(concept)
                         
                 mapped_concepts = self.entity_resolver.resolve(part, mapped_concepts)
                 self.conversation_manager.record_turn(part, mapped_concepts)
                 
                 # ROUTING WITH REFACTORED SUB-HANDLERS
-                res = self._route_logical_reasoning(mapped_concepts, words, language, world, part, prag_trace)
+                res = self._route_logical_reasoning(mapped_concepts, words, language, world, part, prag_trace, match_res)
                 last_result = res
                 
         return last_result
@@ -506,7 +571,7 @@ class SimpleReasoner:
             return True
         return False
 
-    def _route_logical_reasoning(self, mapped_concepts, words, language, world, part, prag_trace):
+    def _route_logical_reasoning(self, mapped_concepts, words, language, world, part, prag_trace, match_res=None):
         """Routes logic parsing to distinct sub-handlers for high modularity."""
         # 1. Anomaly & Exception Detection (Level 10)
         res = self._handle_anomaly(mapped_concepts, words, prag_trace)
@@ -535,25 +600,47 @@ class SimpleReasoner:
         # 7. Negation & Polarity Rules (Level 6)
         res = self._handle_negation(mapped_concepts, part, language, world, prag_trace)
         if res: return res
+
+        # If matched by pattern, route to that specific intent first
+        if match_res:
+            intent = match_res.intent
+            if intent == "classification":
+                res = self._handle_classification(mapped_concepts, words, language, part, prag_trace, match_res)
+                if res: return res
+            elif intent == "location":
+                res = self._handle_location(mapped_concepts, words, world, prag_trace, match_res)
+                if res: return res
+            elif intent == "hypothetical":
+                res = self._handle_hypothetical(mapped_concepts, words, prag_trace, match_res)
+                if res: return res
+            elif intent == "comparison":
+                res = self._handle_comparison_diff(mapped_concepts, words, world, prag_trace, match_res)
+                if res: return res
+            elif intent == "relation_path":
+                res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res)
+                if res: return res
+            elif intent == "celestial":
+                res = self._handle_celestial(mapped_concepts, words, language, world, prag_trace, match_res)
+                if res: return res
         
         # 8. Semantic Roles (Level 1)
         res = self._handle_semantic_roles(words, language, prag_trace)
         if res: return res
         
         # 9. Celestial
-        res = self._handle_celestial(mapped_concepts, words, language, world, prag_trace)
+        res = self._handle_celestial(mapped_concepts, words, language, world, prag_trace, match_res)
         if res: return res
         
         # 10. Comparison
-        res = self._handle_comparison_diff(mapped_concepts, words, world, prag_trace)
+        res = self._handle_comparison_diff(mapped_concepts, words, world, prag_trace, match_res)
         if res: return res
         
         # 11. Hypothetical
-        res = self._handle_hypothetical(mapped_concepts, words, prag_trace)
+        res = self._handle_hypothetical(mapped_concepts, words, prag_trace, match_res)
         if res: return res
         
         # 12. Location
-        res = self._handle_location(mapped_concepts, words, world, prag_trace)
+        res = self._handle_location(mapped_concepts, words, world, prag_trace, match_res)
         if res: return res
         
         # 13. Causal Why
@@ -571,11 +658,11 @@ class SimpleReasoner:
             }
         
         # 14. Classification
-        res = self._handle_classification(mapped_concepts, words, language, part, prag_trace)
+        res = self._handle_classification(mapped_concepts, words, language, part, prag_trace, match_res)
         if res: return res
         
         # 15. Relation Path / Connection Search
-        res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words)
+        res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res)
         if res: return res
         
         # 16. Generic "What is X?"
@@ -821,7 +908,7 @@ class SimpleReasoner:
                 }
         return None
 
-    def _handle_celestial(self, mapped_concepts, words, language, world, prag_trace):
+    def _handle_celestial(self, mapped_concepts, words, language, world, prag_trace, match_res=None):
         if "c_sun" in mapped_concepts:
             props = self.handler.get_properties("c_sun", world=world)
             target = None
@@ -833,7 +920,7 @@ class SimpleReasoner:
             conflicts = self.conflict_resolver.resolve_conflict("c_sun", "rises_from")
             conflict_trace = [c["description"] for c in conflicts]
             
-            is_classification_query = self._is_classification_word_query(words, language)
+            is_classification_query = (match_res and match_res.intent == "celestial" and "concept2" in match_res.extracted_entities) or self._is_classification_word_query(words, language)
                 
             if is_classification_query:
                 dir_concept = None
@@ -865,8 +952,9 @@ class SimpleReasoner:
                 }
         return None
 
-    def _handle_comparison_diff(self, mapped_concepts, words, world, prag_trace):
-        if ("الفرق" in words or "difference" in words or "différence" in words or "differance" in words) and len(mapped_concepts) >= 2:
+    def _handle_comparison_diff(self, mapped_concepts, words, world, prag_trace, match_res=None):
+        is_comparison_query = (match_res and match_res.intent == "comparison") or (("الفرق" in words or "difference" in words or "différence" in words or "differance" in words) and len(mapped_concepts) >= 2)
+        if is_comparison_query and len(mapped_concepts) >= 2:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
             props1 = self.handler.get_properties(c1, world=world)
             props2 = self.handler.get_properties(c2, world=world)
@@ -882,8 +970,9 @@ class SimpleReasoner:
             }
         return None
 
-    def _handle_hypothetical(self, mapped_concepts, words, prag_trace):
-        if ("لو" in words or "إذا" in words or "اذا" in words or "if" in words or "si" in words) and len(mapped_concepts) >= 2:
+    def _handle_hypothetical(self, mapped_concepts, words, prag_trace, match_res=None):
+        is_hypothetical = (match_res and match_res.intent == "hypothetical") or (("لو" in words or "إذا" in words or "اذا" in words or "if" in words or "si" in words) and len(mapped_concepts) >= 2)
+        if is_hypothetical and len(mapped_concepts) >= 2:
             entity = None
             env = None
             for c in mapped_concepts:
@@ -925,12 +1014,12 @@ class SimpleReasoner:
                 }
         return None
 
-    def _handle_location(self, mapped_concepts, words, world, prag_trace):
+    def _handle_location(self, mapped_concepts, words, world, prag_trace, match_res=None):
         loc_settings = self.handler.language_rules.get("location_query_settings", {})
         loc_particles = loc_settings.get("question_particles", ["أين", "اين", "where", "où", "ou"])
         loc_verbs = loc_settings.get("verbs", ["يعيش", "عاش", "يسكن", "live", "lives", "vit", "vivent", "located"])
         
-        is_location_query = any(w in words for w in loc_particles + loc_verbs)
+        is_location_query = (match_res and match_res.intent == "location") or any(w in words for w in loc_particles + loc_verbs)
         
         if is_location_query and len(mapped_concepts) >= 1:
             concept = mapped_concepts[0]
@@ -1040,8 +1129,8 @@ class SimpleReasoner:
                 }
         return None
 
-    def _handle_classification(self, mapped_concepts, words, language, part, prag_trace):
-        is_classification_query = self._is_classification_word_query(words, language)
+    def _handle_classification(self, mapped_concepts, words, language, part, prag_trace, match_res=None):
+        is_classification_query = (match_res and match_res.intent == "classification") or self._is_classification_word_query(words, language)
             
         if is_classification_query and len(mapped_concepts) >= 2:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
@@ -1212,14 +1301,14 @@ class SimpleReasoner:
                 }
         return None
 
-    def _handle_relation_path(self, mapped_concepts, part, world, prag_trace, words):
-        is_relation_query = any(w in words for w in ["علاقة", "الروابط", "رابط", "يربط", "علاقه", "العلاقة", "العلاقه", "relation", "relationship", "connect", "connection", "link", "between", "entre"]) and len(mapped_concepts) >= 2
+    def _handle_relation_path(self, mapped_concepts, part, world, prag_trace, words, match_res=None):
+        is_relation_query = (match_res and match_res.intent == "relation_path") or (any(w in words for w in ["علاقة", "الروابط", "رابط", "يربط", "علاقه", "العلاقة", "العلاقه", "relation", "relationship", "connect", "connection", "link", "between", "entre"]) and len(mapped_concepts) >= 2)
         if is_relation_query:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
             c1_lbl = self.handler.graph.nodes[c1].get("labels", [c1])[0] if c1 in self.handler.graph else c1
             c2_lbl = self.handler.graph.nodes[c2].get("labels", [c2])[0] if c2 in self.handler.graph else c2
             
-            is_deep = any(keyword in part.lower() for keyword in ["عميق", "مسار", "سلسلة", "تتبع", "مفصل", "تفصيل", "deep", "detailed", "path", "traverse", "unrestricted", "chain"])
+            is_deep = (match_res and getattr(match_res, "is_deep", False)) or any(keyword in part.lower() for keyword in ["عميق", "مسار", "سلسلة", "تتبع", "مفصل", "تفصيل", "deep", "detailed", "path", "traverse", "unrestricted", "chain"])
             
             active_undirected = nx.Graph()
             for node in self.handler.graph.nodes():

@@ -394,5 +394,467 @@
       "knowledge_separator": ", ",
       "unknown": "honnêtement, je ne dispose d'aucune information ou fait logique dans la base de données pour appuyer cette question, et je préfère dire que je ne sais pas plutôt que d'inventer!"
     }
+  },
+  "semantic_frames": [
+    {
+      "id": "query_classification_01",
+      "pattern": [
+        "هل",
+        "?X",
+        "هو",
+        "?Y"
+      ],
+      "intent": "classification",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      }
+    },
+    {
+      "id": "query_classification_02",
+      "pattern": [
+        "هل",
+        "?X",
+        "?Y"
+      ],
+      "intent": "classification",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      }
+    },
+    {
+      "id": "query_classification_en_01",
+      "pattern": [
+        "Is",
+        "?X",
+        "?Y"
+      ],
+      "intent": "classification",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      }
+    },
+    {
+      "id": "query_classification_en_02",
+      "pattern": [
+        "is",
+        "?X",
+        "?Y"
+      ],
+      "intent": "classification",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      }
+    },
+    {
+      "id": "query_classification_fr_01",
+      "pattern": [
+        "Est-ce",
+        "que",
+        "?X",
+        "est",
+        "de",
+        "la",
+        "?Y"
+      ],
+      "intent": "classification",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      }
+    },
+    {
+      "id": "query_classification_fr_02",
+      "pattern": [
+        "est-ce",
+        "que",
+        "?X",
+        "est",
+        "de",
+        "la",
+        "?Y"
+      ],
+      "intent": "classification",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      }
+    },
+    {
+      "id": "query_location_01",
+      "pattern": [
+        "أين",
+        "?ACTION",
+        "?X"
+      ],
+      "conditions": {
+        "?ACTION": "is_location_verb"
+      },
+      "intent": "location",
+      "mapping": {
+        "concept": "?X",
+        "relation": "?ACTION"
+      }
+    },
+    {
+      "id": "query_location_02",
+      "pattern": [
+        "اين",
+        "?ACTION",
+        "?X"
+      ],
+      "conditions": {
+        "?ACTION": "is_location_verb"
+      },
+      "intent": "location",
+      "mapping": {
+        "concept": "?X",
+        "relation": "?ACTION"
+      }
+    },
+    {
+      "id": "query_location_03",
+      "pattern": [
+        "أين",
+        "?ACTION"
+      ],
+      "conditions": {
+        "?ACTION": "is_location_verb"
+      },
+      "intent": "location",
+      "mapping": {
+        "relation": "?ACTION"
+      }
+    },
+    {
+      "id": "query_location_04",
+      "pattern": [
+        "اين",
+        "?ACTION"
+      ],
+      "conditions": {
+        "?ACTION": "is_location_verb"
+      },
+      "intent": "location",
+      "mapping": {
+        "relation": "?ACTION"
+      }
+    },
+    {
+      "id": "query_location_en_01",
+      "pattern": [
+        "where",
+        "does",
+        "?X",
+        "?ACTION"
+      ],
+      "conditions": {
+        "?ACTION": "is_location_verb"
+      },
+      "intent": "location",
+      "mapping": {
+        "concept": "?X",
+        "relation": "?ACTION"
+      }
+    },
+    {
+      "id": "query_hypothetical_01",
+      "pattern": [
+        "لو",
+        "?X",
+        "?ACTION",
+        "في",
+        "?Y",
+        "ماذا",
+        "?NEED"
+      ],
+      "intent": "hypothetical",
+      "mapping": {
+        "entity": "?X",
+        "environment": "?Y"
+      }
+    },
+    {
+      "id": "query_comparison_01",
+      "pattern": [
+        "ما",
+        "الفرق",
+        "بين",
+        "?X",
+        "و",
+        "?Y"
+      ],
+      "intent": "comparison",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      }
+    },
+    {
+      "id": "query_relation_path_01",
+      "pattern": [
+        "ما",
+        "علاقة",
+        "?X",
+        "بـ",
+        "?Y"
+      ],
+      "intent": "relation_path",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      },
+      "is_deep": false
+    },
+    {
+      "id": "query_relation_path_02",
+      "pattern": [
+        "ما",
+        "علاقة",
+        "?X",
+        "بالـ",
+        "?Y"
+      ],
+      "intent": "relation_path",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      },
+      "is_deep": false
+    },
+    {
+      "id": "query_relation_path_03",
+      "pattern": [
+        "ما",
+        "علاقة",
+        "?X",
+        "ب",
+        "?Y"
+      ],
+      "intent": "relation_path",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      },
+      "is_deep": false
+    },
+    {
+      "id": "query_relation_path_deep_01",
+      "pattern": [
+        "ما",
+        "العلاقة",
+        "العميقة",
+        "بين",
+        "?X",
+        "و",
+        "?Y"
+      ],
+      "intent": "relation_path",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      },
+      "is_deep": true
+    },
+    {
+      "id": "query_relation_path_deep_02",
+      "pattern": [
+        "ما",
+        "العلاقة",
+        "بين",
+        "?X",
+        "و",
+        "?Y"
+      ],
+      "intent": "relation_path",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y"
+      },
+      "is_deep": false
+    },
+    {
+      "id": "query_celestial_classification_01",
+      "pattern": [
+        "هل",
+        "?X",
+        "?ACTION",
+        "من",
+        "?Y"
+      ],
+      "intent": "celestial",
+      "mapping": {
+        "concept1": "?X",
+        "concept2": "?Y",
+        "relation": "?ACTION"
+      }
+    },
+    {
+      "id": "query_celestial_location_01",
+      "pattern": [
+        "أين",
+        "?ACTION",
+        "?X"
+      ],
+      "intent": "celestial",
+      "mapping": {
+        "concept": "?X",
+        "relation": "?ACTION"
+      }
+    }
+  ],
+  "resolver_settings": {
+    "subject_categories": [
+      "animal",
+      "parts_of_speech",
+      "grammar_role",
+      "inflection_property"
+    ],
+    "subject_concepts": [
+      "feline_carnivore",
+      "polar_bear"
+    ],
+    "reference_pronouns": [
+      "هو",
+      "هي",
+      "عنه",
+      "عنها",
+      "فيه",
+      "فيها",
+      "هناك"
+    ],
+    "implicit_verb_indicators": [
+      "عاش",
+      "يعيش",
+      "بياكل",
+      "يأكل",
+      "يحتاج",
+      "يتحمل",
+      "تحمل"
+    ],
+    "question_words": [
+      "ما",
+      "من",
+      "ماذا"
+    ],
+    "pronouns_copula": [
+      "هو",
+      "هي"
+    ],
+    "suffixes": [
+      "ه",
+      "ها",
+      "هم"
+    ]
+  },
+  "world_rules": {
+    "world_triggers": [
+      {
+        "world": "خيالي",
+        "patterns": [
+          "في عالم خيالي",
+          "عالم خيالي",
+          "تخيل",
+          "خيالي",
+          "in fantasy world",
+          "fantasy world",
+          "in a fantasy world",
+          "dans un monde imaginaire",
+          "monde imaginaire",
+          "dans le monde imaginaire"
+        ]
+      },
+      {
+        "world": "reality",
+        "patterns": [
+          "في عالم الواقع",
+          "في الحقيقة",
+          "في الواقع",
+          "حقيقة",
+          "فعلاً",
+          "in real world",
+          "in real life",
+          "in reality",
+          "dans le monde réel",
+          "monde réel",
+          "en réalité"
+        ]
+      },
+      {
+        "world": "arctic_scenario",
+        "patterns": [
+          "في عالم القطب",
+          "عالم القطب",
+          "في القطب",
+          "in arctic world",
+          "in polar scenario",
+          "in the arctic",
+          "dans le monde polaire",
+          "dans le monde arctique",
+          "arctique"
+        ]
+      }
+    ],
+    "conjunctions_to_strip": {
+      "ar": [
+        "و ",
+        "، ",
+        ", "
+      ],
+      "en": [
+        "and ",
+        ", ",
+        ". "
+      ],
+      "fr": [
+        "et ",
+        ", ",
+        ". "
+      ]
+    }
+  },
+  "relation_mappings": {
+    "يعيش": "lives_in",
+    "عاش": "lives_in",
+    "يسكن": "lives_in",
+    "live": "lives_in",
+    "lives": "lives_in",
+    "vit": "lives_in",
+    "vivent": "lives_in",
+    "شروق": "rises_from",
+    "تشرق": "rises_from",
+    "rises": "rises_from",
+    "يحتاج": "requires",
+    "requires": "requires",
+    "يحمي": "provides",
+    "provides": "provides",
+    "يفترس": "hunting",
+    "يأكل": "hunting",
+    "عوش": "lives_in",
+    "حتاج": "requires",
+    "حمي": "provides",
+    "فرس": "hunting"
+  },
+  "location_query_settings": {
+    "question_particles": [
+      "أين",
+      "اين",
+      "where",
+      "où",
+      "ou"
+    ],
+    "verbs": [
+      "يعيش",
+      "عاش",
+      "يسكن",
+      "live",
+      "lives",
+      "vit",
+      "vivent",
+      "located"
+    ]
   }
 }

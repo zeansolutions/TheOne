@@ -17,6 +17,9 @@ class EntityResolver:
         subject_concepts = resolver_settings.get("subject_concepts", ["feline_carnivore", "polar_bear"])
         ref_pronouns = resolver_settings.get("reference_pronouns", ["هو", "هي", "عنه", "عنها", "فيه", "فيها", "هناك"])
         implicit_verb_indicators = resolver_settings.get("implicit_verb_indicators", ["عاش", "يعيش", "بياكل", "يأكل", "يحتاج", "يتحمل", "تحمل"])
+        question_words = resolver_settings.get("question_words", ["ما", "من", "ماذا"])
+        pronouns_copula = resolver_settings.get("pronouns_copula", ["هو", "هي"])
+        suffixes = resolver_settings.get("suffixes", ["ه", "ها", "هم"])
 
         # Check if current_concepts already contains a specific animal/entity or grammar concept
         has_subject = False
@@ -39,15 +42,15 @@ class EntityResolver:
         # 1. Pronouns (ignoring question copula matches like "ما هي" or "من هو")
         is_question_copula = False
         for idx, w in enumerate(words):
-            if w in ["هو", "هي"] and idx > 0 and words[idx - 1] in ["ما", "من", "ماذا"]:
+            if w in pronouns_copula and idx > 0 and words[idx - 1] in question_words:
                 is_question_copula = True
                 
         if any(p in words for p in ref_pronouns) and not is_question_copula:
             has_ref = True
             
-        # 2. Suffixes (word ending with ه/ها/هم)
+        # 2. Suffixes (word ending with suffixes)
         for w in words:
-            if len(w) > 2 and (w.endswith("ه") or w.endswith("ها") or w.endswith("هم")):
+            if len(w) > 2 and any(w.endswith(suff) for suff in suffixes):
                 has_ref = True
                 break
                 

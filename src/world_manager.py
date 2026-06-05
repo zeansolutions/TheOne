@@ -1,8 +1,11 @@
+import re
+from typing import Dict, Any
+
 class WorldManager:
     def __init__(self, graph_handler):
         self.handler = graph_handler
 
-    def detect_and_set_world(self, query):
+    def detect_and_set_world(self, query: str):
         """
         Detects if query specifies a world (e.g. "في عالم خيالي" or "في عالم الواقع")
         and sets the active world accordingly. Returns the cleaned query and the detected world.
@@ -11,58 +14,34 @@ class WorldManager:
         cleaned_query = query
         query_lower = query.lower()
         
-        # 1. Arabic world switching triggers
-        if "في عالم خيالي" in query:
-            world = "خيالي"
-            cleaned_query = query.replace("في عالم خيالي", "").strip()
-        elif "عالم خيالي" in query:
-            world = "خيالي"
-            cleaned_query = query.replace("عالم خيالي", "").strip()
-        elif "في عالم الواقع" in query:
-            world = "reality"
-            cleaned_query = query.replace("في عالم الواقع", "").strip()
-        elif "في عالم القطب" in query:
-            world = "arctic_scenario"
-            cleaned_query = query.replace("في عالم القطب", "").strip()
+        # Check if query is conditional/hypothetical to avoid stripping the environment triggers
+        words = query_lower.split()
+        is_conditional = any(p in words[:2] for p in ["لو", "إذا", "اذا", "if", "si"])
+        
+        world_rules = {}
+        if self.handler and hasattr(self.handler, "language_rules") and self.handler.language_rules:
+            world_rules = self.handler.language_rules.get("world_rules", {})
             
-        # 2. English world switching triggers
-        elif "in fantasy world" in query_lower:
-            world = "خيالي"
-            cleaned_query = re_replace_ignore_case("in fantasy world", "", query)
-        elif "fantasy world" in query_lower:
-            world = "خيالي"
-            cleaned_query = re_replace_ignore_case("fantasy world", "", query)
-        elif "in real world" in query_lower:
-            world = "reality"
-            cleaned_query = re_replace_ignore_case("in real world", "", query)
-        elif "in real life" in query_lower:
-            world = "reality"
-            cleaned_query = re_replace_ignore_case("in real life", "", query)
-        elif "in arctic world" in query_lower:
-            world = "arctic_scenario"
-            cleaned_query = re_replace_ignore_case("in arctic world", "", query)
-        elif "in polar scenario" in query_lower:
-            world = "arctic_scenario"
-            cleaned_query = re_replace_ignore_case("in polar scenario", "", query)
-            
-        # 3. French world switching triggers
-        elif "dans un monde imaginaire" in query_lower:
-            world = "خيالي"
-            cleaned_query = re_replace_ignore_case("dans un monde imaginaire", "", query)
-        elif "monde imaginaire" in query_lower:
-            world = "خيالي"
-            cleaned_query = re_replace_ignore_case("monde imaginaire", "", query)
-        elif "dans le monde réel" in query_lower:
-            world = "reality"
-            cleaned_query = re_replace_ignore_case("dans le monde réel", "", query)
-        elif "dans le monde polaire" in query_lower:
-            world = "arctic_scenario"
-            cleaned_query = re_replace_ignore_case("dans le monde polaire", "", query)
-        elif "dans le monde arctique" in query_lower:
-            world = "arctic_scenario"
-            cleaned_query = re_replace_ignore_case("dans le monde arctique", "", query)
-            
-        # Clean leading conjunctions/punctuation
+        world_triggers = world_rules.get("world_triggers", [])
+        
+        # 1. Check world triggers dynamically
+        for trigger in world_triggers:
+            target_world = trigger.get("world")
+            patterns = trigger.get("patterns", [])
+            for pattern in patterns:
+                pattern_lower = pattern.lower()
+                if pattern_lower in cleaned_query.lower():
+                    world = target_world
+                    if not is_conditional:
+                        cleaned_query = re_replace_ignore_case(pattern, "", cleaned_query).strip()
+                    
+        # Clean leading conjunctions/punctuation dynamically or using fallbacks
+        conjunctions_to_strip = world_rules.get("conjunctions_to_strip", {})
+        for lang, conj_list in conjunctions_to_strip.items():
+            for conj in conj_list:
+                if cleaned_query.lower().startswith(conj):
+                    cleaned_query = cleaned_query[len(conj):].strip()
+                    
         cleaned_query = cleaned_query.lstrip("،").lstrip(",").lstrip(".").strip()
         if cleaned_query.startswith("و "):
             cleaned_query = cleaned_query[2:].strip()
@@ -92,36 +71,25 @@ class WorldManager:
         relation = "has_property"
         relation_word = None
         
-        if language in ["en", "fr"]:
-            lang_rules = self.handler.language_rules.get(language, {})
-            relations_dict = lang_rules.get("relations", {})
-            for word in words:
-                if word in relations_dict:
-                    relation = relations_dict[word]
-                    relation_word = word
-                    break
-        else:
+        relation_mappings = {}
+        if self.handler and hasattr(self.handler, "language_rules") and self.handler.language_rules:
+            relation_mappings = self.handler.language_rules.get("relation_mappings", {})
+            
+        # Check direct mapping
+        for word in words:
+            if word in relation_mappings:
+                relation = relation_mappings[word]
+                relation_word = word
+                break
+                
+        # Check morphology roots
+        if not relation_word and self.handler and hasattr(self.handler, "language_rules") and self.handler.language_rules:
             for root in self.handler.language_rules.get("morphology", {}).get("roots", []):
                 for word in words:
                     if word in root["patterns"]:
-                        if root["id"] == "عوش":
-                            relation = "lives_in"
-                            relation_word = word
-                            break
-                        elif root["id"] == "شروق":
-                            relation = "rises_from"
-                            relation_word = word
-                            break
-                        elif root["id"] == "حتاج":
-                            relation = "requires"
-                            relation_word = word
-                            break
-                        elif root["id"] == "حمي":
-                            relation = "provides"
-                            relation_word = word
-                            break
-                        elif root["id"] == "فرس":
-                            relation = "hunting"
+                        root_id = root["id"]
+                        if root_id in relation_mappings:
+                            relation = relation_mappings[root_id]
                             relation_word = word
                             break
                 if relation_word:
@@ -133,7 +101,7 @@ class WorldManager:
             if word == relation_word:
                 continue
             shares_relation_root = False
-            if relation_word:
+            if relation_word and self.handler and hasattr(self.handler, "language_rules") and self.handler.language_rules:
                 for root in self.handler.language_rules.get("morphology", {}).get("roots", []):
                     if word in root["patterns"] and relation_word in root["patterns"]:
                         shares_relation_root = True
@@ -174,6 +142,5 @@ class WorldManager:
 
 def re_replace_ignore_case(pattern, replacement, text):
     """Helper to perform case-insensitive regex replacement."""
-    import re
     compiled = re.compile(re.escape(pattern), re.IGNORECASE)
     return compiled.sub(replacement, text)
