@@ -84,10 +84,21 @@ class SimpleReasoner:
                     return node
         return None
 
-    def _resolve_concept(self, val, language, context_concepts):
+    def _resolve_concept(self, val, language, context_concepts, trace=None):
         concept = self._resolve_extracted_entity(val, language, context_concepts)
         resolved = self.entity_resolver.resolve(val, [concept] if concept else [])
-        return resolved[0] if resolved else concept
+        c = resolved[0] if resolved else concept
+        
+        # If not resolved locally, trigger the on-demand importer!
+        if not c and val and not val.startswith("?"):
+            from src.tools.data_importer import DataImporter
+            importer = DataImporter(self.handler)
+            if importer.enrich_concept(val, language, trace=trace):
+                # Re-try resolution now that it has been imported
+                concept = self._resolve_extracted_entity(val, language, context_concepts)
+                resolved = self.entity_resolver.resolve(val, [concept] if concept else [])
+                c = resolved[0] if resolved else concept
+        return c
 
     def _get_concept_index(self, c, words, language, part=None):
         """Finds the word index of a concept in the query string/words list."""
@@ -491,7 +502,7 @@ class SimpleReasoner:
                     for role in expected_roles:
                         val = match_res.extracted_entities.get(role)
                         if val:
-                            c = self._resolve_concept(val, language, context_concepts)
+                            c = self._resolve_concept(val, language, context_concepts, trace=prag_trace)
                             if c and c not in extracted_concepts:
                                 extracted_concepts.append(c)
                     if len(extracted_concepts) >= len(expected_roles) and len(extracted_concepts) > 0:
