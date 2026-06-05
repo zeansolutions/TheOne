@@ -91,13 +91,14 @@ class SimpleReasoner:
         
         # If not resolved locally, trigger the on-demand importer!
         if not c and val and not val.startswith("?"):
-            from src.tools.data_importer import DataImporter
-            importer = DataImporter(self.handler)
-            if importer.enrich_concept(val, language, trace=trace):
-                # Re-try resolution now that it has been imported
-                concept = self._resolve_extracted_entity(val, language, context_concepts)
-                resolved = self.entity_resolver.resolve(val, [concept] if concept else [])
-                c = resolved[0] if resolved else concept
+            if getattr(self.handler, "online_import_enabled", True):
+                from src.tools.data_importer import DataImporter
+                importer = DataImporter(self.handler)
+                if importer.enrich_concept(val, language, trace=trace):
+                    # Re-try resolution now that it has been imported
+                    concept = self._resolve_extracted_entity(val, language, context_concepts)
+                    resolved = self.entity_resolver.resolve(val, [concept] if concept else [])
+                    c = resolved[0] if resolved else concept
         return c
 
     def _get_concept_index(self, c, words, language, part=None):

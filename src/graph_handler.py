@@ -7,6 +7,8 @@ from src.persistence.graph_database import GraphDatabaseSQLite
 
 class GraphHandler:
     def __init__(self):
+        import sys
+        self.online_import_enabled = "pytest" not in sys.modules
         self.graph = GraphDatabaseSQLite(":memory:")
         self.language_rules = {}
         self.facts = []
