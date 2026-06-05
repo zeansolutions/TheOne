@@ -299,10 +299,41 @@ class ResponseGeneratorSimple:
             category = res.get("category", "")
             relations = res.get("relations", [])
             
+            category_translations = {
+                "ar": {
+                    "concept": "مفهوم",
+                    "animal": "حيوان",
+                    "plant": "نبات",
+                    "location": "مكان",
+                    "person": "شخص",
+                    "object": "شيء",
+                    "mammal": "ثدييات",
+                    "bird": "طائر",
+                    "fish": "سمكة",
+                    "insect": "حشرة",
+                    "invertebrate": "لافقاريات",
+                    "reptile": "زواحف",
+                    "amphibian": "برمائيات",
+                    "organism": "كائن حي",
+                    "celestial": "جرم سماوي"
+                }
+            }
+            cat_display = category
+            if language in category_translations and category in category_translations[language]:
+                cat_display = category_translations[language][category]
+
+            is_feminine = False
+            if language == "ar":
+                clean_lbl = concept_label.strip()
+                if clean_lbl.endswith("ة") or any(fem in clean_lbl for fem in ["شمس", "أرض", "نار", "ريح", "عين", "يد", "رجل", "نفس"]):
+                    is_feminine = True
+
             parts = []
-            if category:
+            if category and category not in ["concept", "user_defined", "unknown"]:
                 template_cat = self.get_template("describe_category", language, self.get_fallback_template("describe_category", language))
-                parts.append(template_cat.format(concept_label=concept_label, category=category))
+                if language == "ar" and is_feminine:
+                    template_cat = template_cat.replace(" هو ", " هي ")
+                parts.append(template_cat.format(concept_label=concept_label, category=cat_display))
             else:
                 parts.append(concept_label)
             
@@ -331,11 +362,15 @@ class ResponseGeneratorSimple:
                 mapped_rel_map = {}
             
             for r in unique_outgoing[:5]:
-                rel_display = mapped_rel_map.get(r.get("relation"), r.get("relation_display", r.get("relation", "")))
+                rel = r.get("relation", "")
+                rel_display = mapped_rel_map.get(rel, r.get("relation_display", rel))
+                if language == "ar" and rel == "is_a":
+                    rel_display = "هي" if is_feminine else "هو"
                 parts.append(f"{rel_display} {r['target_label']}")
             
             for r in unique_incoming[:3]:
-                rel_display = mapped_rel_map.get(r.get("relation"), r.get("relation", ""))
+                rel = r.get("relation", "")
+                rel_display = mapped_rel_map.get(rel, rel)
                 parts.append(f"{r['source_label']} {rel_display} {concept_label}")
             
             sep = self.get_template("describe_separator", language, self.get_fallback_template("describe_separator", language))

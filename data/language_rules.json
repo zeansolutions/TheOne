@@ -1893,6 +1893,39 @@
         "patterns": [
           "السافانا"
         ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
       }
     ],
     "particles": [
@@ -2475,6 +2508,14 @@
       {
         "form": "في",
         "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
       }
     ],
     "derivation_patterns": [
@@ -2718,6 +2759,11 @@
         "id": "declarative",
         "pattern": "noun + verb + object",
         "description": "Standard declarative statement"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
       },
       {
         "id": "declarative_verbal",
@@ -3224,6 +3270,17 @@
       "are",
       "do",
       "does",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
       "ما",
       "من",
       "هل",
@@ -4413,6 +4470,17 @@
       "is",
       "are",
       "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
       "does"
     ],
     "question_classification": {
@@ -4501,7 +4569,18 @@
         "lives_in": "lives in",
         "has_property": "has property",
         "part_of": "part of",
-        "rises_from": "rises from"
+        "rises_from": "rises from",
+        "synonym": "is a synonym of",
+        "antonym": "is the opposite of",
+        "distinctfrom": "is distinct from",
+        "relatedto": "is related to",
+        "capableof": "is capable of",
+        "usedfor": "is used for",
+        "atlocation": "is found at",
+        "hasproperty": "has property",
+        "definedas": "is defined as",
+        "partof": "is part of",
+        "hasa": "has"
       },
       "knowledge_header": "Knowledge available about {concept_label}:",
       "knowledge_separator": ", ",
@@ -4606,7 +4685,18 @@
         "lives_in": "vit dans",
         "has_property": "a la propriété",
         "part_of": "fait partie de",
-        "rises_from": "se lève à"
+        "rises_from": "se lève à",
+        "synonym": "est un synonyme de",
+        "antonym": "est le contraire de",
+        "distinctfrom": "est distinct de",
+        "relatedto": "est lié à",
+        "capableof": "est capable de",
+        "usedfor": "est utilisé pour",
+        "atlocation": "se trouve à",
+        "hasproperty": "a la propriété",
+        "definedas": "est défini comme",
+        "partof": "fait partie de",
+        "hasa": "a"
       },
       "knowledge_header": "Connaissances disponibles sur {concept_label}:",
       "knowledge_separator": ", ",
@@ -5617,6 +5707,17 @@
       "متى",
       "كم",
       "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
       "هي"
     ],
     "question_classification": {
@@ -5705,7 +5806,18 @@
         "lives_in": "يعيش في",
         "has_property": "لديه صفة",
         "part_of": "جزء من",
-        "rises_from": "يشرق من"
+        "rises_from": "يشرق من",
+        "synonym": "هو مرادف لـ",
+        "antonym": "هو عكس",
+        "distinctfrom": "يختلف عن",
+        "relatedto": "مرتبط بـ",
+        "capableof": "قادر على",
+        "usedfor": "يستخدم في",
+        "atlocation": "يوجد في",
+        "hasproperty": "لديه صفة",
+        "definedas": "يعرف بأنه",
+        "partof": "جزء من",
+        "hasa": "يحتوي على"
       },
       "knowledge_header": "المعرفة المتوفرة حول {concept_label}:",
       "knowledge_separator": "، ",

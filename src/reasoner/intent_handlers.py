@@ -798,8 +798,10 @@ class IntentHandlers:
                     edge_world = data.get("world", "reality")
                     if edge_type == "relation" or (edge_type in ["fact", "inferred"] and edge_world == world):
                         if data.get("status", "active") == "active":
-                            to_label = self.handler.graph.nodes[to_node].get("labels", [to_node])[0] if to_node in self.handler.graph else to_node
                             rel_name = data.get("relation", "unknown")
+                            if rel_name in ["formof", "derivedfrom", "etymologicallyrelatedto", "etymologicallyderivedfrom", "etymologicalorigin", "externalurl", "pronunciation", "soundsalike"]:
+                                continue
+                            to_label = self.handler.graph.nodes[to_node].get("labels", [to_node])[0] if to_node in self.handler.graph else to_node
                             rel_meta = self.handler.graph.graph.get("relations_metadata", {})
                             if isinstance(rel_meta, dict) and rel_name in rel_meta:
                                 rel_display = rel_meta[rel_name].get("name", rel_name)
@@ -817,8 +819,10 @@ class IntentHandlers:
                     edge_world = data.get("world", "reality")
                     if edge_type == "relation" or (edge_type in ["fact", "inferred"] and edge_world == world):
                         if data.get("status", "active") == "active":
-                            from_label = self.handler.graph.nodes[from_node].get("labels", [from_node])[0] if from_node in self.handler.graph else from_node
                             rel_name = data.get("relation", "unknown")
+                            if rel_name in ["formof", "derivedfrom", "etymologicallyrelatedto", "etymologicallyderivedfrom", "etymologicalorigin", "externalurl", "pronunciation", "soundsalike"]:
+                                continue
+                            from_label = self.handler.graph.nodes[from_node].get("labels", [from_node])[0] if from_node in self.handler.graph else from_node
                             all_relations.append({
                                 "relation": rel_name,
                                 "source": from_node,
@@ -853,9 +857,12 @@ class IntentHandlers:
                     edge_world = data.get("world", "reality")
                     if edge_type == "relation" or (edge_type in ["fact", "inferred"] and edge_world == world):
                         if data.get("status", "active") == "active":
+                            rel_name = data.get("relation", "unknown")
+                            if rel_name in ["formof", "derivedfrom", "etymologicallyrelatedto", "etymologicallyderivedfrom", "etymologicalorigin", "externalurl", "pronunciation", "soundsalike"]:
+                                continue
                             to_label = self.handler.graph.nodes[to_node].get("labels", [to_node])[0] if to_node in self.handler.graph else to_node
                             all_out.append({
-                                "relation": data.get("relation", "unknown"),
+                                "relation": rel_name,
                                 "target": to_node,
                                 "target_label": to_label
                             })
@@ -864,9 +871,12 @@ class IntentHandlers:
                     edge_world = data.get("world", "reality")
                     if edge_type == "relation" or (edge_type in ["fact", "inferred"] and edge_world == world):
                         if data.get("status", "active") == "active":
+                            rel_name = data.get("relation", "unknown")
+                            if rel_name in ["formof", "derivedfrom", "etymologicallyrelatedto", "etymologicallyderivedfrom", "etymologicalorigin", "externalurl", "pronunciation", "soundsalike"]:
+                                continue
                             from_label = self.handler.graph.nodes[from_node].get("labels", [from_node])[0] if from_node in self.handler.graph else from_node
                             all_in.append({
-                                "relation": data.get("relation", "unknown"),
+                                "relation": rel_name,
                                 "source": from_node,
                                 "source_label": from_label
                             })

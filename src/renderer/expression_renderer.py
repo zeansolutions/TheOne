@@ -1027,10 +1027,41 @@ class MultilingualExpressionRenderer:
             category = res.get("category", "")
             relations = res.get("relations", [])
             
+            category_translations = {
+                "ar": {
+                    "concept": "مفهوم",
+                    "animal": "حيوان",
+                    "plant": "نبات",
+                    "location": "مكان",
+                    "person": "شخص",
+                    "object": "شيء",
+                    "mammal": "ثدييات",
+                    "bird": "طائر",
+                    "fish": "سمكة",
+                    "insect": "حشرة",
+                    "invertebrate": "لافقاريات",
+                    "reptile": "زواحف",
+                    "amphibian": "برمائيات",
+                    "organism": "كائن حي",
+                    "celestial": "جرم سماوي"
+                }
+            }
+            cat_display = category
+            if language in category_translations and category in category_translations[language]:
+                cat_display = category_translations[language][category]
+
+            is_feminine = False
+            if language == "ar":
+                clean_lbl = concept_label.strip()
+                if clean_lbl.endswith("ة") or any(fem in clean_lbl for fem in ["شمس", "أرض", "نار", "ريح", "عين", "يد", "رجل", "نفس"]):
+                    is_feminine = True
+
             parts = []
-            if category:
+            if category and category not in ["concept", "user_defined", "unknown"]:
                 template_cat = self.get_template("describe_category", language, self.get_fallback_template("describe_category", language))
-                parts.append(template_cat.format(concept_label=concept_label, category=category))
+                if language == "ar" and is_feminine:
+                    template_cat = template_cat.replace(" هو ", " هي ")
+                parts.append(template_cat.format(concept_label=concept_label, category=cat_display))
             else:
                 parts.append(concept_label)
             
@@ -1063,6 +1094,8 @@ class MultilingualExpressionRenderer:
                 rel = r.get("relation", "")
                 target_lbl = self.get_concept_label(r.get("target", ""), language)
                 rel_display = mapped_rel_map.get(rel, rel)
+                if language == "ar" and rel == "is_a":
+                    rel_display = "هي" if is_feminine else "هو"
                 parts.append(f"{rel_display} {target_lbl}")
                 
             for r in unique_incoming[:3]:

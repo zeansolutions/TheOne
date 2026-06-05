@@ -1,5 +1,27 @@
 {
-  "facts": [],
+  "facts": [
+    {
+      "subject": "lion",
+      "predicate": "eats",
+      "object": "gazelle",
+      "world": "عالم الحيوان",
+      "confidence": 1.0
+    },
+    {
+      "subject": "lion",
+      "predicate": "located_in",
+      "object": "savanna",
+      "world": "عالم الحيوان",
+      "confidence": 1.0
+    },
+    {
+      "subject": "gazelle",
+      "predicate": "located_in",
+      "object": "savanna",
+      "world": "عالم الحيوان",
+      "confidence": 1.0
+    }
+  ],
   "personas": [
     {
       "id": "old_star_persona",
