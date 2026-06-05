@@ -9,6 +9,8 @@ from src.entity_resolver import EntityResolver
 from src.manager.language_selection_engine import LanguageSelectionEngine
 from src.reasoner.pattern_matcher import GenericPatternMatcher
 from src.reasoner.learning_engine import InteractiveBootstrapper
+from src.utils.logger import logger
+from src.utils.profiler import profile_function
 
 # Import 10 Advanced Cognitive Reasoning Processors
 from src.reasoner.semantic_processor import SemanticProcessor
@@ -332,6 +334,7 @@ class SimpleReasoner:
             
         return True, premise, question
 
+    @profile_function
     def process_query(self, query, interactive=False, language=None):
         """
         Wrapper that detects conditional thought experiments (sandbox)
@@ -481,6 +484,7 @@ class SimpleReasoner:
                         match_res = self.pattern_matcher.match(part)
                 
                 if match_res:
+                    logger.info(f"Pattern matched successfully! Intent: {match_res.intent}, entities: {match_res.extracted_entities}")
                     extracted_concepts = []
                     expected_roles = [role for role in ["concept1", "concept2", "concept", "entity", "environment", "object"]
                                      if role in match_res.extracted_entities]
