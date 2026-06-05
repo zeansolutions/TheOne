@@ -179,6 +179,56 @@ class MultilingualExpressionRenderer:
         Translates a single trace step from Arabic to English or French, replacing concept IDs as well.
         """
         if language == "ar":
+            if "[KNOWLEDGE IMPORT]" in step:
+                # 1. Querying offline ConceptNet database
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Querying offline ConceptNet database for '(.+?)' \((.+?)\)\.\.\.", step)
+                if m:
+                    return f"[استيراد المعرفة] الاستعلام في قاعدة بيانات ConceptNet المحلية عن '{m.group(1)}' ({m.group(2)})..."
+                
+                # 2. Offline ConceptNet: No relations found
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Offline ConceptNet: No relations found for '(.+?)'\.", step)
+                if m:
+                    return f"[استيراد المعرفة] ConceptNet المحلية: لم يتم العثور على علاقات للمفهوم '{m.group(1)}'."
+                
+                # 3. Offline ConceptNet: 0 relations matching language
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Offline ConceptNet: 0 relations matching language '(.+?)' were imported\.", step)
+                if m:
+                    return f"[استيراد المعرفة] ConceptNet المحلية: تم استيراد 0 من العلاقات المطابقة للغة '{m.group(1)}'."
+                
+                # 4. Success: Imported X relations from offline ConceptNet
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Success: Imported (\d+) relations from offline ConceptNet\.", step)
+                if m:
+                    return f"[استيراد المعرفة] نجاح: تم استيراد {m.group(1)} علاقة من قاعدة ConceptNet المحلية."
+                
+                # 5. Offline ConceptNet Error
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Offline ConceptNet Error: (.+)", step)
+                if m:
+                    return f"[استيراد المعرفة] خطأ في ConceptNet المحلية: {m.group(1)}"
+                
+                # 6. Connecting to ConceptNet
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Connecting to ConceptNet for '(.+?)' \((.+?)\)\.\.\.", step)
+                if m:
+                    return f"[استيراد المعرفة] الاتصال بموقع ConceptNet للبحث عن '{m.group(1)}' ({m.group(2)})..."
+                
+                # 7. Success: Imported X relations from ConceptNet
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Success: Imported (\d+) relations from ConceptNet\.", step)
+                if m:
+                    return f"[استيراد المعرفة] نجاح: تم استيراد {m.group(1)} علاقة من ConceptNet."
+                
+                # 8. Wikidata: No search results found
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Wikidata: No search results found for '(.+?)'\.", step)
+                if m:
+                    return f"[استيراد المعرفة] Wikidata: لم يتم العثور على نتائج بحث للمفهوم '{m.group(1)}'."
+                
+                # 9. Success: Wikidata resolved X to Qnnn. Imported Y taxonomic links
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Success: Wikidata resolved '(.+?)' to (Q\d+)\. Imported (\d+) taxonomic links in (.+?)s\.", step)
+                if m:
+                    return f"[استيراد المعرفة] نجاح: تم ربط المفهوم '{m.group(1)}' بمعرف Wikidata ({m.group(2)}). تم استيراد {m.group(3)} من الروابط التصنيفية في {m.group(4)} ثانية."
+                
+                # 10. Wikidata Offline Mode / Error
+                m = re.search(r"\[KNOWLEDGE IMPORT\] Offline Mode: Could not reach Wikidata \((.+?)\): (.+?)\. Proceeding with local graph\.", step)
+                if m:
+                    return f"[استيراد المعرفة] وضع العمل المحلي: تعذر الاتصال بـ Wikidata ({m.group(1)}): {m.group(2)}. يتم المتابعة باستخدام الرسم البياني المحلي."
             return step
             
         words = re.findall(r"\w+", step)

@@ -3,8 +3,8 @@
     {
       "id": "lion",
       "labels": [
-        "أسد",
-        "الأسد"
+        "الأسد",
+        "أسد"
       ],
       "category": "animal"
     },
@@ -26,8 +26,8 @@
       "id": "savanna",
       "labels": [
         "سافانا",
-        "السافانا",
-        "غابات السافانا"
+        "غابات السافانا",
+        "السافانا"
       ],
       "category": "location"
     },
@@ -41,14 +41,26 @@
     {
       "id": "gazelle",
       "labels": [
-        "غزال",
         "الغزالة",
+        "غزال",
         "غزالة"
       ],
       "category": "animal"
     }
   ],
   "relations": [
+    {
+      "from": "lion",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "lion",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
     {
       "from": "lion",
       "to": "animal",
@@ -128,7 +140,13 @@
       "causal_purpose": null
     },
     {
-      "from": "category",
+      "from": "animal",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "animal",
       "to": "category",
       "relation": "is_a",
       "causal_purpose": null
@@ -152,6 +170,36 @@
       "causal_purpose": null
     },
     {
+      "from": "category",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "category",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "category",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "savanna",
+      "to": "location",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "savanna",
+      "to": "location",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
       "from": "savanna",
       "to": "location",
       "relation": "is_a",
@@ -214,6 +262,30 @@
     {
       "from": "location",
       "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "location",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "location",
+      "to": "category",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "gazelle",
+      "to": "animal",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "gazelle",
+      "to": "animal",
       "relation": "is_a",
       "causal_purpose": null
     },
