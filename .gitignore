@@ -27,3 +27,5 @@ desktop-gui/dist/
 api.log
 *.log
 
+# Databases
+*.db

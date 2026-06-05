@@ -12,6 +12,15 @@ class DbIoHandler:
         self.gh.language_rules_path = language_rules_path
         self.gh.inference_rules_path = inference_rules_path
         
+        # Close old database if exists
+        if hasattr(self.gh, "graph") and hasattr(self.gh.graph, "close"):
+            self.gh.graph.close()
+            
+        from src.persistence.graph_database import GraphDatabaseSQLite
+        db_path = ontology_path.replace('.json', '.db')
+        self.gh.graph = GraphDatabaseSQLite(db_path)
+        self.gh.graph.clear()
+        
         # 1. Load Language Rules
         with open(language_rules_path, 'r', encoding='utf-8') as f:
             self.gh.language_rules = json.load(f)

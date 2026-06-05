@@ -3,10 +3,11 @@ import json
 import datetime
 import networkx as nx
 from src.maintenance.db_io_handler import DbIoHandler
+from src.persistence.graph_database import GraphDatabaseSQLite
 
 class GraphHandler:
     def __init__(self):
-        self.graph = nx.MultiDiGraph()
+        self.graph = GraphDatabaseSQLite(":memory:")
         self.language_rules = {}
         self.facts = []
         self.personas = []
