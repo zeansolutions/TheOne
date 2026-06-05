@@ -363,15 +363,21 @@ class ResponseGeneratorSimple:
             
             for r in unique_outgoing[:5]:
                 rel = r.get("relation", "")
+                target_lbl = r.get("target_label", "")
+                if language == "ar" and all(ord(c) < 128 for c in target_lbl):
+                    continue
                 rel_display = mapped_rel_map.get(rel, r.get("relation_display", rel))
                 if language == "ar" and rel == "is_a":
                     rel_display = "هي" if is_feminine else "هو"
-                parts.append(f"{rel_display} {r['target_label']}")
+                parts.append(f"{rel_display} {target_lbl}")
             
             for r in unique_incoming[:3]:
                 rel = r.get("relation", "")
+                src_lbl = r.get("source_label", "")
+                if language == "ar" and all(ord(c) < 128 for c in src_lbl):
+                    continue
                 rel_display = mapped_rel_map.get(rel, rel)
-                parts.append(f"{r['source_label']} {rel_display} {concept_label}")
+                parts.append(f"{src_lbl} {rel_display} {concept_label}")
             
             sep = self.get_template("describe_separator", language, self.get_fallback_template("describe_separator", language))
             body = sep.join(parts)

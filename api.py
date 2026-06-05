@@ -530,10 +530,10 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                     handler.facts = []
                     message = "Successfully cleared all facts database."
                 elif clear_type == "world" and target_world:
-                    # Remove fact edges for this world
+                    # Remove all edges (facts and inferred) for this world
                     to_remove = []
                     for u, v, key, data in list(handler.graph.edges(keys=True, data=True)):
-                        if data.get("type") == "fact" and data.get("world") == target_world:
+                        if data.get("world") == target_world:
                             to_remove.append((u, v, key))
                     for u, v, key in to_remove:
                         handler.graph.remove_edge(u, v, key=key)
