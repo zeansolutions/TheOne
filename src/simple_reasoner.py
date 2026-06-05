@@ -135,13 +135,16 @@ class SimpleReasoner:
         for _, to_node, data in self.handler.graph.out_edges(concept_id, data=True):
             if data.get("relation") == "is_a" and to_node == target_category_id:
                 reason = data.get("reason")
+                sub_lbl = self.handler.graph.nodes[concept_id].get("labels", [concept_id])[0]
+                obj_lbl = self.handler.graph.nodes[target_category_id].get("labels", [target_category_id])[0]
+                logical_step = f"{sub_lbl} هو تصنيف فرعي من {obj_lbl} (علاقة is_a)"
                 if reason:
-                    trace.append(reason)
+                    if "استنتاج بالتعدي" in reason or "هو" in reason:
+                        trace.append(reason)
+                    else:
+                        trace.append(f"{logical_step} [مصدر: {reason}]")
                 else:
-                    # Translate labels to Arabic for trace readability
-                    sub_lbl = self.handler.graph.nodes[concept_id].get("labels", [concept_id])[0]
-                    obj_lbl = self.handler.graph.nodes[target_category_id].get("labels", [target_category_id])[0]
-                    trace.append(f"{sub_lbl} هو تصنيف فرعي من {obj_lbl} (علاقة is_a)")
+                    trace.append(logical_step)
                 return {
                     "result": True,
                     "path": path,
