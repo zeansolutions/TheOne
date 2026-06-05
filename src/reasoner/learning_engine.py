@@ -63,116 +63,149 @@ class InteractiveBootstrapper:
     def propose_pattern(self, text: str) -> Optional[Dict[str, Any]]:
         """Analyzes text, identifies concepts and unknown words, and proposes a new pattern structure."""
         concepts = self.scan_concepts(text)
-        if len(concepts) < 2:
+        if len(concepts) < 1:
             return None
             
-        # We take the first two detected concepts to form a relation pattern
-        c1_data = concepts[0]
-        c2_data = concepts[1]
-        
-        c1_id = c1_data["concept_id"]
-        c2_id = c2_data["concept_id"]
-        c1_lbl = c1_data["label"]
-        c2_lbl = c2_data["label"]
-        
         # Tokenize text
         words = text.strip().split()
         # Clean punctuation
         words_clean = [w.replace("؟", "").replace("?", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "") for w in words]
         words_clean = [w for w in words_clean if w]
-        
-        # Construct pattern tokens
-        pattern_tokens = []
-        mapping = {}
-        var_count = 1
-        
-        # Replace the substring matches with variables in the pattern tokens
-        i = 0
-        while i < len(words_clean):
-            word = words_clean[i]
-            # Check if this word is part of concept 1
-            if c1_lbl in word or word in c1_lbl:
-                pattern_tokens.append("?X")
-                mapping["concept1"] = "?X"
-                i += len(c1_lbl.split())
-            elif c2_lbl in word or word in c2_lbl:
-                pattern_tokens.append("?Y")
-                mapping["concept2"] = "?Y"
-                i += len(c2_lbl.split())
-            else:
-                pattern_tokens.append(word)
-                i += 1
-                
-        # Ensure we have ?X and ?Y in the pattern
-        if "?X" not in pattern_tokens or "?Y" not in pattern_tokens:
-            # Alternative: simpler construction
-            # just ["?X", "unknown_word", "?Y"]
-            # Find the word between concepts
-            # Text between concepts
-            start_between = c1_data["end"]
-            end_between = c2_data["start"]
-            between_text = text[start_between:end_between].strip()
-            # Clean punctuation
-            for p in ["؟", "?", "!", "،", ",", "."]:
-                between_text = between_text.replace(p, "")
-            between_words = [w for w in between_text.split() if w]
-            if not between_words:
-                between_words = ["هو"]  # fallback default relation word
-                
-            pattern_tokens = ["?X"] + between_words + ["?Y"]
-            mapping = {"concept1": "?X", "concept2": "?Y"}
 
-        # Infer intent
-        # Check if there is an existing relation in the graph
-        inferred_intent = "classification"
-        inferred_relation = "is_a"
-        
-        if self.handler and self.handler.graph:
-            if self.handler.graph.has_edge(c1_id, c2_id):
-                edge_data = self.handler.graph[c1_id][c2_id]
-                rel = edge_data.get("relation", "is_a")
-                if rel == "lives_in":
-                    inferred_intent = "location"
-                    inferred_relation = "lives_in"
-                    mapping = {"concept": "?X", "relation": "?ACTION"}
-                    # Replace intermediate words with ?ACTION in pattern
-                    # Find index of intermediate words
-                    for idx, token in enumerate(pattern_tokens):
-                        if token not in ["?X", "?Y"]:
-                            pattern_tokens[idx] = "?ACTION"
-                            mapping["relation"] = "?ACTION"
-                elif rel == "is_a":
-                    inferred_intent = "classification"
-                    inferred_relation = "is_a"
-                    mapping = {"concept1": "?X", "concept2": "?Y"}
-            else:
-                # Default fallback
-                inferred_intent = "classification"
-                mapping = {"concept1": "?X", "concept2": "?Y"}
-                
-        suggested_question = ""
-        unknown_str = " ".join([t for t in pattern_tokens if not t.startswith("?")])
-        
-        if inferred_intent == "classification":
-            suggested_question = f"أنا أفهم '{c1_lbl}' وأفهم '{c2_lbl}'، لكنني لا أعرف معنى '{unknown_str}'. هل تقصد أن {c1_lbl} هو تصنيف فرعي من {c2_lbl}؟"
-        elif inferred_intent == "location":
-            suggested_question = f"أنا أفهم '{c1_lbl}' وأفهم '{c2_lbl}'، لكنني لا أعرف معنى '{unknown_str}'. هل تقصد السؤال عن موطن أو موقع {c1_lbl}؟"
+        if len(concepts) >= 2:
+            # We take the first two detected concepts to form a relation pattern
+            c1_data = concepts[0]
+            c2_data = concepts[1]
             
-        pattern_id = f"learned_{inferred_intent}_{len(pattern_tokens)}_{abs(hash(tuple(pattern_tokens))) % 10000}"
-        
-        return {
-            "id": pattern_id,
-            "pattern": pattern_tokens,
-            "intent": inferred_intent,
-            "mapping": mapping,
-            "confidence": 1.0,
-            "suggested_question": suggested_question,
-            "inferred_relation": inferred_relation,
-            "concept1": c1_id,
-            "concept2": c2_id,
-            "concept1_lbl": c1_lbl,
-            "concept2_lbl": c2_lbl
-        }
+            c1_id = c1_data["concept_id"]
+            c2_id = c2_data["concept_id"]
+            c1_lbl = c1_data["label"]
+            c2_lbl = c2_data["label"]
+            
+            # Construct pattern tokens
+            pattern_tokens = []
+            mapping = {}
+            
+            # Replace the substring matches with variables in the pattern tokens
+            i = 0
+            while i < len(words_clean):
+                word = words_clean[i]
+                # Check if this word is part of concept 1
+                if c1_lbl in word or word in c1_lbl:
+                    pattern_tokens.append("?X")
+                    mapping["concept1"] = "?X"
+                    i += len(c1_lbl.split())
+                elif c2_lbl in word or word in c2_lbl:
+                    pattern_tokens.append("?Y")
+                    mapping["concept2"] = "?Y"
+                    i += len(c2_lbl.split())
+                else:
+                    pattern_tokens.append(word)
+                    i += 1
+                    
+            # Ensure we have ?X and ?Y in the pattern
+            if "?X" not in pattern_tokens or "?Y" not in pattern_tokens:
+                start_between = c1_data["end"]
+                end_between = c2_data["start"]
+                between_text = text[start_between:end_between].strip()
+                for p in ["؟", "?", "!", "،", ",", "."]:
+                    between_text = between_text.replace(p, "")
+                between_words = [w for w in between_text.split() if w]
+                if not between_words:
+                    between_words = ["هو"]  # fallback default relation word
+                    
+                pattern_tokens = ["?X"] + between_words + ["?Y"]
+                mapping = {"concept1": "?X", "concept2": "?Y"}
+
+            # Infer intent
+            inferred_intent = "classification"
+            inferred_relation = "is_a"
+            
+            if self.handler and self.handler.graph:
+                if self.handler.graph.has_edge(c1_id, c2_id):
+                    edge_data = self.handler.graph[c1_id][c2_id]
+                    rel = edge_data.get("relation", "is_a")
+                    if rel == "lives_in":
+                        inferred_intent = "location"
+                        inferred_relation = "lives_in"
+                        mapping = {"concept": "?X", "relation": "?ACTION"}
+                        for idx, token in enumerate(pattern_tokens):
+                            if token not in ["?X", "?Y"]:
+                                pattern_tokens[idx] = "?ACTION"
+                                mapping["relation"] = "?ACTION"
+                    elif rel == "is_a":
+                        inferred_intent = "classification"
+                        inferred_relation = "is_a"
+                        mapping = {"concept1": "?X", "concept2": "?Y"}
+                else:
+                    inferred_intent = "classification"
+                    mapping = {"concept1": "?X", "concept2": "?Y"}
+                    
+            suggested_question = ""
+            unknown_str = " ".join([t for t in pattern_tokens if not t.startswith("?")])
+            
+            if inferred_intent == "classification":
+                suggested_question = f"أنا أفهم '{c1_lbl}' وأفهم '{c2_lbl}'، لكنني لا أعرف معنى '{unknown_str}'. هل تقصد أن {c1_lbl} هو تصنيف فرعي من {c2_lbl}؟"
+            elif inferred_intent == "location":
+                suggested_question = f"أنا أفهم '{c1_lbl}' وأفهم '{c2_lbl}'، لكنني لا أعرف معنى '{unknown_str}'. هل تقصد السؤال عن موطن أو موقع {c1_lbl}؟"
+                
+            pattern_id = f"learned_{inferred_intent}_{len(pattern_tokens)}_{abs(hash(tuple(pattern_tokens))) % 10000}"
+            
+            return {
+                "id": pattern_id,
+                "pattern": pattern_tokens,
+                "intent": inferred_intent,
+                "mapping": mapping,
+                "confidence": 1.0,
+                "suggested_question": suggested_question,
+                "inferred_relation": inferred_relation,
+                "concept1": c1_id,
+                "concept2": c2_id,
+                "concept1_lbl": c1_lbl,
+                "concept2_lbl": c2_lbl
+            }
+        else:
+            # len(concepts) == 1
+            c1_data = concepts[0]
+            c1_id = c1_data["concept_id"]
+            c1_lbl = c1_data["label"]
+            
+            pattern_tokens = []
+            mapping = {}
+            
+            i = 0
+            while i < len(words_clean):
+                word = words_clean[i]
+                if c1_lbl in word or word in c1_lbl:
+                    pattern_tokens.append("?X")
+                    mapping["concept"] = "?X"
+                    i += len(c1_lbl.split())
+                else:
+                    pattern_tokens.append(word)
+                    i += 1
+                    
+            if "?X" not in pattern_tokens:
+                pattern_tokens = ["?X"] + [w for w in words_clean if w != c1_lbl]
+                mapping = {"concept": "?X"}
+                
+            inferred_intent = "classification"
+            inferred_relation = "is_a"
+            
+            unknown_str = " ".join([t for t in pattern_tokens if not t.startswith("?")])
+            suggested_question = f"أنا أفهم '{c1_lbl}'، لكنني لا أعرف الصيغة '{unknown_str}'. هل تقصد السؤال عن تعريف أو تصنيف '{c1_lbl}'؟"
+            pattern_id = f"learned_{inferred_intent}_{len(pattern_tokens)}_{abs(hash(tuple(pattern_tokens))) % 10000}"
+            
+            return {
+                "id": pattern_id,
+                "pattern": pattern_tokens,
+                "intent": inferred_intent,
+                "mapping": mapping,
+                "confidence": 1.0,
+                "suggested_question": suggested_question,
+                "inferred_relation": inferred_relation,
+                "concept1": c1_id,
+                "concept1_lbl": c1_lbl
+            }
 
     def save_new_pattern(self, pattern_data: Dict[str, Any]) -> bool:
         """Appends the newly learned pattern to language_rules.json."""
