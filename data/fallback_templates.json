@@ -107,7 +107,9 @@
       "relation_path_deep": "تم العثور على مسار علاقة غير مباشر (عميق) بين [{concept1}] و [{concept2}]: {steps_str}.",
       "relation_path_direct": "توجد علاقة مباشرة بين [{concept1}] و [{concept2}]: {steps_str}.",
       "relation_path_none": "لا توجد علاقة بين المفهومين في قاعدة المعرفة.",
-      "relation_path_steps_separator": "، ثم "
+      "relation_path_steps_separator": "، ثم ",
+      "innovation_success": "تم ابتكار فكرة جديدة تربط [{concept1}] بـ [{concept2}] عبر المفهوم المشترك [{matching_property}]:\nالمسار التوليدي: {path_str}\nالتحقق الفيزيائي: {validation_message}",
+      "innovation_fail": "لم نتمكن من ابتكار فكرة منطقية تربط بين [{concept1}] و [{concept2}] بناءً على القدرات والاحتياجات المسجلة حالياً."
     },
     "en": {
       "classification_true": "{concept1} is a {concept2}, that's correct! Taxonomic deduction proves this relation via ascending inheritance.",
@@ -166,7 +168,9 @@
       "relation_path_deep": "Indirect relation path found between [{concept1}] and [{concept2}]: {steps_str}.",
       "relation_path_direct": "Direct relation found between [{concept1}] and [{concept2}]: {steps_str}.",
       "relation_path_none": "No relation path found between the two concepts in the knowledge base.",
-      "relation_path_steps_separator": ", then "
+      "relation_path_steps_separator": ", then ",
+      "innovation_success": "Successfully innovated a new idea connecting [{concept1}] and [{concept2}] via the shared concept [{matching_property}]:\nGenerative path: {path_str}\nValidation: {validation_message}",
+      "innovation_fail": "Could not innovate a logical connection between [{concept1}] and [{concept2}] based on current capabilities and requirements."
     },
     "fr": {
       "classification_true": "{concept1} est un {concept2}, c'est exact! La déduction taxonomique prouve cette relation par héritage ascendant.",
@@ -225,7 +229,9 @@
       "relation_path_deep": "Chemin de relation indirecte trouvé entre [{concept1}] et [{concept2}]: {steps_str}.",
       "relation_path_direct": "Relation directe trouvée entre [{concept1}] et [{concept2}]: {steps_str}.",
       "relation_path_none": "Aucun chemin de relation trouvé entre les deux concepts dans la base de connaissances.",
-      "relation_path_steps_separator": ", puis "
+      "relation_path_steps_separator": ", puis ",
+      "innovation_success": "Idée innovante créée avec succès reliant [{concept1}] et [{concept2}] via le concept partagé [{matching_property}]:\nChemin génératif: {path_str}\nValidation: {validation_message}",
+      "innovation_fail": "Impossible d'innover une connexion logique entre [{concept1}] et [{concept2}] selon les capacités et besoins actuels."
     }
   }
 }

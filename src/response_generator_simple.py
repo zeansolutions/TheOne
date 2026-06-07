@@ -352,6 +352,33 @@ class ResponseGeneratorSimple:
                 ans = template
             return prefix + ans
  
+        # 15.6. Innovation Response
+        elif type_ == "innovation":
+            c1_lbl = res.get("concept1_label")
+            c2_lbl = res.get("concept2_label")
+            if res["result"]:
+                matching_prop_lbl = res.get("matching_property")
+                path_str = res.get("path_str")
+                val_msg = res.get("validation_message")
+                
+                key = "innovation_success"
+                template = self.get_template(key, language, self.get_fallback_template(key, language))
+                ans = template.format(
+                    concept1=c1_lbl,
+                    concept2=c2_lbl,
+                    matching_property=matching_prop_lbl,
+                    path_str=path_str,
+                    validation_message=val_msg
+                )
+            else:
+                key = "innovation_fail"
+                template = self.get_template(key, language, self.get_fallback_template(key, language))
+                ans = template.format(
+                    concept1=c1_lbl,
+                    concept2=c2_lbl
+                )
+            return prefix + ans
+
         # 16. Describe Response
         elif type_ == "describe":
             concept_label = res.get("concept_label", self.get_concept_label(res.get("concept", ""), language))

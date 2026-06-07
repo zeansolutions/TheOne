@@ -915,6 +915,36 @@ class IntentHandlers:
                     "trace": prag_trace + [f"استعلام وصفي عن المفهوم '{concept_label}' ({concept})", f"تم العثور على {len(all_relations)} علاقة مرتبطة"],
                     "confidence": 1.0
                 }
+    def handle_innovation(self, mapped_concepts, words, world, prag_trace, match_res=None, language=None):
+        if language is None:
+            language = "ar"
+            
+        is_innovation_query = (match_res and match_res.intent == "innovation") or (
+            any(w in words for w in ["ابتكر", "ابتكار", "اخترع", "innovate", "invention", "innovation"]) and len(mapped_concepts) >= 2
+        )
+        
+        if is_innovation_query:
+            c1, c2 = mapped_concepts[0], mapped_concepts[1]
+            res = self.reasoner.innovation_engine.innovate(c1, c2, world, language)
+            
+            trace_msg = [
+                f"بدء الاستدلال الابتكاري بين '{res.get('concept1_label')}' و '{res.get('concept2_label')}'",
+                f"حالة التحقق: {res.get('validation_status')}"
+            ]
+            
+            return {
+                "type": "innovation",
+                "result": res.get("success", False),
+                "concept1_label": res.get("concept1_label"),
+                "concept2_label": res.get("concept2_label"),
+                "matching_property": res.get("matching_property_label"),
+                "match_type": res.get("match_type"),
+                "path_str": res.get("path_str"),
+                "validation_status": res.get("validation_status"),
+                "validation_message": res.get("validation_message"),
+                "trace": prag_trace + trace_msg,
+                "confidence": 1.0 if res.get("success") else 0.5
+            }
         return None
 
     def handle_knowledge_fallback(self, mapped_concepts, world, prag_trace):

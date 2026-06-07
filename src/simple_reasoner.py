@@ -9,6 +9,7 @@ from src.entity_resolver import EntityResolver
 from src.manager.language_selection_engine import LanguageSelectionEngine
 from src.reasoner.pattern_matcher import GenericPatternMatcher
 from src.reasoner.learning_engine import InteractiveBootstrapper
+from src.reasoner.innovation_engine import InnovationEngine
 from src.utils.logger import logger
 from src.utils.profiler import profile_function
 
@@ -68,6 +69,7 @@ class SimpleReasoner:
         rules_path = getattr(self.handler, "language_rules_path", "data/language_rules.json")
         self.pattern_matcher = GenericPatternMatcher(rules_path)
         self.learning_engine = InteractiveBootstrapper(self.handler, rules_path)
+        self.innovation_engine = InnovationEngine(self.handler)
 
     def _resolve_extracted_entity(self, val, language, context_concepts):
         return self.entity_extractor.resolve_extracted_entity(val, language, context_concepts)
@@ -430,7 +432,8 @@ class SimpleReasoner:
                 
             is_question = any(q in words for q in question_particles) or \
                           part.endswith("؟") or part.endswith("?") or \
-                          any(w in words for w in ["الفرق", "إزاي", "ازاي", "difference", "différence", "comment", "how"])
+                          any(w in words for w in ["الفرق", "إزاي", "ازاي", "difference", "différence", "comment", "how"]) or \
+                          any(w in words for w in ["ابتكر", "ابتكار", "اخترع", "innovate", "invention", "innovation"])
             
             if not is_question:
                 teach_res = self.world_manager.parse_and_add_fact(part, world, interactive=interactive, language=language)
@@ -641,6 +644,9 @@ class SimpleReasoner:
             elif intent == "relation_path":
                 res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res, is_deep=is_deep)
                 if res: return res
+            elif intent == "innovation":
+                res = self._handle_innovation(mapped_concepts, words, world, prag_trace, match_res, language)
+                if res: return res
             elif intent == "celestial":
                 res = self._handle_celestial(mapped_concepts, words, language, world, prag_trace, match_res)
                 if res: return res
@@ -755,6 +761,9 @@ class SimpleReasoner:
 
     def _handle_relation_path(self, *args, **kwargs):
         return self.intent_handlers.handle_relation_path(*args, **kwargs)
+
+    def _handle_innovation(self, *args, **kwargs):
+        return self.intent_handlers.handle_innovation(*args, **kwargs)
 
     def _handle_describe(self, *args, **kwargs):
         return self.intent_handlers.handle_describe(*args, **kwargs)
