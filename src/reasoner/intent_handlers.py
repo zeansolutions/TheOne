@@ -809,11 +809,7 @@ class IntentHandlers:
                         step_desc_list = []
                         for src, tgt, edge_data in edge_list:
                             rel_name = edge_data.get("relation", "relation")
-                            rel_meta = self.handler.graph.graph.get("relations_metadata", {})
-                            if isinstance(rel_meta, dict) and rel_name in rel_meta:
-                                rel_display = rel_meta[rel_name].get("name", rel_name)
-                            else:
-                                rel_display = rel_name
+                            rel_display = self.handler.get_relation_label(rel_name, language)
 
                             src_lbl = self.handler.graph.nodes[src].get("labels", [src])[0] if src in self.handler.graph else src
                             tgt_lbl = self.handler.graph.nodes[tgt].get("labels", [tgt])[0] if tgt in self.handler.graph else tgt

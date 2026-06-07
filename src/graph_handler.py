@@ -11,6 +11,7 @@ class GraphHandler:
         self.online_import_enabled = "pytest" not in sys.modules
         self.graph = GraphDatabaseSQLite(":memory:")
         self.language_rules = {}
+        self.relations_metadata = {}
         self.facts = []
         self.personas = []
         self.active_world = "reality"
@@ -74,6 +75,76 @@ class GraphHandler:
         for src, dest in norm_rules.items():
             text = text.replace(src, dest)
         return text
+
+    def get_relation_label(self, relation_id, language="ar"):
+        """Translates a relation ID into the target language display name."""
+        # 1. Check loaded relations_metadata
+        if hasattr(self, "relations_metadata") and self.relations_metadata:
+            meta = self.relations_metadata.get(relation_id)
+            if meta:
+                if language == "ar" and "name" in meta:
+                    return meta["name"]
+                
+        # 2. Check fallback translations dictionary
+        fallback_translations = {
+            "ar": {
+                'is_a': 'نوع من',
+                'part_of': 'جزء من',
+                'lives_in': 'يعيش في',
+                'has_property': 'له صفة',
+                'eats': 'يأكل',
+                'rises_from': 'تشرق من',
+                'causes': 'يسبب',
+                'resembles': 'يماثل',
+                'requires': 'يتطلب',
+                'provides': 'يوفر',
+                'located_in': 'موجود في',
+                'emits': 'يصدر',
+                'illuminates': 'يضيء',
+                'leads_to': 'يؤدي إلى',
+                'follows': 'يتبع',
+                'contains': 'يحتوي على'
+            },
+            "en": {
+                'is_a': 'is a',
+                'part_of': 'part of',
+                'lives_in': 'lives in',
+                'has_property': 'has property',
+                'eats': 'eats',
+                'rises_from': 'rises from',
+                'causes': 'causes',
+                'resembles': 'resembles',
+                'requires': 'requires',
+                'provides': 'provides',
+                'located_in': 'located in',
+                'emits': 'emits',
+                'illuminates': 'illuminates',
+                'leads_to': 'leads to',
+                'follows': 'follows',
+                'contains': 'contains'
+            },
+            "fr": {
+                'is_a': 'est un',
+                'part_of': 'fait partie de',
+                'lives_in': 'vit dans',
+                'has_property': 'a la propriété',
+                'eats': 'mange',
+                'rises_from': 'se lève de',
+                'causes': 'cause',
+                'resembles': 'ressemble à',
+                'requires': 'requiert',
+                'provides': 'fournit',
+                'located_in': 'situé dans',
+                'emits': 'émet',
+                'illuminates': 'illumine',
+                'leads_to': 'conduit à',
+                'follows': 'suit',
+                'contains': 'contient'
+            }
+        }
+        
+        lang_map = fallback_translations.get(language, fallback_translations["en"])
+        return lang_map.get(relation_id, relation_id)
 
     def load_databases(self, ontology_path, facts_path, language_rules_path, inference_rules_path=None):
         """Loads and parses JSON databases by delegating to DbIoHandler."""

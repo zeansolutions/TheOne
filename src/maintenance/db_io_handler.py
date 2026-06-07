@@ -36,6 +36,20 @@ class DbIoHandler:
         else:
             self.gh.inference_rules = []
             
+        # 1.6 Load Relations Metadata
+        metadata_path = os.path.join(os.path.dirname(ontology_path), "relations_metadata.json")
+        self.gh.relations_metadata = {}
+        if os.path.exists(metadata_path):
+            try:
+                with open(metadata_path, 'r', encoding='utf-8') as f:
+                    meta_data = json.load(f)
+                    for r in meta_data.get("relations", []):
+                        r_id = r.get("id")
+                        if r_id:
+                            self.gh.relations_metadata[r_id] = r
+            except Exception as e:
+                print(f"Error loading relations metadata: {e}")
+            
         # 2. Load Ontology (Concepts & Relations)
         with open(ontology_path, 'r', encoding='utf-8') as f:
             ontology = json.load(f)

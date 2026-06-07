@@ -62,6 +62,20 @@
       "transitive": false,
       "symmetric": false,
       "decay": 0
+    },
+    {
+      "id": "part_of",
+      "name": "جزء من",
+      "transitive": false,
+      "symmetric": false,
+      "decay": 0
+    },
+    {
+      "id": "has_property",
+      "name": "له صفة",
+      "transitive": false,
+      "symmetric": false,
+      "decay": 0
     }
   ]
 }
