@@ -14,6 +14,7 @@ class GraphHandler:
         self.facts = []
         self.personas = []
         self.active_world = "reality"
+        self.nlp_mode = "library"
         self.io_handler = DbIoHandler(self)
 
     def canonicalize_concept(self, word, language="ar"):
@@ -41,11 +42,16 @@ class GraphHandler:
         # Sort definite articles by length descending to match longest prefixes first
         definite_articles.sort(key=len, reverse=True)
         
-        for art in definite_articles:
-            if word.startswith(art) and len(word) > len(art):
-                return word[len(art):]
-                
-        return word
+        words = word.split()
+        cleaned_words = []
+        for w in words:
+            cleaned_w = w
+            for art in definite_articles:
+                if w.startswith(art) and len(w) > len(art):
+                    cleaned_w = w[len(art):]
+                    break
+            cleaned_words.append(cleaned_w)
+        return " ".join(cleaned_words)
 
     def normalize_text(self, text, language=None):
         """
@@ -528,91 +534,124 @@ class GraphHandler:
         """
         Dynamic morphological analyzer.
         Matches input words to concept IDs using rules loaded in self.language_rules.
+        Supports NLP driver-based lemmatization as the primary search method.
         Supports Spreading Activation if multiple concepts match.
         """
         # Clean word of punctuation
         word = word.strip().replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "")
-        
+        if not word:
+            return None
+            
         matched_concepts = []
 
-        if language in ["en", "fr"]:
-            word = word.lower()
-            # 1. Lookup in the language-specific lexicon
-            lang_rules = self.language_rules.get(language, {})
-            lexicon = lang_rules.get("lexicon", {})
-            if word in lexicon:
-                matched_concepts.append(lexicon[word])
+        # --- 1. Driver-based Lemmatization Match (Primary) ---
+        if getattr(self, "nlp_mode", "library") == "library":
+            try:
+                from src.nlp_drivers.factory import get_nlp_driver
+                driver = get_nlp_driver(language)
                 
-            # 2. Direct lookup in node IDs (as fallback)
-            for node in self.graph.nodes:
-                if word == node.lower():
-                    matched_concepts.append(node)
-        else:
-            # --- Arabic Morphological Lookup ---
-            # Direct lookup in concept labels (normalized)
-            norm_word = self.normalize_text(word, "ar")
-            for node, data in self.graph.nodes(data=True):
-                if data.get("type") == "concept":
-                    if any(norm_word == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
+                # Extract lemmas from the word
+                lemmas = driver.extract_lemmas(word)
+                # Add normalized version of the word itself
+                normalized_word = driver.normalize_text(word)
+                
+                # Form search terms: lemmas, normalized word, original word
+                search_terms = list(dict.fromkeys(lemmas + [normalized_word, word]))
+                
+                for term in search_terms:
+                    term_norm = driver.normalize_text(term) if language == "ar" else term.lower()
+                    
+                    # Check direct lexicon if it exists for this language
+                    lang_rules = self.language_rules.get(language, {})
+                    lexicon = lang_rules.get("lexicon", {})
+                    if term in lexicon:
+                        matched_concepts.append(lexicon[term])
+                    elif term.lower() in lexicon:
+                        matched_concepts.append(lexicon[term.lower()])
+                    
+                    # Search concept labels and node IDs
+                    for node, data in self.graph.nodes(data=True):
+                        if term.lower() == node.lower():
+                            matched_concepts.append(node)
+                        elif data.get("type") == "concept":
+                            labels = data.get("labels", [])
+                            for lbl in labels:
+                                lbl_norm = driver.normalize_text(lbl) if language == "ar" else lbl.lower()
+                                if term_norm == lbl_norm:
+                                    matched_concepts.append(node)
+            except Exception as e:
+                # If driver fails, fallback to legacy behavior
+                pass
+
+        # --- 2. Rule-based Fallback (Legacy) ---
+        if not matched_concepts:
+            if language in ["en", "fr"]:
+                word_lower = word.lower()
+                lang_rules = self.language_rules.get(language, {})
+                lexicon = lang_rules.get("lexicon", {})
+                if word_lower in lexicon:
+                    matched_concepts.append(lexicon[word_lower])
+                for node in self.graph.nodes:
+                    if word_lower == node.lower():
                         matched_concepts.append(node)
-                        
-            # Apply affix rules dynamically loaded from language_rules
-            prefixes = [p["form"].replace("ـ", "") for p in self.language_rules.get("morphology", {}).get("particles", []) if p["type"] in ["definite_article", "preposition", "conjunction"]]
-            suffixes = [s["form"].replace("ـ", "") for s in self.language_rules.get("morphology", {}).get("particles", []) if s["type"] in ["pronoun_suffix", "plural_suffix"]]
-            
-            # Iterative stripping of prefixes/suffixes to handle compound affixes like "بالقطب" (ب + ال + قطب)
-            candidates = {word}
-            
-            # Try iterative prefix stripping
-            changed = True
-            while changed:
-                changed = False
-                new_candidates = set()
-                for cand in candidates:
-                    for pref in prefixes:
-                        if cand.startswith(pref) and len(cand) > len(pref):
-                            stem = cand[len(pref):]
-                            if stem not in candidates:
-                                new_candidates.add(stem)
-                                changed = True
-                candidates.update(new_candidates)
-                
-            # Try iterative suffix stripping
-            changed = True
-            while changed:
-                changed = False
-                new_candidates = set()
-                for cand in candidates:
-                    for suff in suffixes:
-                        if cand.endswith(suff) and len(cand) > len(suff):
-                            stem = cand[:-len(suff)]
-                            if stem not in candidates:
-                                new_candidates.add(stem)
-                                changed = True
-                candidates.update(new_candidates)
-                
-            # Check if any candidate is a concept label (normalized)
-            for stem in sorted(list(candidates), key=len):
-                norm_stem = self.normalize_text(stem, "ar")
+            else:
+                # --- Arabic Morphological Lookup ---
+                norm_word = self.normalize_text(word, "ar")
                 for node, data in self.graph.nodes(data=True):
                     if data.get("type") == "concept":
-                        if any(norm_stem == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
+                        if any(norm_word == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
                             matched_concepts.append(node)
                             
-            # Check dynamic lexicon roots (only if no direct or stem label match was found, normalized)
-            if not matched_concepts:
+                prefixes = [p["form"].replace("ـ", "") for p in self.language_rules.get("morphology", {}).get("particles", []) if p["type"] in ["definite_article", "preposition", "conjunction"]]
+                suffixes = [s["form"].replace("ـ", "") for s in self.language_rules.get("morphology", {}).get("particles", []) if s["type"] in ["pronoun_suffix", "plural_suffix"]]
+                
+                candidates = {word}
+                
+                changed = True
+                while changed:
+                    changed = False
+                    new_candidates = set()
+                    for cand in candidates:
+                        for pref in prefixes:
+                            if cand.startswith(pref) and len(cand) > len(pref):
+                                stem = cand[len(pref):]
+                                if stem not in candidates:
+                                    new_candidates.add(stem)
+                                    changed = True
+                    candidates.update(new_candidates)
+                    
+                changed = True
+                while changed:
+                    changed = False
+                    new_candidates = set()
+                    for cand in candidates:
+                        for suff in suffixes:
+                            if cand.endswith(suff) and len(cand) > len(suff):
+                                stem = cand[:-len(suff)]
+                                if stem not in candidates:
+                                    new_candidates.add(stem)
+                                    changed = True
+                    candidates.update(new_candidates)
+                    
                 for stem in sorted(list(candidates), key=len):
                     norm_stem = self.normalize_text(stem, "ar")
-                    for root in self.language_rules.get("morphology", {}).get("roots", []):
-                        if any(norm_stem == self.normalize_text(pat, "ar") for pat in root["patterns"]):
-                            for pat in root["patterns"]:
-                                for node, data in self.graph.nodes(data=True):
-                                    if data.get("type") == "concept" and any(self.normalize_text(pat, "ar") == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
-                                        matched_concepts.append(node)
-                                    
+                    for node, data in self.graph.nodes(data=True):
+                        if data.get("type") == "concept":
+                            if any(norm_stem == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
+                                matched_concepts.append(node)
+                                
+                if not matched_concepts:
+                    for stem in sorted(list(candidates), key=len):
+                        norm_stem = self.normalize_text(stem, "ar")
+                        for root in self.language_rules.get("morphology", {}).get("roots", []):
+                            if any(norm_stem == self.normalize_text(pat, "ar") for pat in root["patterns"]):
+                                for pat in root["patterns"]:
+                                    for node, data in self.graph.nodes(data=True):
+                                        if data.get("type") == "concept" and any(self.normalize_text(pat, "ar") == self.normalize_text(lbl, "ar") for lbl in data.get("labels", [])):
+                                            matched_concepts.append(node)
+
         # Resolve ambiguity using Spreading Activation if context is available
         if matched_concepts:
-            # Deduplicate preserving order
             unique_matches = []
             for c in matched_concepts:
                 if c not in unique_matches:
@@ -621,12 +660,9 @@ class GraphHandler:
             if len(unique_matches) > 1:
                 if context_concepts:
                     activations = self.spreading_activation(context_concepts)
-                    # Pick candidate with highest activation level
                     best_concept = max(unique_matches, key=lambda c: activations.get(c, 0.0))
-                    # If we found a candidate with positive activation, return it
                     if activations.get(best_concept, 0.0) > 0.0:
                         return best_concept
-                # Default fallback is the first match
                 return unique_matches[0]
             return unique_matches[0]
             

@@ -1,6 +1,48 @@
 {
   "concepts": [
     {
+      "id": "رأس",
+      "labels": [
+        "رأس"
+      ],
+      "category": "user_defined"
+    },
+    {
+      "id": "user_defined",
+      "labels": [
+        "user_defined"
+      ],
+      "category": "category"
+    },
+    {
+      "id": "category",
+      "labels": [
+        "category"
+      ],
+      "category": "category"
+    },
+    {
+      "id": "انسان",
+      "labels": [
+        "انسان"
+      ],
+      "category": "user_defined"
+    },
+    {
+      "id": "مستديرة",
+      "labels": [
+        "مستديرة"
+      ],
+      "category": "user_defined"
+    },
+    {
+      "id": "كرة",
+      "labels": [
+        "كرة"
+      ],
+      "category": "user_defined"
+    },
+    {
       "id": "lion",
       "labels": [
         "الأسد",
@@ -16,18 +58,11 @@
       "category": "category"
     },
     {
-      "id": "category",
-      "labels": [
-        "category"
-      ],
-      "category": "category"
-    },
-    {
       "id": "savanna",
       "labels": [
-        "سافانا",
         "غابات السافانا",
-        "السافانا"
+        "السافانا",
+        "سافانا"
       ],
       "category": "location"
     },
@@ -42,52 +77,64 @@
       "id": "gazelle",
       "labels": [
         "الغزالة",
-        "غزال",
-        "غزالة"
+        "غزالة",
+        "غزال"
       ],
       "category": "animal"
     }
   ],
   "relations": [
     {
-      "from": "lion",
-      "to": "animal",
+      "from": "رأس",
+      "to": "user_defined",
       "relation": "is_a",
       "causal_purpose": null
     },
     {
-      "from": "lion",
-      "to": "animal",
+      "from": "رأس",
+      "to": "user_defined",
       "relation": "is_a",
       "causal_purpose": null
     },
     {
-      "from": "lion",
-      "to": "animal",
+      "from": "user_defined",
+      "to": "category",
       "relation": "is_a",
       "causal_purpose": null
     },
     {
-      "from": "lion",
-      "to": "animal",
+      "from": "انسان",
+      "to": "user_defined",
       "relation": "is_a",
       "causal_purpose": null
     },
     {
-      "from": "lion",
-      "to": "animal",
+      "from": "انسان",
+      "to": "user_defined",
       "relation": "is_a",
       "causal_purpose": null
     },
     {
-      "from": "lion",
-      "to": "animal",
+      "from": "مستديرة",
+      "to": "user_defined",
       "relation": "is_a",
       "causal_purpose": null
     },
     {
-      "from": "lion",
-      "to": "animal",
+      "from": "مستديرة",
+      "to": "user_defined",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "كرة",
+      "to": "user_defined",
+      "relation": "is_a",
+      "causal_purpose": null
+    },
+    {
+      "from": "كرة",
+      "to": "user_defined",
       "relation": "is_a",
       "causal_purpose": null
     },
@@ -110,212 +157,8 @@
       "causal_purpose": null
     },
     {
-      "from": "animal",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "animal",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "animal",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "animal",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "animal",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "animal",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "animal",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "category",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "category",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "category",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "category",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "category",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "category",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
       "from": "savanna",
       "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "savanna",
-      "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "savanna",
-      "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "savanna",
-      "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "savanna",
-      "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "savanna",
-      "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "savanna",
-      "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "savanna",
-      "to": "location",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "location",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "location",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "location",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "location",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "location",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "location",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "location",
-      "to": "category",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "gazelle",
-      "to": "animal",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "gazelle",
-      "to": "animal",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "gazelle",
-      "to": "animal",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "gazelle",
-      "to": "animal",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "gazelle",
-      "to": "animal",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "gazelle",
-      "to": "animal",
-      "relation": "is_a",
-      "causal_purpose": null
-    },
-    {
-      "from": "gazelle",
-      "to": "animal",
       "relation": "is_a",
       "causal_purpose": null
     },

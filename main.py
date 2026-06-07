@@ -48,7 +48,7 @@ def t(key, **kwargs):
             return text
     return text
 
-def print_banner():
+def print_banner(handler):
     print(t("banner_title"))
     print(t("banner_header"))
     print(t("banner_sub"))
@@ -59,6 +59,8 @@ def print_banner():
     print(t("menu_teach"))
     print(t("menu_worlds"))
     print(t("menu_lang"))
+    mode_lbl = "Libraries (NLP Drivers)" if handler.nlp_mode == "library" else "Database Rules (Dynamic)"
+    print(t("menu_nlp_mode", mode=mode_lbl))
     print(t("menu_exit"))
     print("-" * 75)
 
@@ -166,17 +168,31 @@ def change_language():
     else:
         print(f"⚠️ Unsupported language choice: {choice}. Retaining current language: {active_lang}")
 
+def change_nlp_mode(handler):
+    choice = input(t("nlp_mode_switch_prompt")).strip()
+    if choice == "1":
+        handler.nlp_mode = "library"
+        mode_lbl = "Libraries (NLP Drivers)" if active_lang != "ar" else "المكتبات الخارجية (NLP Drivers)"
+        print(t("nlp_mode_toggle_success", mode=mode_lbl))
+    elif choice == "2":
+        handler.nlp_mode = "database"
+        mode_lbl = "Database Rules (Dynamic)" if active_lang != "ar" else "قواعد البيانات الديناميكية (Dynamic Rules)"
+        print(t("nlp_mode_toggle_success", mode=mode_lbl))
+    else:
+        print("⚠️ Invalid choice. Retaining current NLP mode.")
+
 def main():
-    global active_lang
     import argparse
     parser = argparse.ArgumentParser(description="TheOne Neuro-Symbolic AI CLI")
     parser.add_argument("--trace-level", type=str, choices=["detailed", "minimal"], default="detailed", help="Trace level verbosity")
+    parser.add_argument("--nlp-mode", type=str, choices=["library", "database"], default="library", help="NLP mode to run in (library or database)")
     args = parser.parse_args()
     
     trace_level = args.trace_level
 
     # 1. Initialize databases
     handler = GraphHandler()
+    handler.nlp_mode = args.nlp_mode
     
     ontology_path = "data/ontology.json"
     facts_path = "data/facts.json"
@@ -199,7 +215,7 @@ def main():
     persona_engine = MultilingualPersonaEngine(handler)
     
     # Print welcome
-    print_banner()
+    print_banner(handler)
     
     while True:
         choice = input(t("menu_choice")).strip()
@@ -248,8 +264,11 @@ def main():
             show_worlds(handler)
         elif choice == "5":
             change_language()
-            print_banner()
-        elif choice == "6" or choice.lower() == "q":
+            print_banner(handler)
+        elif choice == "6":
+            change_nlp_mode(handler)
+            print_banner(handler)
+        elif choice == "7" or choice.lower() == "q":
             print(t("exit_msg"))
             break
         else:

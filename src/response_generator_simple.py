@@ -25,6 +25,46 @@ class ResponseGeneratorSimple:
         """Retrieves a baseline fallback template from the fallback database."""
         return self.fallback_db.get("templates", {}).get(language, {}).get(key, "")
 
+    def adjust_arabic_agreement(self, template, subject_lbl):
+        """
+        Dynamically adjusts verbs, pronouns, and adjectives in Arabic templates
+        to match the grammatical gender of the subject.
+        """
+        is_fem = False
+        if getattr(self.handler, "nlp_mode", "library") == "library":
+            try:
+                from src.nlp_drivers.factory import get_nlp_driver
+                driver = get_nlp_driver("ar")
+                gender = driver.get_gender(subject_lbl)
+                is_fem = (gender == 'F')
+            except Exception:
+                is_fem = subject_lbl.endswith("ة")
+        else:
+            is_fem = subject_lbl.endswith("ة")
+            
+        if is_fem:
+            # Pronouns
+            template = template.replace(" هو ", " هي ").replace(" هو،", " هي،").replace(" هو.", " هي.")
+            template = template.replace(" هو!", " هي!")
+            template = template.replace(" ليس ", " ليست ")
+            template = template.replace(" وعنده ", " وعندها ")
+            template = template.replace(" بيئته ", " بيئتها ")
+            template = template.replace(" جسديه ", " جسدية ")
+            
+            # Verbs (prefixes and suffixes)
+            template = template.replace("بيعيش", "بتعيش").replace("يعيش", "تعيش")
+            template = template.replace("بيأكل", "بتأكل").replace("يأكل", "تأكل")
+            template = template.replace("بيحتاج", "بتحتاج").replace("يحتاج", "تحتاج")
+            template = template.replace("بيتحمل", "بتحمل").replace("يتحمل", "تتحمل")
+            template = template.replace(" عاش ", " عاشت ")
+            template = template.replace(" محتاج ", " محتاجة ")
+            template = template.replace("يتكيف", "تتكيف")
+            template = template.replace("هيحتاج", "هتحتاج")
+            template = template.replace("يطور", "تطور")
+            template = template.replace("مهيأ", "مهيأة")
+            
+        return template
+
     def get_concept_label(self, concept_id, language="ar"):
         """Translates a concept ID into the target language label."""
         # 1. Try fallbacks for common concepts first (to guarantee correct baseline translation)
@@ -74,7 +114,7 @@ class ResponseGeneratorSimple:
         anc1 = get_ancestors(c1)
         anc2 = get_ancestors(c2)
         for a in anc1:
-            if a in anc2:
+            if a in anc2 and a not in ["user_defined", "concept", "category", "unknown"]:
                 return a
         return None
 
@@ -113,6 +153,8 @@ class ResponseGeneratorSimple:
             key = "classification_true" if res["result"] else "classification_false"
             
             template = self.get_template(key, language, self.get_fallback_template(key, language))
+            if language == "ar":
+                template = self.adjust_arabic_agreement(template, c1_lbl)
             ans = template.format(concept1=c1_lbl, concept2=c2_lbl)
             return prefix + ans
                  
@@ -122,6 +164,8 @@ class ResponseGeneratorSimple:
             loc_lbl = self.get_concept_label(res.get("location_label", res.get("location", "")), language)
             
             template = self.get_template("location", language, self.get_fallback_template("location", language))
+            if language == "ar":
+                template = self.adjust_arabic_agreement(template, c_lbl)
             ans = template.format(concept=c_lbl, location=loc_lbl)
             return prefix + ans
             
@@ -135,9 +179,13 @@ class ResponseGeneratorSimple:
                 cand_lbl = self.get_concept_label(res["analogy_candidate"], language)
                 
                 template = self.get_template("hypothetical_needs_adaptation", language, self.get_fallback_template("hypothetical_needs_adaptation", language))
+                if language == "ar":
+                    template = self.adjust_arabic_agreement(template, entity_lbl)
                 ans = template.format(entity=entity_lbl, environment=env_lbl, transferred_property=prop_lbl, analogy_candidate=cand_lbl)
             else:
                 template = self.get_template("hypothetical_no_adaptation", language, self.get_fallback_template("hypothetical_no_adaptation", language))
+                if language == "ar":
+                    template = self.adjust_arabic_agreement(template, entity_lbl)
                 ans = template.format(entity=entity_lbl, environment=env_lbl)
             return prefix + ans
                  
@@ -166,16 +214,25 @@ class ResponseGeneratorSimple:
             
             common_lbl = self.get_concept_label(common, language) if common else common_fallback
             
-            template = self.get_template("comparison", language, self.get_fallback_template("comparison", language))
-            ans = template.format(
-                concept1=c1_lbl,
-                concept2=c2_lbl,
-                l1_str=l1_str,
-                l2_str=l2_str,
-                p1_formatted=p1_formatted,
-                p2_formatted=p2_formatted,
-                common_lbl=common_lbl
-            )
+            if language == "ar":
+                c1_clause = f"{c1_lbl} بيعيش في {l1_str} وعنده {p1_formatted}"
+                c2_clause = f"{c2_lbl} بيعيش في {l2_str} وعنده {p2_formatted}"
+                
+                c1_clause = self.adjust_arabic_agreement(c1_clause, c1_lbl)
+                c2_clause = self.adjust_arabic_agreement(c2_clause, c2_lbl)
+                
+                ans = f"الفرق واضح جداً بين {c1_lbl} و {c2_lbl}: أولاً، {c1_clause}. أما {c2_clause}. لكن التشابه الجوهري أن كلاهما {common_lbl} تصنيفياً."
+            else:
+                template = self.get_template("comparison", language, self.get_fallback_template("comparison", language))
+                ans = template.format(
+                    concept1=c1_lbl,
+                    concept2=c2_lbl,
+                    l1_str=l1_str,
+                    l2_str=l2_str,
+                    p1_formatted=p1_formatted,
+                    p2_formatted=p2_formatted,
+                    common_lbl=common_lbl
+                )
             return prefix + ans
              
         # 6. Teaching Response
@@ -215,6 +272,8 @@ class ResponseGeneratorSimple:
             key = "comparison_scale_true" if res["result"] else "comparison_scale_false"
             
             template = self.get_template(key, language, self.get_fallback_template(key, language))
+            if language == "ar":
+                template = self.adjust_arabic_agreement(template, c1_lbl)
             ans = template.format(entity1=c1_lbl, entity2=c2_lbl, property_name=res["property_name"])
             return prefix + ans
              
@@ -324,9 +383,19 @@ class ResponseGeneratorSimple:
 
             is_feminine = False
             if language == "ar":
-                clean_lbl = concept_label.strip()
-                if clean_lbl.endswith("ة") or any(fem in clean_lbl for fem in ["شمس", "أرض", "نار", "ريح", "عين", "يد", "رجل", "نفس"]):
-                    is_feminine = True
+                if getattr(self.handler, "nlp_mode", "library") == "library":
+                    try:
+                        from src.nlp_drivers.factory import get_nlp_driver
+                        driver = get_nlp_driver("ar")
+                        is_feminine = (driver.get_gender(concept_label) == 'F')
+                    except Exception:
+                        clean_lbl = concept_label.strip()
+                        if clean_lbl.endswith("ة") or any(fem in clean_lbl for fem in ["شمس", "أرض", "نار", "ريح", "عين", "يد", "رجل", "نفس"]):
+                            is_feminine = True
+                else:
+                    clean_lbl = concept_label.strip()
+                    if clean_lbl.endswith("ة") or any(fem in clean_lbl for fem in ["شمس", "أرض", "نار", "ريح", "عين", "يد", "رجل", "نفس"]):
+                        is_feminine = True
 
             parts = []
             if category and category not in ["concept", "user_defined", "unknown"]:

@@ -101,23 +101,59 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                 # Load relations metadata
                 metadata_path = os.path.join(project_root, "data/relations_metadata.json")
                 relations = []
+                relations_metadata = []
                 if os.path.exists(metadata_path):
                     try:
                         with open(metadata_path, 'r', encoding='utf-8') as f:
                             meta_data = json.load(f)
                             relations = [r.get("id") for r in meta_data.get("relations", []) if r.get("id")]
+                            relations_metadata = meta_data.get("relations", [])
                     except Exception:
                         pass
                 
+                # Default relations translations
+                fallback_translations = {
+                    'is_a': 'نوع من',
+                    'part_of': 'جزء من',
+                    'lives_in': 'يعيش في',
+                    'has_property': 'له صفة',
+                    'eats': 'يأكل',
+                    'rises_from': 'تشرق من',
+                    'causes': 'يسبب',
+                    'resembles': 'يماثل',
+                    'requires': 'يتطلب',
+                    'provides': 'يوفر',
+                    'located_in': 'موجود في',
+                    'emits': 'يصدر',
+                    'illuminates': 'يضيء',
+                    'leads_to': 'يؤدي إلى',
+                    'follows': 'يتبع',
+                    'contains': 'يحتوي على'
+                }
+
+                # Ensure all active relations are in relations_metadata with display names
+                metadata_by_id = {r["id"]: r for r in relations_metadata if "id" in r}
+                
                 # Fallback to basic relation types if empty
+                basic = ['is_a', 'part_of', 'lives_in', 'has_property', 'eats', 'rises_from', 'causes', 'resembles', 'requires']
                 if not relations:
-                    relations = ['is_a', 'part_of', 'lives_in', 'has_property', 'eats', 'rises_from', 'causes', 'resembles', 'requires']
+                    relations = basic
                 else:
-                    # Make sure basic relations are always present
-                    basic = ['is_a', 'part_of', 'lives_in', 'has_property', 'eats', 'rises_from', 'causes', 'resembles', 'requires']
                     for r in basic:
                         if r not in relations:
                             relations.append(r)
+                            
+                # Populate relations_metadata list
+                final_metadata = []
+                for r_id in relations:
+                    if r_id in metadata_by_id:
+                        final_metadata.append(metadata_by_id[r_id])
+                    else:
+                        name_ar = fallback_translations.get(r_id, r_id)
+                        final_metadata.append({
+                            "id": r_id,
+                            "name": name_ar
+                        })
                 
                 # Load language rules statistics
                 language_stats = {}
@@ -163,12 +199,14 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                     "status": "online",
                     "active_world": handler.active_world,
                     "active_language": active_lang,
+                    "nlp_mode": getattr(handler, "nlp_mode", "library"),
                     "concepts_count": len(concepts),
                     "facts_count": facts_count,
                     "inferred_count": inferred_count,
                     "worlds": list(worlds) if worlds else ["reality"],
                     "personas": [p.get("id") for p in persona_engine.personas_db] if (hasattr(persona_engine, "personas_db") and persona_engine.personas_db) else ["sage_friend", "scientist", "witty_mentor"],
                     "relations": relations,
+                    "relations_metadata": final_metadata,
                     "language_stats": language_stats
                 }
                 
@@ -260,6 +298,12 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                 lang_pref = body.get("lang", active_lang)
                 persona_pref = body.get("persona") # Forced persona ID
                 is_deep = body.get("is_deep") # None, True or False
+                
+                # Check for NLP mode toggle in query body
+                if "nlp_mode" in body:
+                    mode = body.get("nlp_mode")
+                    if mode in ["library", "database"]:
+                        handler.nlp_mode = mode
                 
                 if query:
                     # 1. Detect language
@@ -567,6 +611,18 @@ class TheOneAPIHandler(BaseHTTPRequestHandler):
                     save_procedural_steps(data)
                     response_data = {"success": True, "message": "Procedure saved successfully"}
 
+            elif path == "/api/set_nlp_mode":
+                nlp_mode = body.get("nlp_mode", "library")
+                if nlp_mode in ["library", "database"]:
+                    handler.nlp_mode = nlp_mode
+                    response_data = {
+                        "success": True,
+                        "nlp_mode": handler.nlp_mode,
+                        "message": f"NLP Mode set to '{handler.nlp_mode}' successfully."
+                    }
+                else:
+                    response_data = {"error": "Invalid nlp_mode. Must be 'library' or 'database'"}
+                    
             elif path == "/api/procedural/delete":
                 procedure_name = body.get("procedure_name", "").strip()
                 if not procedure_name:

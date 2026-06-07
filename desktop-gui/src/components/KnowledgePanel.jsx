@@ -127,9 +127,13 @@ export default function KnowledgePanel({
                 onChange={(e) => setSelectedRelation(e.target.value)}
                 className="cyber-select py-2 text-xs"
               >
-                {Array.from(new Set([...(status.relations || []), ...RELATION_TYPES])).map(rel => (
-                  <option key={rel} value={rel}>{rel}</option>
-                ))}
+                {Array.from(new Set([...(status.relations || []), ...RELATION_TYPES])).map(rel => {
+                  const meta = status.relations_metadata?.find(r => r.id === rel);
+                  const displayName = lang === 'ar' && meta?.name ? `${meta.name} (${rel})` : rel;
+                  return (
+                    <option key={rel} value={rel}>{displayName}</option>
+                  );
+                })}
               </select>
             </div>
 

@@ -246,6 +246,17 @@ def test_arabic_spelling_normalization(setup_engine):
     assert "سافانا" in response or "السافانا" in response
 
 
+def test_sibling_classification_exclusion(setup_engine):
+    reasoner, generator = setup_engine
+    
+    # "feline_carnivore" (lion) and "polar_bear" (polar bear) are siblings under "carnivore".
+    # Querying "هل الأسد دب قطبي؟" should NOT evaluate to True, and must be False.
+    res = reasoner.process_query("هل الأسد دب قطبي؟")
+    assert res["type"] == "classification"
+    assert res["result"] is False
+
+
+
 
 
 

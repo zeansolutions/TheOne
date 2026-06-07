@@ -330,6 +330,7 @@
   },
   "fr": {
     "lexicon": {
+      "dinosaure": "dinosaur",
       "lion": "feline_carnivore",
       "lions": "feline_carnivore",
       "ours": "polar_bear",
@@ -840,6 +841,19 @@
     }
   },
   "relation_mappings": {
+    "يكون": "is_a",
+    "هو": "is_a",
+    "هي": "is_a",
+    "يأكل": "eats",
+    "يفترس": "hunting",
+    "أكل": "eats",
+    "تأكل": "eats",
+    "eat": "eats",
+    "eats": "eats",
+    "يتواجد": "located_in",
+    "يوجد": "located_in",
+    "موجود": "located_in",
+    "located_in": "located_in",
     "يعيش": "lives_in",
     "عاش": "lives_in",
     "يسكن": "lives_in",
@@ -854,8 +868,6 @@
     "requires": "requires",
     "يحمي": "provides",
     "provides": "provides",
-    "يفترس": "hunting",
-    "يأكل": "hunting",
     "عوش": "lives_in",
     "حتاج": "requires",
     "حمي": "provides",

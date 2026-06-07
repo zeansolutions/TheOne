@@ -45,6 +45,7 @@ export default function App() {
   const [isThinking, setIsThinking] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState('auto');
   const [queryMode, setQueryMode] = useState('restricted'); // 'restricted' or 'deep'
+  const [nlpMode, setNlpMode] = useState('library');
   const [reasoningTrace, setReasoningTrace] = useState('');
   const [perfTrace, setPerfTrace] = useState(null);
 
@@ -115,6 +116,9 @@ export default function App() {
       const data = await res.json();
       if (data.status === 'online') {
         setStatus(data);
+        if (data.nlp_mode) {
+          setNlpMode(data.nlp_mode);
+        }
       }
     } catch (e) {
       setStatus(prev => ({ ...prev, status: 'offline' }));
@@ -225,9 +229,34 @@ export default function App() {
     }
   }, [chatMessages]);
 
+  useEffect(() => {
+    if (status?.active_world) {
+      setTeachWorld(status.active_world);
+    }
+  }, [status?.active_world]);
+
   const logMessage = (msg, type = 'info') => {
     const time = new Date().toLocaleTimeString();
     setSystemLogs(prev => [`[${time}] [${type.toUpperCase()}] ${msg}`, ...prev.slice(0, 99)]);
+  };
+
+  const handleSetNlpMode = async (mode) => {
+    setNlpMode(mode);
+    try {
+      const res = await fetch('http://localhost:8000/api/set_nlp_mode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nlp_mode: mode })
+      });
+      const data = await res.json();
+      if (data.success) {
+        logMessage(`NLP mode set to: ${mode === 'library' ? 'Libraries (NLP Drivers)' : 'Database Rules (Dynamic)'}`, 'success');
+      } else {
+        logMessage(`Failed to set NLP mode: ${data.error}`, 'error');
+      }
+    } catch (e) {
+      logMessage(`Failed to contact server to set NLP mode.`, 'error');
+    }
   };
 
   const handleSetWorld = async (worldName) => {
@@ -240,6 +269,7 @@ export default function App() {
       const data = await res.json();
       if (data.success) {
         logMessage(`Swapped reasoning world to: '${worldName}'`, 'world');
+        setTeachWorld(worldName);
         fetchStatus();
         fetchGraph();
       }
@@ -280,7 +310,8 @@ export default function App() {
           query: queryText, 
           lang: lang,
           persona: selectedPersona === 'auto' ? null : selectedPersona,
-          is_deep: queryMode === 'deep'
+          is_deep: queryMode === 'deep',
+          nlp_mode: nlpMode
         })
       });
       const data = await res.json();
@@ -830,6 +861,8 @@ export default function App() {
                 setQueryMode={setQueryMode}
                 handleConfirmProposal={handleConfirmProposal}
                 handleCancelProposal={handleCancelProposal}
+                nlpMode={nlpMode}
+                setNlpMode={handleSetNlpMode}
               />
             </div>
           ) : (

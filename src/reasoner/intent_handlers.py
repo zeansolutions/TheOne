@@ -518,13 +518,25 @@ class IntentHandlers:
             
         if is_classification_query and len(mapped_concepts) >= 2:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
-            try:
-                idx1 = self._get_concept_index(c1, words, language, part)
-                idx2 = self._get_concept_index(c2, words, language, part)
-                if idx1 > idx2:
-                    c1, c2 = c2, c1
-            except Exception:
-                pass
+            if len(mapped_concepts) >= 3:
+                mc0 = mapped_concepts[0]
+                mc1 = mapped_concepts[1]
+                connected = False
+                if self.handler and self.handler.graph:
+                    if self.handler.graph.has_node(mc0) and self.handler.graph.has_node(mc1):
+                        if self.handler.graph.has_edge(mc0, mc1) or self.handler.graph.has_edge(mc1, mc0):
+                            connected = True
+                if connected:
+                    c1 = mc0
+                    c2 = mapped_concepts[2]
+            else:
+                try:
+                    idx1 = self._get_concept_index(c1, words, language, part)
+                    idx2 = self._get_concept_index(c2, words, language, part)
+                    if idx1 > idx2:
+                        c1, c2 = c2, c1
+                except Exception:
+                    pass
                 
             is_same_type_query = False
             same_type_markers = []
@@ -630,6 +642,12 @@ class IntentHandlers:
                 u_source = None
                 v_target = None
                 
+                ALLOWED_CLASSIFICATION_RELATIONS = {
+                    "has_property", "hasproperty", "has_behavior", "has_assigned_case",
+                    "characterizes_temporarily", "capable_of", "capableof",
+                    "has_case_capability", "has_case"
+                }
+                
                 for u in ancestors1:
                     if self.handler.graph.has_node(u):
                         for _, v_node, data in self.handler.graph.out_edges(u, data=True):
@@ -637,11 +655,13 @@ class IntentHandlers:
                                 edge_world = data.get("world", "reality")
                                 edge_status = data.get("status", "active")
                                 if edge_world == world and edge_status == "active":
-                                    found_relation = data.get("relation")
-                                    edge_data = data
-                                    u_source = u
-                                    v_target = v_node
-                                    break
+                                    rel = data.get("relation")
+                                    if rel in ALLOWED_CLASSIFICATION_RELATIONS or rel in ["prohibited_case", "prohibited_relation"]:
+                                        found_relation = rel
+                                        edge_data = data
+                                        u_source = u
+                                        v_target = v_node
+                                        break
                         if found_relation:
                             break
                             
@@ -685,7 +705,9 @@ class IntentHandlers:
                 }
         return None
 
-    def handle_relation_path(self, mapped_concepts, part, world, prag_trace, words, match_res=None, is_deep=None):
+    def handle_relation_path(self, mapped_concepts, part, world, prag_trace, words, match_res=None, is_deep=None, language=None):
+        if language is None:
+            language = "ar"
         is_relation_query = (match_res and match_res.intent == "relation_path") or (any(w in words for w in ["علاقة", "الروابط", "رابط", "يربط", "علاقه", "العلاقة", "العلاقه", "relation", "relationship", "connect", "connection", "link", "between", "entre"]) and len(mapped_concepts) >= 2)
         if is_relation_query:
             c1, c2 = mapped_concepts[0], mapped_concepts[1]
@@ -715,6 +737,9 @@ class IntentHandlers:
             
             if is_deep:
                 try:
+                    for meta_node in ["user_defined", "concept", "category", "unknown"]:
+                        if active_undirected.has_node(meta_node) and meta_node != c1 and meta_node != c2:
+                            active_undirected.remove_node(meta_node)
                     path_nodes = nx.shortest_path(active_undirected, source=c1, target=c2)
                     path_found = True
                 except (nx.NetworkXNoPath, nx.NodeNotFound):
@@ -726,24 +751,74 @@ class IntentHandlers:
                 else:
                     path_found = False
                     
-            if path_found and len(path_nodes) >= 2:
-                for i in range(len(path_nodes) - 1):
-                    u_node = path_nodes[i]
-                    v_node = path_nodes[i+1]
-                    edge_list = active_undirected[u_node][v_node]['edges']
-                    step_desc_list = []
-                    for src, tgt, edge_data in edge_list:
-                        rel_name = edge_data.get("relation", "relation")
-                        rel_meta = self.handler.graph.graph.get("relations_metadata", {})
-                        if isinstance(rel_meta, dict) and rel_name in rel_meta:
-                            rel_display = rel_meta[rel_name].get("name", rel_name)
-                        else:
-                            rel_display = rel_name
+            if not path_found:
+                # Find if they share a common ancestor
+                def get_ancestors(node):
+                    anc = [node]
+                    visited = set()
+                    queue = [node]
+                    while queue:
+                        curr = queue.pop(0)
+                        if curr in visited:
+                            continue
+                        visited.add(curr)
+                        if self.handler.graph.has_node(curr):
+                            for _, to_node, data in self.handler.graph.out_edges(curr, data=True):
+                                if data.get("relation") == "is_a" and data.get("status", "active") == "active":
+                                    if to_node not in anc:
+                                        anc.append(to_node)
+                                        queue.append(to_node)
+                    return anc
+
+                anc1 = get_ancestors(c1)
+                anc2 = get_ancestors(c2)
+                common_ancestor = None
+                for a in anc1:
+                    if a in anc2 and a != c1 and a != c2:
+                        if a not in ["user_defined", "concept", "category", "unknown"]:
+                            common_ancestor = a
+                            break
+                
+                if common_ancestor:
+                    anc_label = self.handler.graph.nodes[common_ancestor].get("labels", [common_ancestor])[0] if common_ancestor in self.handler.graph else common_ancestor
+                    # Try to get translation of the common ancestor if available in lexicon
+                    lang_lex = self.handler.language_rules.get(language, {}).get("lexicon", {})
+                    for k, v in lang_lex.items():
+                        if v == common_ancestor:
+                            anc_label = k
+                            break
                             
-                        src_lbl = self.handler.graph.nodes[src].get("labels", [src])[0] if src in self.handler.graph else src
-                        tgt_lbl = self.handler.graph.nodes[tgt].get("labels", [tgt])[0] if tgt in self.handler.graph else tgt
-                        step_desc_list.append(f"({src_lbl}) --[{rel_display}]--> ({tgt_lbl})")
-                    path_steps.append(" أو ".join(step_desc_list))
+                    # Construct step description based on language
+                    if language == "ar":
+                        step_desc = f"كلاهما يندرجان تحت تصنيف {anc_label}"
+                    elif language == "fr":
+                        step_desc = f"les deux appartiennent à la catégorie {anc_label}"
+                    else:
+                        step_desc = f"both belong to the category {anc_label}"
+                        
+                    path_steps = [step_desc]
+                    path_found = True
+                    path_nodes = [c1, common_ancestor, c2]
+
+            if path_found and len(path_nodes) >= 2:
+                if not path_steps:
+                    for i in range(len(path_nodes) - 1):
+                        u_node = path_nodes[i]
+                        v_node = path_nodes[i+1]
+                        edge_list = active_undirected[u_node][v_node]['edges']
+                        step_desc_list = []
+                        for src, tgt, edge_data in edge_list:
+                            rel_name = edge_data.get("relation", "relation")
+                            rel_meta = self.handler.graph.graph.get("relations_metadata", {})
+                            if isinstance(rel_meta, dict) and rel_name in rel_meta:
+                                rel_display = rel_meta[rel_name].get("name", rel_name)
+                            else:
+                                rel_display = rel_name
+
+                            src_lbl = self.handler.graph.nodes[src].get("labels", [src])[0] if src in self.handler.graph else src
+                            tgt_lbl = self.handler.graph.nodes[tgt].get("labels", [tgt])[0] if tgt in self.handler.graph else tgt
+                            step_desc_list.append(f"({src_lbl}) --[{rel_display}]--> ({tgt_lbl})")
+                        path_steps.append(" أو ".join(step_desc_list))
                     
                 query_mode_str = "عميق" if is_deep else "محدد"
                 trace_msg = [

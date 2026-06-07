@@ -1992,6 +1992,138 @@
         "patterns": [
           "السافانا"
         ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
+      },
+      {
+        "id": "أسد",
+        "patterns": [
+          "الأسد",
+          "أسد"
+        ]
+      },
+      {
+        "id": "أكل",
+        "patterns": [
+          "يأكل",
+          "أكل"
+        ]
+      },
+      {
+        "id": "غزل",
+        "patterns": [
+          "الغزالة",
+          "غزالة"
+        ]
+      },
+      {
+        "id": "غيب",
+        "patterns": [
+          "غابات"
+        ]
+      },
+      {
+        "id": "سفن",
+        "patterns": [
+          "السافانا"
+        ]
       }
     ],
     "particles": [
@@ -2598,6 +2730,38 @@
       {
         "form": "في",
         "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
+      },
+      {
+        "form": "ال",
+        "type": "definite_article"
+      },
+      {
+        "form": "في",
+        "type": "preposition"
       }
     ],
     "derivation_patterns": [
@@ -2841,6 +3005,26 @@
         "id": "declarative",
         "pattern": "noun + verb + object",
         "description": "Standard declarative statement"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
+      },
+      {
+        "id": "declarative_verbal",
+        "pattern": "subject + verb + object + prepositional_phrase",
+        "description": "جملة خبرية فعلية تبدأ باسم متبوع بفعل ومفعول به وجار ومجرور"
       },
       {
         "id": "declarative_verbal",
@@ -3581,6 +3765,50 @@
       "متى",
       "كم",
       "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
       "هي"
     ]
   },
@@ -3980,6 +4208,50 @@
       "has": "has_part"
     },
     "question_particles": [
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "is",
+      "are",
+      "do",
+      "does",
       "what",
       "who",
       "where",
@@ -5250,6 +5522,50 @@
       "في": "located_in"
     },
     "question_particles": [
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
+      "ما",
+      "من",
+      "هل",
+      "أين",
+      "كيف",
+      "لماذا",
+      "ماذا",
+      "متى",
+      "كم",
+      "أي",
+      "هي",
       "ما",
       "من",
       "هل",

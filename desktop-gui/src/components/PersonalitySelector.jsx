@@ -1,7 +1,7 @@
 import React from 'react';
-import { Brain, Zap } from 'lucide-react';
+import { Brain, Zap, Cpu } from 'lucide-react';
 
-export default function PersonalitySelector({ lang, selectedPersona, setSelectedPersona, personas = [], t, queryMode, setQueryMode }) {
+export default function PersonalitySelector({ lang, selectedPersona, setSelectedPersona, personas = [], t, queryMode, setQueryMode, nlpMode, setNlpMode }) {
   const getPersonaName = (id) => {
     if (lang === 'ar') {
       if (id === 'sage_friend') return 'الحكيم الودود';
@@ -49,6 +49,22 @@ export default function PersonalitySelector({ lang, selectedPersona, setSelected
         >
           <option value="restricted">🔒 {t('queryModeRestricted')}</option>
           <option value="deep">🌐 {t('queryModeDeep')}</option>
+        </select>
+      </div>
+
+      <div className="d-flex justify-between align-center gap-2">
+        <span className="text-[11px] text-slate-400 font-mono d-flex align-center gap-1">
+          <Cpu style={{ width: '12px', height: '12px' }} />
+          {lang === 'ar' ? 'وضع معالجة اللغة' : 'NLP Engine Mode'}:
+        </span>
+        <select
+          value={nlpMode || 'library'}
+          onChange={(e) => setNlpMode(e.target.value)}
+          className="cyber-select text-[11px] py-0.5 px-2"
+          style={{ minWidth: '160px' }}
+        >
+          <option value="library">📚 {lang === 'ar' ? 'المكتبات الخارجية' : 'Libraries (NLP Drivers)'}</option>
+          <option value="database">🗄️ {lang === 'ar' ? 'قواعد البيانات الديناميكية' : 'Database Rules (Dynamic)'}</option>
         </select>
       </div>
     </div>

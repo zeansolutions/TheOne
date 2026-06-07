@@ -96,7 +96,10 @@
         "hasproperty": "لديه صفة",
         "definedas": "يعرف بأنه",
         "partof": "جزء من",
-        "hasa": "يحتوي على"
+        "hasa": "يحتوي على",
+        "eats": "يأكل",
+        "located_in": "يتواجد في",
+        "hunting": "يفترس"
       },
       "knowledge_header": "المعرفة المتوفرة حول {concept_label}:",
       "knowledge_separator": "، ",

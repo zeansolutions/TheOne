@@ -1,6 +1,27 @@
 {
   "facts": [
     {
+      "subject": "رأس",
+      "predicate": "part_of",
+      "object": "انسان",
+      "world": "reality",
+      "confidence": 1.0
+    },
+    {
+      "subject": "رأس",
+      "predicate": "has_property",
+      "object": "مستديرة",
+      "world": "reality",
+      "confidence": 1.0
+    },
+    {
+      "subject": "كرة",
+      "predicate": "has_property",
+      "object": "مستديرة",
+      "world": "reality",
+      "confidence": 1.0
+    },
+    {
       "subject": "lion",
       "predicate": "eats",
       "object": "gazelle",

@@ -298,7 +298,7 @@ class SimpleReasoner:
             
         # Clean premise from conditional words
         for cond in lang_conds + ["كان", "افترضنا", "أن", "ان", "assumed", "we assume"]:
-            premise = re.sub(rf'{cond}', '', premise).strip()
+            premise = re.sub(rf'(?<!\w){cond}(?!\w)', '', premise).strip()
             
         return True, premise, question
 
@@ -365,6 +365,14 @@ class SimpleReasoner:
             else:
                 language = "ar"
 
+        driver = None
+        if getattr(self.handler, "nlp_mode", "library") == "library":
+            try:
+                from src.nlp_drivers.factory import get_nlp_driver
+                driver = get_nlp_driver(language)
+            except Exception:
+                driver = None
+
         query, world = self.world_manager.detect_and_set_world(query)
         self.handler.infer_facts(world)
         
@@ -374,29 +382,46 @@ class SimpleReasoner:
         last_result = None
         
         for idx, part in enumerate(parts):
-            raw_words = part.strip().split()
-            words = []
-            for w in raw_words:
-                cleaned_w = w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "")
-                if language == "ar":
-                    if cleaned_w.startswith("وال") and len(cleaned_w) > 3:
-                        cleaned_w = cleaned_w[1:]
-                    elif cleaned_w.startswith("و") and len(cleaned_w) > 2:
-                        stem = cleaned_w[1:]
-                        is_known = False
-                        ar_lex = self.handler.language_rules.get("ar", {}).get("lexicon", {})
-                        if stem in ar_lex:
-                            is_known = True
-                        else:
-                            for node, ndata in self.handler.graph.nodes(data=True):
-                                if ndata.get("type") == "concept" and stem in ndata.get("labels", []):
-                                    is_known = True
-                                    break
-                        if is_known:
-                            cleaned_w = stem
-                elif language in ["en", "fr"]:
-                    cleaned_w = cleaned_w.lower()
-                words.append(cleaned_w)
+            if driver:
+                try:
+                    # Tokenize and extract words using the active language driver
+                    clean_part = part.replace("؟", "").replace("?", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").strip()
+                    tokens_info = driver.analyze_tokens(clean_part)
+                    words = []
+                    for t in tokens_info:
+                        w = t["word"].strip()
+                        if w:
+                            if language != "ar":
+                                w = w.lower()
+                            words.append(w)
+                except Exception:
+                    driver = None
+            
+            # Fallback if driver is not active or failed
+            if not driver:
+                raw_words = part.strip().split()
+                words = []
+                for w in raw_words:
+                    cleaned_w = w.replace("؟", "").replace("!", "").replace("،", "").replace(",", "").replace(".", "").replace("?", "")
+                    if language == "ar":
+                        if cleaned_w.startswith("وال") and len(cleaned_w) > 3:
+                            cleaned_w = cleaned_w[1:]
+                        elif cleaned_w.startswith("و") and len(cleaned_w) > 2:
+                            stem = cleaned_w[1:]
+                            is_known = False
+                            ar_lex = self.handler.language_rules.get("ar", {}).get("lexicon", {})
+                            if stem in ar_lex:
+                                is_known = True
+                            else:
+                                for node, ndata in self.handler.graph.nodes(data=True):
+                                    if ndata.get("type") == "concept" and stem in ndata.get("labels", []):
+                                        is_known = True
+                                        break
+                            if is_known:
+                                cleaned_w = stem
+                    elif language in ["en", "fr"]:
+                        cleaned_w = cleaned_w.lower()
+                    words.append(cleaned_w)
             
             lang_rules = self.handler.language_rules.get(language, {})
             question_particles = lang_rules.get("question_particles", [])
@@ -457,8 +482,12 @@ class SimpleReasoner:
                             if c and c not in extracted_concepts:
                                 extracted_concepts.append(c)
                     if len(extracted_concepts) >= len(expected_roles) and len(extracted_concepts) > 0:
-                        mapped_concepts = extracted_concepts
-                        matched_by_pattern = True
+                        if match_res.intent == "classification":
+                            # For classification, let the fallback map all concepts in the query
+                            pass
+                        else:
+                            mapped_concepts = extracted_concepts
+                            matched_by_pattern = True
                     else:
                         match_res = None
 
@@ -661,7 +690,7 @@ class SimpleReasoner:
         if res: return res
         
         # 15. Relation Path / Connection Search
-        res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res, is_deep=is_deep)
+        res = self._handle_relation_path(mapped_concepts, part, world, prag_trace, words, match_res, is_deep=is_deep, language=language)
         if res: return res
         
         # 16. Generic "What is X?"

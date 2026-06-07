@@ -18,7 +18,9 @@ export default function ChatInterface({
   queryMode,
   setQueryMode,
   handleConfirmProposal,
-  handleCancelProposal
+  handleCancelProposal,
+  nlpMode,
+  setNlpMode
 }) {
   return (
     <div className="d-flex flex-column flex-grow h-full">
@@ -90,6 +92,8 @@ export default function ChatInterface({
         t={t}
         queryMode={queryMode}
         setQueryMode={setQueryMode}
+        nlpMode={nlpMode}
+        setNlpMode={setNlpMode}
       />
 
       {/* Input box */}

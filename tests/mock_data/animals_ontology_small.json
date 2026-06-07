@@ -20,7 +20,7 @@
     {"id": "gazelle", "labels": ["غزال", "الغزال"], "category": "animal"},
     {"id": "prey", "labels": ["فريسة", "فرائس"], "category": "animal"},
     {"id": "forest", "labels": ["غابة", "الغابة"], "category": "location"},
-    {"id": "dinosaur", "labels": ["ديناصور", "ديناصورات", "الديناصورات"], "category": "animal"},
+    {"id": "dinosaur", "labels": ["ديناصور", "ديناصورات", "الديناصورات", "dinosaure", "dinosaur"], "category": "animal"},
     {"id": "mammoth", "labels": ["ماموث", "الماموث"], "category": "animal"}
   ],
   "relations": [
